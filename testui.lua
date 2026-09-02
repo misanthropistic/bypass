@@ -525,7 +525,7 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 63, 1, 0);
+                    Size = dim2(0, 75, 1, 0);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -542,21 +542,21 @@
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 16)
+                    PaddingTop = dim(0, 12)
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "tab_button_holder" ];
-                    Padding = dim(0, 24);
+                    Padding = dim(0, 8);
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
                 
                 items[ "page_holder" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 63, 0, 0);
+                    Position = dim2(0, 75, 0, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -63, 1, 0);
+                    Size = dim2(1, -75, 1, 0);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(12, 12, 12)
                 });                
@@ -625,10 +625,9 @@
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
                         Text = "";
-                        Size = dim2(1, 0, 0, 0);
+                        Size = dim2(1, 0, 0, 48);
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.Y;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     
@@ -638,15 +637,28 @@
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(0, 32, 0, 32);
+                        Size = dim2(0, 24, 0, 24);
                         AnchorPoint = vec2(0.5, 0);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
-                        Position = dim2(0.5, 0, 0, 0);
+                        Position = dim2(0.5, 0, 0, 4);
                         Selectable = true;
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
-                    });                       
+                    });
+
+                    items[ "text_label" ] = library:create( "TextLabel" , {
+                        Parent = items[ "tab_button" ];
+                        BackgroundTransparency = 1;
+                        Text = cfg.name;
+                        FontFace = library.font;
+                        TextSize = 10;
+                        TextColor3 = rgb(128, 128, 128);
+                        Position = dim2(0, 0, 0, 30);
+                        Size = dim2(1, 0, 0, 14);
+                        TextXAlignment = Enum.TextXAlignment.Center;
+                        BorderSizePixel = 0;
+                    });
                 -- 
 
                 -- Page directory
@@ -697,17 +709,20 @@
                 
                 if selected_tab then 
                    selected_tab[ 1 ].ImageColor3 = rgb(128, 128, 128)
+                   if selected_tab[ 3 ] then selected_tab[ 3 ].TextColor3 = rgb(128, 128, 128) end
                    selected_tab[ 2 ].Parent = library.items
                    selected_tab[ 2 ].Visible = false
                 end
                 
                 items.image.ImageColor3 = rgb(255, 255, 255)
+                items.text_label.TextColor3 = rgb(255, 255, 255)
                 items.tab.Parent = self.items[ "page_holder" ]
                 items.tab.Visible = true
 
                 self.selected_tab = {
                     items.image;
                     items.tab;
+                    items.text_label;
                 }
 
                 library:close_current_element(nil) 
@@ -752,7 +767,8 @@
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
                     Size = dim2(1, 0, 0, 26);
-                    BackgroundColor3 = rgb(14, 14, 14)
+                    BackgroundColor3 = rgb(14, 14, 14);
+                    ClipsDescendants = true;
                 });
 
                 library:create( "UIListLayout" , {
@@ -760,7 +776,7 @@
                     FillDirection = Enum.FillDirection.Horizontal;
                     HorizontalAlignment = Enum.HorizontalAlignment.Left;
                     VerticalAlignment = Enum.VerticalAlignment.Center;
-                    Padding = dim(0, 2);
+                    Padding = dim(0, 4);
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
 
@@ -799,7 +815,10 @@
             local btn_bg = library:create( "TextButton" , {
                 Parent = self.subtab_bar;
                 AutoButtonColor = false;
-                Text = "";
+                Text = cfg.name;
+                FontFace = library.font;
+                TextColor3 = rgb(100, 100, 100);
+                TextSize = 11;
                 Name = "\0";
                 BorderSizePixel = 0;
                 AutomaticSize = Enum.AutomaticSize.X;
@@ -807,28 +826,10 @@
                 BackgroundColor3 = rgb(14, 14, 14)
             });
 
-            local btn_label = library:create( "TextLabel" , {
-                FontFace = library.font;
-                TextColor3 = rgb(70, 70, 70);
-                BorderColor3 = rgb(0, 0, 0);
-                Text = cfg.name;
-                Parent = btn_bg;
-                BackgroundTransparency = 1;
-                Size = dim2(1, 0, 1, 0);
-                AutomaticSize = Enum.AutomaticSize.X;
-                BorderSizePixel = 0;
-                TextSize = 10;
-                BackgroundColor3 = rgb(255, 255, 255)
-            });
-
             library:create( "UIPadding" , {
-                Parent = btn_label;
-                PaddingLeft = dim(0, 8);
-                PaddingRight = dim(0, 8)
-            });
-
-            library:create( "UIStroke" , {
-                Parent = btn_label
+                Parent = btn_bg;
+                PaddingLeft = dim(0, 10);
+                PaddingRight = dim(0, 10)
             });
 
             -- Active indicator underline (animates in/out on tab switch)
@@ -837,7 +838,7 @@
                 Name = "\0";
                 AnchorPoint = vec2(0, 1);
                 Position = dim2(0, 0, 1, 0);
-                Size = dim2(0, 0, 0, 1);
+                Size = dim2(0, 0, 0, 2);
                 BorderSizePixel = 0;
                 ZIndex = 5;
                 BackgroundColor3 = rgb(210, 210, 210)
@@ -888,17 +889,17 @@
 
                 if selected then
                     selected.content.Visible = false
-                    library:tween(selected.btn_label, {TextColor3 = rgb(70, 70, 70)})
-                    library:tween(selected.btn_line, {Size = dim2(0, 0, 0, 1)})
+                    library:tween(selected.btn_bg, {TextColor3 = rgb(100, 100, 100)})
+                    library:tween(selected.btn_line, {Size = dim2(0, 0, 0, 2)})
                 end
 
                 content.Visible = true
-                library:tween(btn_label, {TextColor3 = rgb(235, 235, 235)})
-                library:tween(btn_line, {Size = dim2(1, 0, 0, 1)})
+                library:tween(btn_bg, {TextColor3 = rgb(235, 235, 235)})
+                library:tween(btn_line, {Size = dim2(1, 0, 0, 2)})
 
                 self.selected_subtab = {
                     content = content;
-                    btn_label = btn_label;
+                    btn_bg = btn_bg;
                     btn_line = btn_line;
                 }
 
@@ -1251,12 +1252,11 @@
                 callback = options.callback or options.Callback or function() end; 
                 show_value = options.ShowValue or options.show_value or true; 
 
-                -- value settings
-                min = options.min or options.minimum or options.Min or options.Minimum or 0;
+                -- value s                min = options.min or options.minimum or options.Min or options.Minimum or 0;
                 max = options.max or options.maximum or options.Max or options.Maximum or 100;
-                intervals = options.interval or options.decimal or options.Interval or options.Decimal or 1;
+                intervals = options.interval or options.decimal or options.float or options.Interval or options.Decimal or options.Float or 1;
                 default = options.default or options.Default or 10;
-                value = options.default or options.default or 10; 
+                value = options.default or options.Default or 10; 
 
                 -- ignore
                 dragging = false;
@@ -1400,7 +1400,7 @@
                 -- Options
                 name = options.name or options.Name or nil;
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺";
-                options = options.items or options.Items or {"1", "2", "3"};
+                options = options.items or options.Items or options.options or options.Options or options.Content or options.content or {"1", "2", "3"};
                 callback = options.callback or options.Callback or function() end;
                 multi = options.multi or options.Multi or false;
 
@@ -1411,7 +1411,7 @@
                 items = {};
             }   
 
-            cfg.default = options.default or (cfg.multi and {cfg.items[1]}) or cfg.items[1] or "None"
+            cfg.default = options.default or options.Default or (cfg.multi and {cfg.options[1]}) or cfg.options[1] or "None"1] or "None"
             flags[cfg.flag] = cfg.default
             
             local items = cfg.items; do 
