@@ -314,8 +314,8 @@
                         )
                     )
 
-                    -- library:tween(frame, {Position = current_position}, Enum.EasingStyle.Linear, 0) -- heh, nobody will notice 
-                    frame.Position = current_position
+                    -- Drag delay: smooth interpolation tweening instead of instant position set
+                    library:tween(frame, {Position = current_position}, Enum.EasingStyle.Sine, 0.08)
                     library:close_current_element(nil) 
                 end
             end)
@@ -498,48 +498,22 @@
                     BackgroundColor3 = rgb(0, 0, 0)
                 }); items[ "window" ].Position = dim2(0, items[ "window" ].AbsolutePosition.X, 0, items[ "window" ].AbsolutePosition.Y)          
 
+                -- Top frame removed/zeroed to maximize content space
                 items[ "top_frame" ] = library:create( "Frame" , {
                     Name = "\0";
                     Parent = items[ "window" ];
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 0, 45);
+                    Size = dim2(1, 0, 0, 0);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
-                });
-                
-                items[ "logo" ] = library:create( "ImageLabel" , {
-                    BorderColor3 = rgb(0, 0, 0);
-                    Parent = items[ "top_frame" ];
-                    Name = "\0";
-                    Image = cfg.logo;
-                    BackgroundTransparency = 1;
-                    Position = dim2(0, 16, 0, 7);
-                    Size = dim2(0, 32, 0, 32);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(255, 255, 255)
-                });
-                
-                items[ "ui_title" ] = library:create( "TextLabel" , {
-                    FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal);
-                    TextColor3 = rgb(255, 255, 255);
-                    TextStrokeColor3 = rgb(255, 255, 255);
-                    Text = cfg.name;
-                    Parent = items[ "top_frame" ];
-                    Name = "\0";
-                    BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 1, 0);
-                    BorderSizePixel = 0;
-                    BorderColor3 = rgb(0, 0, 0);
-                    TextSize = 35;
-                    BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
                 items[ "inline" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 0, 0, 44);
+                    Position = dim2(0, 0, 0, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 63, 1, -44);
+                    Size = dim2(0, 63, 1, 0);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -556,7 +530,7 @@
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 37)
+                    PaddingTop = dim(0, 16)
                 });
                 
                 library:create( "UIListLayout" , {
@@ -568,9 +542,9 @@
                 items[ "page_holder" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 63, 0, 45);
+                    Position = dim2(0, 63, 0, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -63, 1, -45);
+                    Size = dim2(1, -63, 1, 0);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(12, 12, 12)
                 });                
@@ -1015,8 +989,8 @@
                     Parent = items[ "scrolling" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 12, 0, 12);
-                    Size = dim2(1, -24, 0, 0);
+                    Position = dim2(0, 14, 0, 14);
+                    Size = dim2(1, -28, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.Y;
                     BackgroundColor3 = rgb(255, 255, 255)
@@ -1024,7 +998,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "elements" ];
-                    Padding = dim(0, 5);
+                    Padding = dim(0, 6);
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
                 
@@ -1140,10 +1114,9 @@
                     Text = "";
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 0, 12);
+                    Size = dim2(1, 0, 0, 15);
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
-                    -- AutomaticSize = Enum.AutomaticSize.Y;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1152,7 +1125,7 @@
                     BackgroundTransparency = 1;
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 12, 0, 12);
+                    Size = dim2(0, 14, 0, 14);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1180,7 +1153,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "object" ];
-                    Padding = dim(0, 5);
+                    Padding = dim(0, 6);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     FillDirection = Enum.FillDirection.Horizontal
                 });
@@ -1192,10 +1165,10 @@
                     Text = cfg.name;
                     Parent = items[ "object" ];
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 12, 0, 0);
+                    Position = dim2(0, 14, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
-                    TextSize = 10;
+                    TextSize = 11;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1220,6 +1193,20 @@
                 flags[cfg.flag] = bool
             end 
             
+            items[ "object" ].MouseEnter:Connect(function()
+                if not cfg.enabled then
+                    library:tween(items[ "text" ], {TextColor3 = rgb(225, 225, 225)})
+                    library:tween(items[ "toggle_inline" ], {BackgroundColor3 = rgb(90, 90, 90)})
+                end
+            end)
+
+            items[ "object" ].MouseLeave:Connect(function()
+                if not cfg.enabled then
+                    library:tween(items[ "text" ], {TextColor3 = rgb(178, 178, 178)})
+                    library:tween(items[ "toggle_inline" ], {BackgroundColor3 = rgb(54, 54, 54)})
+                end
+            end)
+
             items[ "object" ].MouseButton1Click:Connect(function()
                 cfg.enabled = not cfg.enabled 
                 cfg.set(cfg.enabled)
@@ -1258,7 +1245,7 @@
                     Parent = self.items.object or self.items.elements;
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Size = dim2(0, 0, 0, 12);
+                    Size = dim2(0, 0, 0, 16);
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
@@ -1267,7 +1254,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "object" ];
-                    Padding = dim(0, 5);
+                    Padding = dim(0, 6);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     FillDirection = Enum.FillDirection.Horizontal
                 });
@@ -1278,7 +1265,7 @@
                     Text = "";
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 100, 1, 0);
+                    Size = dim2(0, 110, 1, 0);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
@@ -1289,7 +1276,7 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0.5, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 0, 5);
+                    Size = dim2(1, 0, 0, 7);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1315,7 +1302,7 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0.5, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 4, 0, 9);
+                    Size = dim2(0, 6, 0, 13);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1336,7 +1323,14 @@
 
                 if cfg.show_value then 
                     items[ "value" ] = setmetatable(cfg, library):Label({padding_top = 1})
-                end       
+                end
+
+                items[ "slider_parent" ].MouseEnter:Connect(function()
+                    library:tween(items[ "inline" ], {BackgroundColor3 = rgb(255, 255, 200)})
+                end)
+                items[ "slider_parent" ].MouseLeave:Connect(function()
+                    library:tween(items[ "inline" ], {BackgroundColor3 = rgb(255, 255, 255)})
+                end)
             end 
 
             function cfg.set(value)
@@ -1422,7 +1416,7 @@
                         Text = "";
                         AutoButtonColor = false;
                         Name = "\0";
-                        Size = dim2(0, 0, 0, 16);
+                        Size = dim2(0, 0, 0, 19);
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.X;
                         BackgroundColor3 = rgb(0, 0, 0)
@@ -1438,6 +1432,15 @@
                         AutomaticSize = Enum.AutomaticSize.X;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
+
+                    items[ "dropdown_outline" ].MouseEnter:Connect(function()
+                        library:tween(items.inner_text, {TextColor3 = rgb(235, 235, 235)})
+                        library:tween(items.arrow, {ImageColor3 = rgb(235, 235, 235)})
+                    end)
+                    items[ "dropdown_outline" ].MouseLeave:Connect(function()
+                        library:tween(items.inner_text, {TextColor3 = rgb(178, 178, 178)})
+                        library:tween(items.arrow, {ImageColor3 = rgb(178, 178, 178)})
+                    end)
                     
                     library:create( "UIGradient" , {
                         Rotation = 90;
@@ -2381,9 +2384,16 @@
                         Parent = self.items.object;
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.XY;
-                        TextSize = 10;
+                        TextSize = 11;
                         BackgroundColor3 = rgb(38, 38, 38)
                     });
+
+                    items.text_label.MouseEnter:Connect(function()
+                        library:tween(items.text_label, {BackgroundColor3 = rgb(65, 65, 65), TextColor3 = rgb(235, 235, 235)})
+                    end)
+                    items.text_label.MouseLeave:Connect(function()
+                        library:tween(items.text_label, {BackgroundColor3 = rgb(38, 38, 38), TextColor3 = rgb(178, 178, 178)})
+                    end)
 
                     library:create( "UIStroke" , {
                         Parent = items.text_label
@@ -3009,7 +3019,7 @@
 					notifications:refresh_notifs()
 				end)
 			else 
-                -- i got no clue wtf im doing ( koni )
+                -- booty code
 				task.spawn(function()
 					tween_service:Create(line, TweenInfo.new(3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = dim2(1, -1, 0, 1)}):Play()
 					task.wait(5)
