@@ -138,10 +138,10 @@
     local notifications = library.notifications 
 
     -- Font importing system 
-        if isfile(library.directory .. "/fonts/main.ttf") then 
-            delfile(library.directory .. "/fonts/main.ttf")
-        else 
-            writefile(library.directory .. "/fonts/main.ttf", game:HttpGet("https://github.com/f1nobe7650/Nebula/raw/refs/heads/main/Minecraftia-Regular.ttf"))
+        if not isfile(library.directory .. "/fonts/main.ttf") then 
+            pcall(function()
+                writefile(library.directory .. "/fonts/main.ttf", game:HttpGet("https://github.com/f1nobe7650/Nebula/raw/refs/heads/main/Minecraftia-Regular.ttf"))
+            end)
         end 
         
         local minecraftia = {
@@ -151,17 +151,25 @@
                     name = "Regular",
                     weight = 400,
                     style = "normal",
-                    assetId = getcustomasset(library.directory .. "/fonts/main.ttf")
+                    assetId = (isfile(library.directory .. "/fonts/main.ttf") and pcall(getcustomasset, library.directory .. "/fonts/main.ttf")) and getcustomasset(library.directory .. "/fonts/main.ttf") or ""
                 }
             }
         }
         
         if not isfile(library.directory .. "/fonts/main_encoded.ttf") then 
-            writefile(library.directory .. "/fonts/main_encoded.ttf", http_service:JSONEncode(minecraftia))
+            pcall(function()
+                writefile(library.directory .. "/fonts/main_encoded.ttf", http_service:JSONEncode(minecraftia))
+            end)
         end 
         
-        library.font = Font.new(getcustomasset(library.directory .. "/fonts/main_encoded.ttf"), Enum.FontWeight.Regular)
-        -- library.font = library.font
+        pcall(function()
+            if isfile(library.directory .. "/fonts/main_encoded.ttf") then
+                library.font = Font.new(getcustomasset(library.directory .. "/fonts/main_encoded.ttf"), Enum.FontWeight.Regular)
+            end
+        end)
+        if not library.font then
+            library.font = Font.fromEnum(Enum.Font.Code)
+        end
     -- 
 --
 
@@ -459,15 +467,19 @@
     
     -- Library element functions
         function library:window(properties)
+            local propTable = type(properties) == "table" and properties or {}
+            local windowName = (type(properties) == "string" and properties) or propTable.name or propTable.Name or "alternate"
+            local windowSize = propTable.size or propTable.Size or dim2(0, 650, 0, 400)
+            local windowLogo = propTable.logo or propTable.Logo or "rbxassetid://128155293790451"
             local cfg = { 
                 -- Properties
-                name = properties.name or properties.Name or "nebula";
-                size = properties.size or properties.Size or dim2(0, 650, 0, 400);
-                logo = properties.logo or properties.Logo or "rbxassetid://128155293790451";
+                name = windowName;
+                size = windowSize;
+                logo = windowLogo;
 
-                selected_tab;
+                selected_tab = nil;
                 items = {};
-                tweening;
+                tweening = false;
             }
             
             library[ "items" ] = library:create( "ScreenGui" , {
@@ -596,10 +608,13 @@
         end 
 
         function library:Tab(properties)
+            local propTable = type(properties) == "table" and properties or {}
+            local tabName = (type(properties) == "string" and properties) or propTable.name or propTable.Name or "visuals"
+            local tabIcon = propTable.icon or propTable.Icon or "http://www.roblox.com/asset/?id=6034767608"
             local cfg = {
                 -- properties
-                name = properties.name or properties.Name or "visuals"; 
-                icon = properties.icon or properties.Icon or "http://www.roblox.com/asset/?id=6034767608";
+                name = tabName; 
+                icon = tabIcon;
                 
                 items = {};
             } 
@@ -710,8 +725,10 @@
         end
 
         function library:SubTab(properties)
+            local propTable = type(properties) == "table" and properties or {}
+            local subName = (type(properties) == "string" and properties) or propTable.name or propTable.Name or "Sub"
             local cfg = {
-                name = properties.name or properties.Name or "Sub";
+                name = subName;
                 items = {};
             }
 
@@ -899,14 +916,20 @@
             return setmetatable(cfg, library)
         end
 
-        function library:Section(properties)
+        function library:Section(properties, sideArg)
+            local propTable = type(properties) == "table" and properties or {}
+            local secName = (type(properties) == "string" and properties) or propTable.name or propTable.Name or "section"
+            local secSide = propTable.side or propTable.Side or sideArg or "left"
+            if type(secSide) == "number" then secSide = (secSide == 1 and "left" or "right") end
+            secSide = tostring(secSide):lower()
+            if secSide ~= "left" and secSide ~= "right" then secSide = "left" end
             local cfg = {
-                name = properties.name or properties.Name or "section"; 
-                side = properties.side or properties.Side or "left";
-                default = properties.default or properties.Default or false;
-                size = properties.size or properties.Size or 0.5; 
-                icon = properties.icon or properties.Icon or "http://www.roblox.com/asset/?id=6022668898";
-                fading_toggle = properties.fading or properties.Fading or false;
+                name = secName; 
+                side = secSide;
+                default = propTable.default or propTable.Default or false;
+                size = propTable.size or propTable.Size or 0.5; 
+                icon = propTable.icon or propTable.Icon or "http://www.roblox.com/asset/?id=6022668898";
+                fading_toggle = propTable.fading or propTable.Fading or false;
                 items = {};
             };
             
