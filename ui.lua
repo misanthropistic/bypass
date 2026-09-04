@@ -594,32 +594,24 @@
                     Name = "TabTooltip";
                     Visible = false;
                     ZIndex = 300;
-                    BackgroundColor3 = rgb(18, 18, 18);
-                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(15, 15, 15);
+                    BorderColor3 = rgb(45, 45, 45);
+                    BorderSizePixel = 1;
                     AutomaticSize = Enum.AutomaticSize.XY;
-                });
-                library:create( "UICorner" , {
-                    Parent = items[ "tab_tooltip" ];
-                    CornerRadius = dim(0, 6);
-                });
-                library:create( "UIStroke" , {
-                    Parent = items[ "tab_tooltip" ];
-                    Color = rgb(45, 45, 45);
-                    Thickness = 1;
                 });
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_tooltip" ];
-                    PaddingTop = dim(0, 5);
-                    PaddingBottom = dim(0, 5);
-                    PaddingLeft = dim(0, 9);
-                    PaddingRight = dim(0, 9);
+                    PaddingTop = dim(0, 4);
+                    PaddingBottom = dim(0, 4);
+                    PaddingLeft = dim(0, 8);
+                    PaddingRight = dim(0, 8);
                 });
                 items[ "tab_tooltip_text" ] = library:create( "TextLabel" , {
                     Parent = items[ "tab_tooltip" ];
                     BackgroundTransparency = 1;
-                    TextColor3 = rgb(245, 245, 245);
-                    FontFace = library.font or Font.fromEnum(Enum.Font.GothamMedium);
-                    TextSize = 12;
+                    TextColor3 = rgb(235, 235, 235);
+                    FontFace = library.font or Font.fromEnum(Enum.Font.Code);
+                    TextSize = 11;
                     Text = "";
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
@@ -717,29 +709,8 @@
                         BackgroundTransparency = 1;
                         Text = "";
                         Size = dim2(0, 52, 0, 52);
-                        BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(25, 25, 25);
                         AutoButtonColor = false;
-                    });
-
-                    library:create( "UICorner" , {
-                        Parent = items[ "tab_button" ];
-                        CornerRadius = dim(0, 8);
-                    });
-
-                    items[ "indicator" ] = library:create( "Frame" , {
-                        Parent = items[ "tab_button" ];
-                        Position = dim2(0, -6, 0.5, 0);
-                        AnchorPoint = vec2(0, 0.5);
-                        Size = dim2(0, 3, 0, 0);
-                        BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(255, 255, 255);
-                        BackgroundTransparency = 1;
-                    });
-                    library:create( "UICorner" , {
-                        Parent = items[ "indicator" ];
-                        CornerRadius = dim(0, 2);
                     });
                     
                     items[ "image" ] = library:create( "ImageLabel" , {
@@ -761,8 +732,7 @@
 
                     -- Tooltip and hover interactions
                     items[ "tab_button" ].MouseEnter:Connect(function()
-                        if not (self.selected_tab and self.selected_tab[ 3 ] == items.tab_button) then
-                            library:tween(items.tab_button, {BackgroundTransparency = 0.6}, Enum.EasingStyle.Quad, 0.15)
+                        if not (self.selected_tab and self.selected_tab[ 2 ] == items.tab) then
                             library:tween(items.image, {ImageColor3 = rgb(200, 200, 200)}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
@@ -771,15 +741,14 @@
                             tip_text.Text = cfg.name
                             local btn_pos = items[ "tab_button" ].AbsolutePosition
                             local win_pos = self.items[ "window" ].AbsolutePosition
-                            local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 12
+                            local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 10
                             tip.Position = dim2(0, 78, 0, rel_y)
                             tip.Visible = true
                         end
                     end)
 
                     items[ "tab_button" ].MouseLeave:Connect(function()
-                        if not (self.selected_tab and self.selected_tab[ 3 ] == items.tab_button) then
-                            library:tween(items.tab_button, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
+                        if not (self.selected_tab and self.selected_tab[ 2 ] == items.tab) then
                             library:tween(items.image, {ImageColor3 = rgb(120, 120, 120)}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
@@ -883,29 +852,17 @@
                 
                 if selected_tab then 
                    library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(120, 120, 120)}, Enum.EasingStyle.Quad, 0.15)
-                   if selected_tab[ 3 ] then
-                       library:tween(selected_tab[ 3 ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
-                   end
-                   if selected_tab[ 4 ] then
-                       library:tween(selected_tab[ 4 ], {Size = dim2(0, 3, 0, 0), BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
-                   end
                    selected_tab[ 2 ].Parent = library.items
                    selected_tab[ 2 ].Visible = false
                 end
                 
                 library:tween(items.image, {ImageColor3 = rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.15)
-                library:tween(items.tab_button, {BackgroundTransparency = 0.35}, Enum.EasingStyle.Quad, 0.15)
-                if items.indicator then
-                    library:tween(items.indicator, {Size = dim2(0, 3, 0, 24), BackgroundTransparency = 0}, Enum.EasingStyle.Quad, 0.15)
-                end
                 items.tab.Parent = self.items[ "page_holder" ]
                 items.tab.Visible = true
 
                 self.selected_tab = {
                     items.image;
                     items.tab;
-                    items.tab_button;
-                    items.indicator;
                 }
 
                 library:close_current_element(nil) 
@@ -947,14 +904,10 @@
                 sub_items[ "subtab_indicator" ] = library:create( "Frame" , {
                     Parent = sub_items[ "subtab_btn" ];
                     BorderSizePixel = 0;
-                    Size = dim2(1, 0, 0, 2);
+                    Size = dim2(1, 0, 0, 1);
                     Position = dim2(0, 0, 1, 2);
                     BackgroundColor3 = rgb(255, 255, 255);
                     BackgroundTransparency = 1;
-                });
-                library:create( "UICorner" , {
-                    Parent = sub_items[ "subtab_indicator" ];
-                    CornerRadius = dim(0, 1);
                 });
 
                 sub_items[ "subtab_content" ] = library:create( "Frame" , {
@@ -3067,18 +3020,18 @@
 
                 items[ "display_label" ] = library:create( "TextLabel" , {
                     Parent = items[ "card" ];
-                    Size = dim2(1, -20, 1, 0);
-                    Position = dim2(0, 20, 0, 0);
+                    Size = dim2(1, -22, 1, 0);
+                    Position = dim2(0, 22, 0, 0);
                     BackgroundTransparency = 1;
                     Text = cfg.display_name ~= "" and cfg.display_name or cfg.name;
-                    TextColor3 = rgb(178, 178, 178);
+                    TextColor3 = rgb(180, 180, 180);
                     TextXAlignment = Enum.TextXAlignment.Left;
                     FontFace = library.font;
-                    TextSize = 10;
+                    TextSize = 11;
+                    RichText = true;
                     TextTruncate = Enum.TextTruncate.AtEnd;
                     BorderSizePixel = 0;
                 });
-                library:create( "UIStroke" , { Parent = items[ "display_label" ] });
 
                 items["card"].MouseButton1Click:Connect(function()
                     cfg.callback()
@@ -3088,7 +3041,7 @@
                     library:tween(items["display_label"], {TextColor3 = rgb(255, 255, 255)})
                 end)
                 items["card"].MouseLeave:Connect(function()
-                    library:tween(items["display_label"], {TextColor3 = rgb(178, 178, 178)})
+                    library:tween(items["display_label"], {TextColor3 = rgb(180, 180, 180)})
                 end)
             end
             function cfg:SetText(text)
@@ -3234,29 +3187,21 @@
                 watermark_obj = library:create("TextLabel", {
                     Parent = library.other;
                     Position = dim2(0, 20, 0, 20);
-                    Size = dim2(0, 0, 0, 22);
+                    Size = dim2(0, 0, 0, 20);
                     AutomaticSize = Enum.AutomaticSize.X;
                     Text = " " .. text .. " ";
                     TextColor3 = rgb(235, 235, 235);
-                    BackgroundColor3 = rgb(18, 18, 18);
-                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(15, 15, 15);
+                    BorderColor3 = rgb(45, 45, 45);
+                    BorderSizePixel = 1;
                     FontFace = library.font;
                     TextSize = 12;
                     TextXAlignment = Enum.TextXAlignment.Left;
                 })
-                library:create("UICorner", {
-                    Parent = watermark_obj;
-                    CornerRadius = dim(0, 4);
-                })
-                library:create("UIStroke", {
-                    Parent = watermark_obj;
-                    Color = rgb(45, 45, 45);
-                    Thickness = 1;
-                })
                 library:create("UIPadding", {
                     Parent = watermark_obj;
-                    PaddingLeft = dim(0, 8);
-                    PaddingRight = dim(0, 8);
+                    PaddingLeft = dim(0, 6);
+                    PaddingRight = dim(0, 6);
                 })
             else
                 watermark_obj.Text = " " .. text .. " "
