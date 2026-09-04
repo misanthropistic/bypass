@@ -72,6 +72,104 @@
         current_open; 
     }
 
+    library.themes = {
+        ["Classic"] = {
+            Accent = rgb(255, 255, 255),
+            WindowBg = rgb(0, 0, 0),
+            TopFrameBg = rgb(0, 0, 0),
+            InlineBg = rgb(8, 8, 8),
+            PageHolderBg = rgb(8, 8, 8),
+            Text = rgb(235, 235, 235),
+            SubText = rgb(178, 178, 178),
+            Border = rgb(26, 26, 26),
+            ToggleActive = rgb(255, 255, 255)
+        },
+        ["Red"] = {
+            Accent = rgb(235, 55, 55),
+            WindowBg = rgb(8, 0, 0),
+            TopFrameBg = rgb(15, 2, 2),
+            InlineBg = rgb(12, 4, 4),
+            PageHolderBg = rgb(12, 4, 4),
+            Text = rgb(255, 220, 220),
+            SubText = rgb(200, 140, 140),
+            Border = rgb(60, 20, 20),
+            ToggleActive = rgb(235, 55, 55)
+        },
+        ["Blood"] = {
+            Accent = rgb(180, 0, 0),
+            WindowBg = rgb(5, 0, 0),
+            TopFrameBg = rgb(10, 0, 0),
+            InlineBg = rgb(8, 2, 2),
+            PageHolderBg = rgb(8, 2, 2),
+            Text = rgb(240, 180, 180),
+            SubText = rgb(160, 90, 90),
+            Border = rgb(80, 10, 10),
+            ToggleActive = rgb(180, 0, 0)
+        },
+        ["Galaxy"] = {
+            Accent = rgb(140, 70, 255),
+            WindowBg = rgb(6, 4, 15),
+            TopFrameBg = rgb(10, 6, 25),
+            InlineBg = rgb(10, 8, 20),
+            PageHolderBg = rgb(10, 8, 20),
+            Text = rgb(230, 220, 255),
+            SubText = rgb(160, 145, 200),
+            Border = rgb(45, 30, 80),
+            ToggleActive = rgb(150, 80, 255)
+        },
+        ["Purple"] = {
+            Accent = rgb(185, 80, 255),
+            WindowBg = rgb(12, 4, 18),
+            TopFrameBg = rgb(18, 6, 28),
+            InlineBg = rgb(14, 6, 22),
+            PageHolderBg = rgb(14, 6, 22),
+            Text = rgb(245, 225, 255),
+            SubText = rgb(180, 145, 210),
+            Border = rgb(65, 25, 95),
+            ToggleActive = rgb(185, 80, 255)
+        },
+        ["Ice Mode"] = {
+            Accent = rgb(80, 200, 255),
+            WindowBg = rgb(2, 10, 16),
+            TopFrameBg = rgb(4, 16, 26),
+            InlineBg = rgb(5, 12, 20),
+            PageHolderBg = rgb(5, 12, 20),
+            Text = rgb(220, 245, 255),
+            SubText = rgb(135, 185, 210),
+            Border = rgb(25, 60, 90),
+            ToggleActive = rgb(80, 200, 255)
+        },
+        ["Yellow"] = {
+            Accent = rgb(255, 215, 0),
+            WindowBg = rgb(14, 12, 2),
+            TopFrameBg = rgb(22, 18, 4),
+            InlineBg = rgb(16, 14, 4),
+            PageHolderBg = rgb(16, 14, 4),
+            Text = rgb(255, 250, 220),
+            SubText = rgb(200, 185, 130),
+            Border = rgb(75, 65, 15),
+            ToggleActive = rgb(255, 215, 0)
+        }
+    }
+    library.current_theme_name = "Classic"
+
+    function library:SetTheme(themeName)
+        local t = library.themes[themeName]
+        if not t then return end
+        library.current_theme_name = themeName
+        library.current_theme = t
+
+        if library.window_obj and library.window_obj.items then
+            local items = library.window_obj.items
+            if items["window"] then items["window"].BackgroundColor3 = t.WindowBg end
+            if items["top_frame"] then items["top_frame"].BackgroundColor3 = t.TopFrameBg end
+            if items["top_divider"] then items["top_divider"].BackgroundColor3 = t.Border end
+            if items["inline"] then items["inline"].BackgroundColor3 = t.InlineBg end
+            if items["page_holder"] then items["page_holder"].BackgroundColor3 = t.PageHolderBg end
+            if items["ui_title"] then items["ui_title"].TextColor3 = t.Text end
+        end
+    end
+
     local keys = {
         [Enum.KeyCode.LeftShift] = "LS",
         [Enum.KeyCode.RightShift] = "RS",
@@ -692,6 +790,10 @@
                 cfg.toggle_menu(bool)
             end
             cfg.Main = items[ "window" ]
+            library.window_obj = cfg
+            if library.current_theme_name then
+                library:SetTheme(library.current_theme_name)
+            end
                 
             return setmetatable(cfg, library)
         end 
@@ -1123,7 +1225,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "elements" ];
-                    Padding = dim(0, 5);
+                    Padding = dim(0, 7);
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
                 
@@ -1564,7 +1666,7 @@
                         Parent = self.items.object or self.items.elements;
                         Name = "\0";
                         BackgroundTransparency = 1;
-                        Size = dim2(1, 0, 0, 16);
+                        Size = dim2(1, 0, 0, 18);
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
@@ -1572,7 +1674,7 @@
 
                     library:create( "UIListLayout" , {
                         Parent = items[ "object" ];
-                        Padding = dim(0, 5);
+                        Padding = dim(0, 8);
                         SortOrder = Enum.SortOrder.LayoutOrder;
                         FillDirection = Enum.FillDirection.Horizontal;
                         VerticalAlignment = Enum.VerticalAlignment.Center;
@@ -1588,7 +1690,7 @@
                             BackgroundTransparency = 1;
                             BorderSizePixel = 0;
                             AutomaticSize = Enum.AutomaticSize.XY;
-                            TextSize = 10;
+                            TextSize = 11;
                             LayoutOrder = 0;
                             BackgroundColor3 = rgb(255, 255, 255)
                         });
@@ -1600,7 +1702,7 @@
                         Text = "";
                         AutoButtonColor = false;
                         Name = "\0";
-                        Size = dim2(0, 90, 0, 16);
+                        Size = dim2(0, 110, 0, 18);
                         BorderSizePixel = 0;
                         LayoutOrder = 1;
                         BackgroundColor3 = rgb(0, 0, 0)
