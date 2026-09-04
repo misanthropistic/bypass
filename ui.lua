@@ -1328,10 +1328,9 @@
                     Text = "";
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 0, 12);
+                    Size = dim2(1, 0, 0, 16);
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
-                    -- AutomaticSize = Enum.AutomaticSize.Y;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1340,7 +1339,7 @@
                     BackgroundTransparency = 1;
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 12, 0, 12);
+                    Size = dim2(0, 14, 0, 14);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1368,7 +1367,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "object" ];
-                    Padding = dim(0, 5);
+                    Padding = dim(0, 8);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     FillDirection = Enum.FillDirection.Horizontal;
                     VerticalAlignment = Enum.VerticalAlignment.Center;
@@ -1381,10 +1380,9 @@
                     Text = cfg.name;
                     Parent = items[ "object" ];
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 12, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
-                    TextSize = 10;
+                    TextSize = 11;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1483,16 +1481,15 @@
                     Parent = self.items.object or self.items.elements;
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Size = dim2(0, 0, 0, 12);
+                    Size = dim2(1, 0, 0, 16);
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.XY;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "object" ];
-                    Padding = dim(0, 5);
+                    Padding = dim(0, 8);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     FillDirection = Enum.FillDirection.Horizontal;
                     VerticalAlignment = Enum.VerticalAlignment.Center;
@@ -1504,8 +1501,9 @@
                     Text = "";
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 100, 1, 0);
+                    Size = dim2(0, 110, 0, 16);
                     BorderSizePixel = 0;
+                    LayoutOrder = 1;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1515,7 +1513,7 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0.5, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 0, 5);
+                    Size = dim2(1, 0, 0, 6);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1541,7 +1539,7 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0.5, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 4, 0, 9);
+                    Size = dim2(0, 5, 0, 11);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1566,12 +1564,11 @@
                         BackgroundTransparency = 1;
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.XY;
-                        TextSize = 10;
+                        TextSize = 11;
                         LayoutOrder = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     library:create( "UIStroke" , { Parent = items[ "name" ] });
-                    items[ "slider_parent" ].LayoutOrder = 1
                 end
 
                 if cfg.show_value then 
@@ -1584,7 +1581,7 @@
                         BackgroundTransparency = 1;
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.XY;
-                        TextSize = 10;
+                        TextSize = 11;
                         LayoutOrder = 2;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
@@ -1832,9 +1829,9 @@
                 if bool then
                     local count = #cfg.options
                     local maxVisible = math.min(count, 6)
-                    local h = maxVisible * 16 + 6
+                    local h = maxVisible * 18 + 6
                     items[ "dropdown_holder" ].Size = dim2(0, items.dropdown_outline.AbsoluteSize.X, 0, h)
-                    items[ "dropdown_holder" ].Position = dim2(0, items.dropdown_outline.AbsolutePosition.X, 0, items.dropdown_outline.AbsolutePosition.Y + 20)
+                    items[ "dropdown_holder" ].Position = dim2(0, items.dropdown_outline.AbsolutePosition.X, 0, items.dropdown_outline.AbsolutePosition.Y + 22)
                 end
                 
                 library.current = cfg
