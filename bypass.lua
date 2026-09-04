@@ -462,7 +462,7 @@
             local cfg = { 
                 -- Properties
                 name = properties.name or properties.Name or "nebula";
-                size = properties.size or properties.Size or dim2(0, 800, 0, 550);
+                size = properties.size or properties.Size or dim2(0, 650, 0, 400);
                 logo = properties.logo or properties.Logo or "rbxassetid://128155293790451";
 
                 selected_tab;
@@ -739,7 +739,12 @@
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(8, 8, 8)
                     }); 
-                end                  
+                    library:create( "UIListLayout" , {
+                        Parent = items[ column ];
+                        Padding = dim(0, 10);
+                        SortOrder = Enum.SortOrder.LayoutOrder;
+                    });
+                end
             end 
 
             function cfg.open_tab() 
@@ -788,7 +793,7 @@
                     BackgroundTransparency = 1;
                     Text = sub_cfg.name;
                     TextColor3 = rgb(128, 128, 128);
-                    Font = Enum.Font.Gotham;
+                    FontFace = library.font;
                     TextSize = 13;
                     Size = dim2(0, 0, 1, 0);
                     AutomaticSize = Enum.AutomaticSize.X;
@@ -821,6 +826,11 @@
                         Size = dim2(0, 100, 0, 100);
                         BorderSizePixel = 0;
                     }); 
+                    library:create( "UIListLayout" , {
+                        Parent = sub_items[ column ];
+                        Padding = dim(0, 10);
+                        SortOrder = Enum.SortOrder.LayoutOrder;
+                    });
                 end
 
                 function sub_cfg.open_subtab()
@@ -1244,7 +1254,7 @@
                 });
                 
                 if cfg.name then
-                    items[ "name" ] = setmetatable(cfg, library):Label({padding_top = 1})
+                    items[ "name" ] = setmetatable(cfg, library):Label({padding_top = 1, name = cfg.name})
                 end
 
                 if cfg.show_value then 
@@ -2615,7 +2625,7 @@
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
                 });
-                library:create( "UICorner" , { Parent = items[ "card_bg" ]; CornerRadius = dim(0, 4) });
+
                 library:create( "UIStroke" , { Parent = items[ "card_bg" ]; Color = rgb(30, 30, 30); Thickness = 1; ApplyStrokeMode = Enum.ApplyStrokeMode.Border });
 
                 items[ "avatar" ] = library:create( "ImageLabel" , {
@@ -2635,7 +2645,7 @@
                     Text = cfg.display_name ~= "" and cfg.display_name or cfg.name;
                     TextColor3 = rgb(255, 255, 255);
                     TextXAlignment = Enum.TextXAlignment.Left;
-                    Font = Enum.Font.GothamMedium;
+                    FontFace = library.font;
                     TextSize = 13;
                 });
 
@@ -2647,7 +2657,7 @@
                     Text = "@" .. cfg.name;
                     TextColor3 = rgb(150, 150, 150);
                     TextXAlignment = Enum.TextXAlignment.Left;
-                    Font = Enum.Font.Gotham;
+                    FontFace = library.font;
                     TextSize = 11;
                 });
 
@@ -2808,7 +2818,7 @@
                     BackgroundColor3 = rgb(15, 15, 15);
                     BorderColor3 = rgb(255, 255, 255);
                     BorderSizePixel = 1;
-                    Font = Enum.Font.GothamMedium;
+                    FontFace = library.font;
                     TextSize = 13;
                     TextXAlignment = Enum.TextXAlignment.Left;
                 })
