@@ -1129,68 +1129,30 @@
             local items = cfg.items; do 
                 items[ "section_outline" ] = library:create( "Frame" , {
                     Name = "\0";
-                    BackgroundTransparency = 1;
+                    BackgroundTransparency = 0;
                     Parent = self.items[ cfg.side ];
-                    BorderColor3 = rgb(0, 0, 0);
+                    BorderColor3 = rgb(35, 35, 35);
                     Size = dim2(1, 0, 1, 0);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(8, 8, 8)
-                });
-                
-                items[ "section_shadow" ] = library:create( "Frame" , {
-                    Parent = items[ "section_outline" ];
-                    Name = "\0";
-                    Position = dim2(0, 1, 0, 1);
-                    BackgroundTransparency = 1;
-                    BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -2, 1, -2);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(5, 5, 5)
-                });
-                
-                items[ "section_shadow_one" ] = library:create( "Frame" , {
-                    Parent = items[ "section_shadow" ];
-                    Name = "\0";
-                    Position = dim2(0, 1, 0, 1);
-                    BackgroundTransparency = 1;
-                    BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -2, 1, -2);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(0, 0, 0)
-                });
-                
-                items[ "section_shadow_two" ] = library:create( "Frame" , {
-                    Parent = items[ "section_shadow_one" ];
-                    Name = "\0";
-                    BackgroundTransparency = 1;
-                    Position = dim2(0, 1, 0, 1);
-                    BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -2, 1, -2);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(0, 0, 0)
-                });
-                
-                items[ "section_shadow_three" ] = library:create( "Frame" , {
-                    Name = "\0";
-                    BackgroundTransparency = 1;
-                    Parent = items[ "section_shadow_two" ];
-                    BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 1, 0);
-                    BorderSizePixel = 0;
+                    BorderSizePixel = 1;
                     BackgroundColor3 = rgb(14, 14, 14)
                 });
                 
                 library:create( "UICorner" , {
-                    Parent = items[ "section_shadow_three" ];
-                    CornerRadius = dim(0, 0)
+                    Parent = items[ "section_outline" ];
+                    CornerRadius = dim(0, 4)
                 });
+
+                items[ "section_shadow" ] = items[ "section_outline" ]
+                items[ "section_shadow_one" ] = items[ "section_outline" ]
+                items[ "section_shadow_two" ] = items[ "section_outline" ]
+                items[ "section_shadow_three" ] = items[ "section_outline" ]
                 
                 items[ "scrolling" ] = library:create( "ScrollingFrame" , {
                     ScrollBarImageColor3 = rgb(60, 60, 60);
                     Active = true;
                     AutomaticCanvasSize = Enum.AutomaticSize.Y;
                     ScrollBarThickness = 2;
-                    Parent = items[ "section_shadow_three" ];
+                    Parent = items[ "section_outline" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
                     Size = dim2(1, 0, 1, 0);
@@ -1206,8 +1168,8 @@
                     Parent = items[ "scrolling" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 12, 0, 12);
-                    Size = dim2(1, -24, 0, 0);
+                    Position = dim2(0, 10, 0, 10);
+                    Size = dim2(1, -20, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.Y;
                     BackgroundColor3 = rgb(255, 255, 255)
@@ -1219,72 +1181,45 @@
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
                 
-                library:create( "UICorner" , {
-                    Parent = items[ "section_shadow_two" ];
-                    CornerRadius = dim(0, 0)
-                });
-                
-                library:create( "UICorner" , {
-                    Parent = items[ "section_shadow_one" ];
-                    CornerRadius = dim(0, 0)
-                });
-                
-                library:create( "UICorner" , {
-                    Parent = items[ "section_shadow" ];
-                    CornerRadius = dim(0, 0)
-                });
-                
                 items.text = library:create( "TextLabel" , {
                     FontFace = library.font;
-                    TextColor3 = rgb(178, 178, 178);
+                    TextColor3 = rgb(185, 185, 185);
                     BorderColor3 = rgb(0, 0, 0);
-                    Text = cfg.name;
+                    Text = " " .. cfg.name .. " ";
                     Parent = items[ "section_outline" ];
-                    BackgroundTransparency = 1;
-                    Position = dim2(0, 8, 0, -15);
+                    BackgroundTransparency = 0;
+                    Position = dim2(0, 10, 0, -8);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
-                    TextSize = 10;
-                    BackgroundColor3 = rgb(255, 255, 255)
+                    TextSize = 11;
+                    ZIndex = 5;
+                    BackgroundColor3 = rgb(14, 14, 14)
                 });
                 
                 items.line = library:create( "Frame" , {
                     Parent = items.text;
-                    Position = dim2(0, 0, 1, 2);
+                    Position = dim2(0, 0, 1, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 0, 0, 1);
+                    Size = dim2(1, 0, 0, 1);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(255, 255, 255)
+                    BackgroundColor3 = rgb(80, 80, 80)
                 });                
 
                 library:create( "UIStroke" , {
                     Parent = items.text;
-                });
-                
-                library:create( "UICorner" , {
-                    Parent = items[ "section_outline" ];
-                    CornerRadius = dim(0, 0)
-                });                
+                });            
             end;
 
             update_column_layout()
 
             items[ "section_outline" ].MouseEnter:Connect(function()
-                for _,section in {"section_shadow_three", "section_shadow_two", "section_shadow_one", "section_shadow"} do 
-                    library:tween(items[ section ], {BackgroundTransparency = 0})
-                end 
-                
-                library:tween(items.line, {Size = dim2(1, 0, 0, 1)})
+                library:tween(items[ "section_outline" ], {BorderColor3 = rgb(65, 65, 65)})
                 library:tween(items.text, {TextColor3 = rgb(255, 255, 255)})
             end)
 
             items[ "section_outline" ].MouseLeave:Connect(function()
-                for _,section in {"section_shadow_three", "section_shadow_two", "section_shadow_one", "section_shadow"} do 
-                    library:tween(items[ section ], {BackgroundTransparency = 1})
-                end
-
-                library:tween(items.line, {Size = dim2(0, 0, 0, 1)})
-                library:tween(items.text, {TextColor3 = rgb(178, 178, 178)})
+                library:tween(items[ "section_outline" ], {BorderColor3 = rgb(35, 35, 35)})
+                library:tween(items.text, {TextColor3 = rgb(185, 185, 185)})
             end)
 
             function cfg:SetVisibility(state)
