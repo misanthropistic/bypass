@@ -1672,14 +1672,6 @@
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
 
-                    library:create( "UIListLayout" , {
-                        Parent = items[ "object" ];
-                        Padding = dim(0, 8);
-                        SortOrder = Enum.SortOrder.LayoutOrder;
-                        FillDirection = Enum.FillDirection.Horizontal;
-                        VerticalAlignment = Enum.VerticalAlignment.Center;
-                    });
-
                     if cfg.name then
                         items[ "name" ] = library:create( "TextLabel" , {
                             FontFace = library.font;
@@ -1688,10 +1680,12 @@
                             Text = cfg.name;
                             Parent = items[ "object" ];
                             BackgroundTransparency = 1;
+                            Position = dim2(0, 0, 0, 0);
+                            Size = dim2(1, -118, 1, 0);
                             BorderSizePixel = 0;
-                            AutomaticSize = Enum.AutomaticSize.XY;
                             TextSize = 11;
-                            LayoutOrder = 0;
+                            TextXAlignment = Enum.TextXAlignment.Left;
+                            TextTruncate = Enum.TextTruncate.AtEnd;
                             BackgroundColor3 = rgb(255, 255, 255)
                         });
                         library:create( "UIStroke" , { Parent = items[ "name" ] });
@@ -1702,9 +1696,10 @@
                         Text = "";
                         AutoButtonColor = false;
                         Name = "\0";
+                        AnchorPoint = vec2(1, 0.5);
+                        Position = dim2(1, 0, 0.5, 0);
                         Size = dim2(0, 110, 0, 18);
                         BorderSizePixel = 0;
-                        LayoutOrder = 1;
                         BackgroundColor3 = rgb(0, 0, 0)
                     });
                     
@@ -1764,24 +1759,27 @@
                 -- Element Holder
                     items[ "dropdown_holder" ] = library:create( "Frame" , {
                         Parent = library.items;
-                        Size = dim2(0, 114, 0, 0);
+                        Size = dim2(0, 110, 0, 0);
                         Visible = false;
                         Name = "\0";
                         ZIndex = 50;
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.Y;
+                        ClipsDescendants = true;
                         BackgroundColor3 = rgb(0, 0, 0)
                     });
                     
-                    items[ "holder_shading" ] = library:create( "Frame" , {
+                    items[ "holder_shading" ] = library:create( "ScrollingFrame" , {
                         Parent = items[ "dropdown_holder" ];
-                        Size = dim2(1, -2, 0, -2);
+                        Size = dim2(1, -2, 1, -2);
                         Name = "\0";
                         Position = dim2(0, 1, 0, 1);
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.Y;
+                        ScrollBarThickness = 2;
+                        ScrollBarImageColor3 = rgb(80, 80, 80);
+                        CanvasSize = dim2(0, 0, 0, 0);
+                        AutomaticCanvasSize = Enum.AutomaticSize.Y;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     
@@ -1793,13 +1791,13 @@
                     
                     library:create( "UIListLayout" , {
                         Parent = items[ "holder_shading" ];
-                        Padding = dim(0, 5);
+                        Padding = dim(0, 2);
                         SortOrder = Enum.SortOrder.LayoutOrder
                     });
                     
                     library:create( "UIPadding" , {
-                        PaddingBottom = dim(0, 5);
-                        PaddingTop = dim(0, 5);
+                        PaddingBottom = dim(0, 3);
+                        PaddingTop = dim(0, 3);
                         Parent = items[ "holder_shading" ]
                     });            
                 -- 
@@ -1812,11 +1810,10 @@
                     BorderColor3 = rgb(0, 0, 0);
                     Text = text;
                     Parent = items[ "holder_shading" ];
-                    Size = dim2(1, 0, 0, 0);
+                    Size = dim2(1, 0, 0, 14);
                     BackgroundTransparency = 1;
                     TextXAlignment = Enum.TextXAlignment.Center;
                     BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.XY;
                     TextSize = 10;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
@@ -1824,21 +1821,21 @@
                 library:create( "UIStroke" , {
                     Parent = button
                 });
-                
-                library:create( "UIPadding" , {
-                    Parent = button
-                });
 
                 return button
             end
             
             function cfg.set_visible(bool)
-                local a = bool and cfg.y_size or 0
                 items[ "dropdown_holder" ].Visible = bool 
                 items[ "arrow" ].Rotation = bool and 180 or 0
 
-                items[ "dropdown_holder" ].Size = dim2(0, items.dropdown_outline.AbsoluteSize.X, 0, 0)
-                items[ "dropdown_holder" ].Position = dim2(0, items.dropdown_outline.AbsolutePosition.X, 0, items.dropdown_outline.AbsolutePosition.Y + 75)
+                if bool then
+                    local count = #cfg.options
+                    local maxVisible = math.min(count, 6)
+                    local h = maxVisible * 16 + 6
+                    items[ "dropdown_holder" ].Size = dim2(0, items.dropdown_outline.AbsoluteSize.X, 0, h)
+                    items[ "dropdown_holder" ].Position = dim2(0, items.dropdown_outline.AbsolutePosition.X, 0, items.dropdown_outline.AbsolutePosition.Y + 20)
+                end
                 
                 library.current = cfg
             end
@@ -3333,10 +3330,9 @@
             return setmetatable(cfg, library)
         end 
 
-        function library:init_config(window, existing_tab) 
+        function library:init_config(window, existing_tab, target_section) 
             local textbox;
-            local main = existing_tab or window
-            local section = main:Section({name = "Configs", side = "right", size = 1, default = true})
+            local section = target_section or (existing_tab or window):Section({name = "Configs", side = "right", size = 1, default = true})
             config_holder = section:Dropdown({Name = "Configs", options = {"Report", "This", "Error", "To", "Finobe"}, callback = function(option) if textbox then textbox.set(option) end end, flag = "config_name_list"}); library:update_config_list()
             textbox = section:Textbox({name = "Config name:", flag = "config_name_text"})
             section:Button({name = "Save", callback = function() writefile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg", library:get_config()) library:update_config_list() end}) 
