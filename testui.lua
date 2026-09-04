@@ -745,6 +745,7 @@
                         SortOrder = Enum.SortOrder.LayoutOrder;
                     });
                 end
+            end 
 
             function cfg.open_tab() 
                 local selected_tab = self.selected_tab
