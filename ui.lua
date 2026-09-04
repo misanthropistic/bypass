@@ -612,47 +612,19 @@
                     Name = "\0";
                     Parent = items[ "window" ];
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 0, 45);
+                    Size = dim2(1, 0, 0, 0);
+                    Visible = false;
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
                 
-                if cfg.logo and cfg.logo ~= "" then
-                    items[ "logo" ] = library:create( "ImageLabel" , {
-                        BorderColor3 = rgb(0, 0, 0);
-                        Parent = items[ "top_frame" ];
-                        Name = "\0";
-                        Image = cfg.logo;
-                        BackgroundTransparency = 1;
-                        Position = dim2(0, 16, 0, 7);
-                        Size = dim2(0, 32, 0, 32);
-                        BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                end
-                
-                items[ "ui_title" ] = library:create( "TextLabel" , {
-                    FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal);
-                    TextColor3 = rgb(235, 235, 235);
-                    TextStrokeColor3 = rgb(0, 0, 0);
-                    TextStrokeTransparency = 0.8;
-                    Text = cfg.name;
-                    Parent = items[ "top_frame" ];
-                    Name = "\0";
-                    BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 1, 0);
-                    BorderSizePixel = 0;
-                    BorderColor3 = rgb(0, 0, 0);
-                    TextSize = 22;
-                    BackgroundColor3 = rgb(255, 255, 255)
-                });
-                
                 items[ "top_divider" ] = library:create( "Frame" , {
-                    Parent = items[ "top_frame" ];
+                    Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 0, 1, -2);
+                    Position = dim2(0, 0, 0, 0);
                     Size = dim2(1, 0, 0, 2);
                     BorderSizePixel = 0;
+                    ZIndex = 10;
                     BackgroundColor3 = rgb(255, 255, 255);
                 });
                 
@@ -665,9 +637,9 @@
                 items[ "inline" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 0, 0, 44);
+                    Position = dim2(0, 0, 0, 2);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 96, 1, -44);
+                    Size = dim2(0, 70, 1, -2);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(8, 8, 8);
                 });
@@ -703,9 +675,9 @@
                 items[ "page_holder" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 96, 0, 45);
+                    Position = dim2(0, 70, 0, 2);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -96, 1, -45);
+                    Size = dim2(1, -70, 1, -2);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(8, 8, 8);
                 });
@@ -867,7 +839,7 @@
                             local btn_pos = items[ "tab_button" ].AbsolutePosition
                             local win_pos = self.items[ "window" ].AbsolutePosition
                             local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 10
-                            tip.Position = dim2(0, 102, 0, rel_y)
+                            tip.Position = dim2(0, 76, 0, rel_y)
                             tip.Visible = true
                         end
                     end)
