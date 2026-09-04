@@ -581,6 +581,21 @@
                 library:resizify(items[ "window" ])
             end 
             
+            library:connection(uis.InputBegan, function(input, game_event)
+                if game_event then
+                    return
+                end
+                local bind = flags["MenuKeybind"]
+                local key = type(bind) == "table" and (bind.key or bind.Key) or bind
+                if not key or key == "NONE" or key == Enum.KeyCode.Unknown then
+                    return
+                end
+                local selected = input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode or input.UserInputType
+                if selected == key then
+                    cfg.toggle_menu(not items["window"].Visible)
+                end
+            end)
+
             function cfg.toggle_menu(bool) 
                 if cfg.tweening then 
                     return 
@@ -1072,12 +1087,6 @@
             update_column_layout()
 
             items[ "section_outline" ].MouseEnter:Connect(function()
-                for _,instance in items[ "section_outline" ]:GetDescendants() do 
-                    if instance:IsA("UICorner") then 
-                        library:tween(instance, {CornerRadius = dim(0, 8)})
-                    end 
-                end 
-
                 for _,section in {"section_shadow_three", "section_shadow_two", "section_shadow_one", "section_shadow"} do 
                     library:tween(items[ section ], {BackgroundTransparency = 0})
                 end 
@@ -1087,12 +1096,6 @@
             end)
 
             items[ "section_outline" ].MouseLeave:Connect(function()
-                for _,instance in items[ "section_outline" ]:GetDescendants() do 
-                    if instance:IsA("UICorner") then 
-                        library:tween(instance, {CornerRadius = dim(0, 0)})
-                    end 
-                end 
-
                 for _,section in {"section_shadow_three", "section_shadow_two", "section_shadow_one", "section_shadow"} do 
                     library:tween(items[ section ], {BackgroundTransparency = 1})
                 end
@@ -1359,11 +1362,38 @@
                 });
                 
                 if cfg.name then
-                    items[ "name" ] = setmetatable(cfg, library):Label({padding_top = 1, name = cfg.name})
+                    items[ "name" ] = library:create( "TextLabel" , {
+                        FontFace = library.font;
+                        TextColor3 = rgb(178, 178, 178);
+                        BorderColor3 = rgb(0, 0, 0);
+                        Text = cfg.name;
+                        Parent = items[ "object" ];
+                        BackgroundTransparency = 1;
+                        BorderSizePixel = 0;
+                        AutomaticSize = Enum.AutomaticSize.XY;
+                        TextSize = 10;
+                        LayoutOrder = 0;
+                        BackgroundColor3 = rgb(255, 255, 255)
+                    });
+                    library:create( "UIStroke" , { Parent = items[ "name" ] });
+                    items[ "slider_parent" ].LayoutOrder = 1
                 end
 
                 if cfg.show_value then 
-                    items[ "value" ] = setmetatable(cfg, library):Label({padding_top = 1})
+                    items[ "value" ] = library:create( "TextLabel" , {
+                        FontFace = library.font;
+                        TextColor3 = rgb(178, 178, 178);
+                        BorderColor3 = rgb(0, 0, 0);
+                        Text = "";
+                        Parent = items[ "object" ];
+                        BackgroundTransparency = 1;
+                        BorderSizePixel = 0;
+                        AutomaticSize = Enum.AutomaticSize.XY;
+                        TextSize = 10;
+                        LayoutOrder = 2;
+                        BackgroundColor3 = rgb(255, 255, 255)
+                    });
+                    library:create( "UIStroke" , { Parent = items[ "value" ] });
                 end       
             end 
 
@@ -1373,7 +1403,7 @@
                 items[ "slider" ].Position = dim2((cfg.value - cfg.min) / (cfg.max - cfg.min), 0, 0.5, 0)
 
                 if items[ "value" ] then
-                    items[ "value" ].set(tostring(cfg.value) .. cfg.suffix)
+                    items[ "value" ].Text = tostring(cfg.value) .. cfg.suffix
                 end
 
                 flags[cfg.flag] = cfg.value
@@ -1432,7 +1462,7 @@
                 items = {};
             }   
 
-            cfg.default = options.default or (cfg.multi and {cfg.items[1]}) or cfg.items[1] or "None"
+            cfg.default = options.default or options.Default or (cfg.multi and {cfg.options[1]}) or cfg.options[1] or "None"
             flags[cfg.flag] = cfg.default
             
             local items = cfg.items; do 
@@ -1441,39 +1471,55 @@
                         Parent = self.items.object or self.items.elements;
                         Name = "\0";
                         BackgroundTransparency = 1;
-                        Size = dim2(0, 0, 0, 12);
+                        Size = dim2(1, 0, 0, 16);
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
 
-                    if self.items.object then 
-                        library:create( "UIPadding" , {
+                    library:create( "UIListLayout" , {
+                        Parent = items[ "object" ];
+                        Padding = dim(0, 5);
+                        SortOrder = Enum.SortOrder.LayoutOrder;
+                        FillDirection = Enum.FillDirection.Horizontal;
+                        VerticalAlignment = Enum.VerticalAlignment.Center;
+                    });
+
+                    if cfg.name then
+                        items[ "name" ] = library:create( "TextLabel" , {
+                            FontFace = library.font;
+                            TextColor3 = rgb(178, 178, 178);
+                            BorderColor3 = rgb(0, 0, 0);
+                            Text = cfg.name;
                             Parent = items[ "object" ];
-                            PaddingTop = dim(0, -2)
-                        });                        
-                    end 
+                            BackgroundTransparency = 1;
+                            BorderSizePixel = 0;
+                            AutomaticSize = Enum.AutomaticSize.XY;
+                            TextSize = 10;
+                            LayoutOrder = 0;
+                            BackgroundColor3 = rgb(255, 255, 255)
+                        });
+                        library:create( "UIStroke" , { Parent = items[ "name" ] });
+                    end
                     
                     items[ "dropdown_outline" ] = library:create( "TextButton" , {
                         Parent = items[ "object" ];
                         Text = "";
                         AutoButtonColor = false;
                         Name = "\0";
-                        Size = dim2(0, 0, 0, 16);
+                        Size = dim2(0, 90, 0, 16);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.X;
+                        LayoutOrder = 1;
                         BackgroundColor3 = rgb(0, 0, 0)
                     });
                     
                     items[ "dropdown_shading" ] = library:create( "Frame" , {
                         Parent = items[ "dropdown_outline" ];
-                        Size = dim2(0, -2, 1, -2);
+                        Size = dim2(1, -2, 1, -2);
                         Name = "\0";
                         Position = dim2(0, 1, 0, 1);
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.X;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     
@@ -1487,35 +1533,21 @@
                         FontFace = library.font;
                         TextColor3 = rgb(178, 178, 178);
                         BorderColor3 = rgb(0, 0, 0);
-                        Text = "Combat";
+                        Text = "";
                         Parent = items[ "dropdown_shading" ];
                         AnchorPoint = vec2(0, 0.5);
-                        Size = dim2(1, 0, 1, 0);
+                        Size = dim2(1, -12, 1, 0);
                         BackgroundTransparency = 1;
-                        Position = dim2(0, 0, 0.5, 0);
+                        Position = dim2(0, 4, 0.5, 0);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
+                        TextXAlignment = Enum.TextXAlignment.Left;
+                        TextTruncate = Enum.TextTruncate.AtEnd;
                         TextSize = 10;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     
                     library:create( "UIStroke" , {
-                        Parent = items[ "TextLabel" ]
-                    });
-                    
-                    library:create( "UIPadding" , {
-                        Parent = items[ "TextLabel" ]
-                    });
-                    
-                    library:create( "UIPadding" , {
-                        Parent = items[ "dropdown_shading" ];
-                        PaddingRight = dim(0, 40);
-                        PaddingLeft = dim(0, 40)
-                    });
-                    
-                    library:create( "UIPadding" , {
-                        PaddingRight = dim(0, 1);
-                        Parent = items[ "dropdown_outline" ]
+                        Parent = items.inner_text
                     });
                     
                     items[ "arrow" ] = library:create( "ImageLabel" , {
@@ -1528,15 +1560,9 @@
                         BackgroundTransparency = 1;
                         Position = dim2(1, -4, 0.5, 0);
                         Size = dim2(0, 7, 0, 4);
+                        ZIndex = 2;
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                    
-                    library:create( "UIListLayout" , {
-                        Parent = items[ "object" ];
-                        Padding = dim(0, 5);
-                        SortOrder = Enum.SortOrder.LayoutOrder;
-                        FillDirection = Enum.FillDirection.Horizontal
                     });
                 -- 
 
@@ -1546,14 +1572,14 @@
                         Size = dim2(0, 114, 0, 0);
                         Visible = false;
                         Name = "\0";
-                        Position = dim2(0.05823293328285217, 0, 0.19430045783519745, 0);
+                        ZIndex = 50;
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.Y;
                         BackgroundColor3 = rgb(0, 0, 0)
                     });
                     
-                    items[ "dropdown_shading" ] = library:create( "Frame" , {
+                    items[ "holder_shading" ] = library:create( "Frame" , {
                         Parent = items[ "dropdown_holder" ];
                         Size = dim2(1, -2, 0, -2);
                         Name = "\0";
@@ -1566,12 +1592,12 @@
                     
                     library:create( "UIGradient" , {
                         Rotation = 90;
-                        Parent = items[ "dropdown_shading" ];
+                        Parent = items[ "holder_shading" ];
                         Color = rgbseq{rgbkey(0, rgb(33, 33, 33)), rgbkey(1, rgb(8, 8, 8))}
                     });
                     
                     library:create( "UIListLayout" , {
-                        Parent = items[ "dropdown_shading" ];
+                        Parent = items[ "holder_shading" ];
                         Padding = dim(0, 5);
                         SortOrder = Enum.SortOrder.LayoutOrder
                     });
@@ -1579,7 +1605,7 @@
                     library:create( "UIPadding" , {
                         PaddingBottom = dim(0, 5);
                         PaddingTop = dim(0, 5);
-                        Parent = items[ "dropdown_shading" ]
+                        Parent = items[ "holder_shading" ]
                     });            
                 -- 
             end 
@@ -1590,7 +1616,7 @@
                     TextColor3 = rgb(178, 178, 178);
                     BorderColor3 = rgb(0, 0, 0);
                     Text = text;
-                    Parent = items[ "dropdown_shading" ];
+                    Parent = items[ "holder_shading" ];
                     Size = dim2(1, 0, 0, 0);
                     BackgroundTransparency = 1;
                     TextXAlignment = Enum.TextXAlignment.Center;
@@ -1688,7 +1714,6 @@
                 end
             end)
             
-            flags[cfg.flag] = {} 
             config_flags[cfg.flag] = cfg.set
             
             cfg.refresh_options(cfg.options)
@@ -1706,23 +1731,23 @@
                 end
             end
             cfg.SetVisiblity = cfg.SetVisibility
+            cfg.set_visible_element = cfg.SetVisibility
+            cfg.Refresh = cfg.refresh_options
 
-            local set = setmetatable(cfg, library)
-
-            if cfg.name then 
-                set:Label({name = cfg.name, padding_bottom = 2})
-            end 
-
-            return set
+            return setmetatable(cfg, library)
         end
 
         function library:Label(options)
+            if type(options) == "string" then
+                options = {Name = options}
+            end
+            options = options or {}
             local cfg = {
                 name = options.Name or options.name or "Label",
 
                 -- ignore
-                padding_top = options.PaddingTop or options.padding_top or 0; -- used because roblox cant make proper layouts
-                padding_top = options.PaddingBottom or options.padding_bottom or 0;
+                padding_top = options.PaddingTop or options.padding_top or 0;
+                padding_bottom = options.PaddingBottom or options.padding_bottom or 0;
 
                 items = {};
             }
@@ -2441,40 +2466,90 @@
         end
 
         function library:Keybind(options) 
+            local init_key = options.key or options.Key or options.default or options.Default
+            if type(init_key) == "boolean" then
+                init_key = nil
+            end
+            if init_key == Enum.KeyCode.Unknown then
+                init_key = nil
+            end
+
             local cfg = {
-                -- options
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺",
                 callback = options.callback or options.Callback or function() end,
                 name = options.name or options.Name or nil, 
-                key = options.key or options.Key or nil, 
+                key = init_key, 
                 mode = options.mode or options.Mode or "Toggle",
-                active = options.default or options.Default or false, 
-
-                -- ignore
+                active = false, 
                 open = false,
                 binding = nil, 
                 hold_instances = {},
                 items = {};
             }
 
+            if cfg.mode == "Always" then
+                cfg.active = true
+            end
+
             flags[cfg.flag] = {
                 mode = cfg.mode,
                 key = cfg.key, 
-                active = cfg.active
+                Key = cfg.key,
+                active = cfg.active,
+                Toggled = cfg.active
             }
 
+            local parent_object = self.items.object or self.items.elements
+            local attached = self.items.object ~= nil
+
             local items = cfg.items; do 
-                -- Component
+                    if not attached then
+                        items[ "row" ] = library:create( "Frame" , {
+                            Parent = parent_object;
+                            BackgroundTransparency = 1;
+                            Name = "\0";
+                            Size = dim2(1, 0, 0, 12);
+                            BorderSizePixel = 0;
+                            BackgroundColor3 = rgb(255, 255, 255)
+                        });
+
+                        library:create( "UIListLayout" , {
+                            Parent = items[ "row" ];
+                            Padding = dim(0, 5);
+                            SortOrder = Enum.SortOrder.LayoutOrder;
+                            FillDirection = Enum.FillDirection.Horizontal;
+                            VerticalAlignment = Enum.VerticalAlignment.Center;
+                        });
+
+                        if cfg.name then
+                            items[ "name" ] = library:create( "TextLabel" , {
+                                FontFace = library.font;
+                                TextColor3 = rgb(178, 178, 178);
+                                BorderColor3 = rgb(0, 0, 0);
+                                Text = cfg.name;
+                                Parent = items[ "row" ];
+                                BackgroundTransparency = 1;
+                                BorderSizePixel = 0;
+                                AutomaticSize = Enum.AutomaticSize.XY;
+                                TextSize = 10;
+                                LayoutOrder = 0;
+                                BackgroundColor3 = rgb(255, 255, 255)
+                            });
+                            library:create( "UIStroke" , { Parent = items[ "name" ] });
+                        end
+                    end
+
                     items.text_label = library:create( "TextButton" , {
                         FontFace = library.font;
                         AutoButtonColor = false;
                         TextColor3 = rgb(178, 178, 178);
                         BorderColor3 = rgb(0, 0, 0);
-                        Text = "J";
-                        Parent = self.items.object;
+                        Text = "NONE";
+                        Parent = attached and parent_object or items[ "row" ];
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.XY;
                         TextSize = 10;
+                        LayoutOrder = 1;
                         BackgroundColor3 = rgb(38, 38, 38)
                     });
 
@@ -2488,17 +2563,12 @@
                         PaddingLeft = dim(0, 4)
                     });
 
-                    if cfg.name then
-                        self:Label({Name = cfg.name})
-                    end 
-                -- 
-                
-                -- Mode Holder
                     items[ "modes" ] = library:create( "Frame" , {
                         Parent = library.items;
                         Visible = false;
-                        Size = dim2(0, 114, 0, 0);
+                        Size = dim2(0, 80, 0, 0);
                         Name = "\0";
+                        ZIndex = 80;
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.Y;
@@ -2507,12 +2577,12 @@
                     
                     items[ "mode_shading" ] = library:create( "Frame" , {
                         Parent = items[ "modes" ];
-                        Size = dim2(0, -2, 0, -2);
+                        Size = dim2(1, -2, 0, -2);
                         Name = "\0";
                         Position = dim2(0, 1, 0, 1);
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
+                        AutomaticSize = Enum.AutomaticSize.Y;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     
@@ -2534,15 +2604,7 @@
                         Parent = items[ "mode_shading" ]
                     });
                     
-                    library:create( "UIPadding" , {
-                        PaddingRight = dim(0, 1);
-                        Parent = items[ "modes" ]
-                    });
-                    
-                
-                    local options = {"Hold", "Toggle", "Always"}
-                    
-                    for _,option in options do
+                    for _, option in {"Hold", "Toggle", "Always"} do
                         local name = library:create( "TextButton" , {
                             FontFace = library.font;
                             AutoButtonColor = false;
@@ -2556,181 +2618,193 @@
                             AutomaticSize = Enum.AutomaticSize.XY;
                             TextSize = 10;
                             BackgroundColor3 = rgb(255, 255, 255)
-                        }); cfg.hold_instances[option] = name
+                        });
+                        cfg.hold_instances[option] = name
                         
                         library:create( "UIStroke" , {
-                            Parent = items[ "TextLabel" ]
+                            Parent = name
                         });
-                        
-                        library:create( "UIPadding" , {
-                            PaddingLeft = dim(0, 5);
-                            Parent = items[ "TextLabel" ]
-                        });
-                                                
-                        -- cfg.y_size += name.AbsoluteSize.Y
 
                         library:create( "UIPadding" , {
                             Parent = name;
                             PaddingTop = dim(0, 1);
-                            PaddingRight = dim(0, 5);
-                            PaddingLeft = dim(0, 5)
+                            PaddingRight = dim(0, 8);
+                            PaddingLeft = dim(0, 8)
                         });
 
                         name.MouseButton1Click:Connect(function()
                             cfg.set(option)
-                            cfg.set_visible(false)
+                            cfg.show_modes(false)
                             cfg.open = false
                         end)
                     end
-                -- 
             end 
             
-            function cfg.modify_mode_color(path) -- ts so frikin tuff 💀
+            local function key_text()
+                if not cfg.key or cfg.key == "NONE" or cfg.key == Enum.KeyCode.Unknown then
+                    return "NONE"
+                end
+                local text = keys[cfg.key] or tostring(cfg.key):gsub("Enum.KeyCode.", ""):gsub("Enum.UserInputType.", "")
+                return text
+            end
+
+            function cfg.modify_mode_color(path)
                 for _,v in cfg.hold_instances do 
                     v.TextColor3 = rgb(178, 178, 178)
                 end 
-
-                cfg.hold_instances[path].TextColor3 = rgb(255, 255, 255)
+                if cfg.hold_instances[path] then
+                    cfg.hold_instances[path].TextColor3 = rgb(255, 255, 255)
+                end
             end
 
             function cfg.set_mode(mode) 
                 cfg.mode = mode 
-
                 if mode == "Always" then
-                    cfg.set(true)
+                    cfg.active = true
                 elseif mode == "Hold" then
-                    cfg.set(false)
+                    cfg.active = false
                 end
-
-                flags[cfg.flag]["mode"] = mode
                 cfg.modify_mode_color(mode)
+            end 
+
+            function cfg.show_modes(bool)
+                items.modes.Visible = bool 
+                if bool then
+                    local abs = items.text_label.AbsolutePosition
+                    local size = items.text_label.AbsoluteSize
+                    items.modes.Position = dim_offset(abs.X + size.X + 6, abs.Y + 58)
+                    library.current = cfg
+                end
             end 
 
             function cfg.set(input)
                 if type(input) == "boolean" then 
                     cfg.active = input
-
                     if cfg.mode == "Always" then 
                         cfg.active = true
                     end
-                elseif tostring(input):find("Enum") then 
-                    input = input.Name == "Escape" and "NONE" or input
-                    
-                    cfg.key = input or "NONE"	
-                elseif find({"Toggle", "Hold", "Always"}, input) then 
-                    if input == "Always" then 
-                        cfg.active = true 
-                    end 
-
-                    cfg.mode = input
-                    cfg.set_mode(cfg.mode) 
-                elseif type(input) == "table" then 
-                    input.key = type(input.key) == "string" and input.key ~= "NONE" and library:convert_enum(input.key) or input.key
-                    input.key = input.key == Enum.KeyCode.Escape and "NONE" or input.key
-
-                    cfg.key = input.key or "NONE"
-                    cfg.mode = input.mode or "Toggle"
-
-                    if input.active then
-                        cfg.active = input.active
+                elseif typeof(input) == "EnumItem" then 
+                    if input == Enum.KeyCode.Escape or (input.Name and input.Name == "Escape") then
+                        cfg.key = nil
+                    else
+                        cfg.key = input
                     end
-
+                elseif find({"Toggle", "Hold", "Always"}, input) then 
+                    cfg.set_mode(input)
+                elseif type(input) == "table" then 
+                    local k = input.key or input.Key
+                    if type(k) == "string" and k ~= "NONE" and k ~= "None" and k ~= "Unknown" then
+                        k = library:convert_enum(k) or k
+                    end
+                    if k == Enum.KeyCode.Escape or k == "NONE" or k == Enum.KeyCode.Unknown then
+                        k = nil
+                    end
+                    cfg.key = k
+                    cfg.mode = input.mode or input.Mode or cfg.mode or "Toggle"
+                    if input.active ~= nil then
+                        cfg.active = input.active
+                    elseif input.Toggled ~= nil then
+                        cfg.active = input.Toggled
+                    end
                     cfg.set_mode(cfg.mode) 
                 end 
 
-                cfg.callback(cfg.active)
-
-                local text = tostring(cfg.key) ~= "Enums" and (keys[cfg.key] or tostring(cfg.key):gsub("Enum.", "")) or nil
-                local __text = text and (tostring(text):gsub("KeyCode.", ""):gsub("UserInputType.", ""))
-                
-                items.text_label.Text = __text
+                if cfg.mode == "Always" then
+                    cfg.active = true
+                end
 
                 flags[cfg.flag] = {
                     mode = cfg.mode,
                     key = cfg.key, 
-                    active = cfg.active
+                    Key = cfg.key,
+                    active = cfg.active,
+                    Toggled = cfg.active
                 }
-            end
 
-            function cfg.set_visible(bool)
-                -- local size = bool and cfg.y_size or 0
-                -- library:tween(items.object, {Size = dim_offset(items.text_label.AbsoluteSize.X, size)})
-                items.modes.Visible = bool 
-                items.modes.Position = dim_offset(items.text_label.AbsolutePosition.X + items.text_label.AbsoluteSize.X + 5, items.text_label.AbsolutePosition.Y + 58)
-
-                library.current = cfg
+                items.text_label.Text = key_text()
+                pcall(cfg.callback, cfg.active, cfg.key, cfg.mode)
             end
             
-            items.text_label.MouseButton1Down:Connect(function()
-                task.wait()
-                items.text_label.Text = "..."	
-
-                cfg.binding = library:connection(uis.InputBegan, function(keycode, game_event)  
-                    cfg.set(keycode.KeyCode ~= Enum.KeyCode.Unknown and keycode.KeyCode or keycode.UserInputType)
-                    
-                    cfg.binding:Disconnect() 
+            items.text_label.MouseButton1Click:Connect(function()
+                if cfg.binding then
+                    cfg.binding:Disconnect()
                     cfg.binding = nil
+                end
+                items.text_label.Text = "..."
+                task.wait()
+                cfg.binding = library:connection(uis.InputBegan, function(input)
+                    if input.UserInputType == Enum.UserInputType.Keyboard then
+                        cfg.set(input.KeyCode)
+                    elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 or input.UserInputType == Enum.UserInputType.MouseButton3 then
+                        cfg.set(input.UserInputType)
+                    end
+                    if cfg.binding then
+                        cfg.binding:Disconnect() 
+                        cfg.binding = nil
+                    end
                 end)
             end)
 
-            items.text_label.MouseButton2Down:Connect(function()
+            items.text_label.MouseButton2Click:Connect(function()
                 cfg.open = not cfg.open 
-
-                cfg.set_visible(cfg.open)
+                cfg.show_modes(cfg.open)
             end)
 
             library:connection(uis.InputBegan, function(input, game_event) 
-                if not game_event then
-                    local selected_key = input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode or input.UserInputType
-
-                    if selected_key == cfg.key then 
-                        if cfg.mode == "Toggle" then 
-                            cfg.active = not cfg.active
-                            cfg.set(cfg.active)
-                        elseif cfg.mode == "Hold" then 
-                            cfg.set(true)
-                        end
+                if game_event or cfg.binding then
+                    return
+                end
+                if not cfg.key then
+                    return
+                end
+                local selected_key = input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode or input.UserInputType
+                if selected_key == cfg.key then 
+                    if cfg.mode == "Toggle" then 
+                        cfg.set(not cfg.active)
+                    elseif cfg.mode == "Hold" then 
+                        cfg.set(true)
+                    elseif cfg.mode == "Always" then
+                        cfg.set(true)
                     end
                 end
             end)    
 
             library:connection(uis.InputEnded, function(input, game_event) 
-                if game_event then 
+                if game_event or not cfg.key then 
                     return 
                 end 
-
                 local selected_key = input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode or input.UserInputType
-    
-                if selected_key == cfg.key then
-                    if cfg.mode == "Hold" then 
-                        cfg.set(false)
-                    end
+                if selected_key == cfg.key and cfg.mode == "Hold" then
+                    cfg.set(false)
                 end
             end)
 
             library:connection(uis.InputEnded, function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    if not (library:mouse_in_frame(items[ "modes" ]) or library:mouse_in_frame(items.text_label)) then 
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 then
+                    if cfg.open and not (library:mouse_in_frame(items[ "modes" ]) or library:mouse_in_frame(items.text_label)) then 
                         cfg.open = false
-                        cfg.set_visible(false)
+                        cfg.show_modes(false)
                     end
                 end
             end)
             
             cfg.set({mode = cfg.mode, active = cfg.active, key = cfg.key})           
             config_flags[cfg.flag] = cfg.set
+            cfg.set_visible = cfg.show_modes
 
             function cfg:SetVisibility(state)
                 if state == nil and type(self) == "boolean" then state = self end
                 cfg.visible = state
-                if items.text_label then
+                if items.row then
+                    items.row.Visible = state
+                elseif items.text_label then
                     items.text_label.Visible = state
                 end
                 if not state and items.modes then
                     items.modes.Visible = false
+                    cfg.open = false
                 end
             end
-            cfg.set_visible = cfg.SetVisibility
             cfg.SetVisiblity = cfg.SetVisibility
 
             return setmetatable(cfg, library)
@@ -3018,18 +3092,15 @@
             return setmetatable(cfg, library)
         end 
 
-        function library:init_config(window) 
+        function library:init_config(window, existing_tab) 
             local textbox;
-            local main = window:Tab({name = "Configs", icon = "rbxassetid://72506063321241"})
-            local section = main:Section({name = "Settings", side = "right", size = 1, default = true})
+            local main = existing_tab or window
+            local section = main:Section({name = "Configs", side = "right", size = 1, default = true})
             config_holder = section:Dropdown({Name = "Configs", options = {"Report", "This", "Error", "To", "Finobe"}, callback = function(option) if textbox then textbox.set(option) end end, flag = "config_name_list"}); library:update_config_list()
             textbox = section:Textbox({name = "Config name:", flag = "config_name_text"})
             section:Button({name = "Save", callback = function() writefile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg", library:get_config()) library:update_config_list() end}) 
             section:Button({name = "Load", callback = function() library:load_config(readfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg"))  library:update_config_list() end})
             section:Button({name = "Delete", callback = function() delfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg")  library:update_config_list() end})
-            
-            window.tweening = true 
-            section:Label({Name = "UI Bind"}):Keybind({callback = function(bool) window.toggle_menu(bool) print(window.tweening) end, default = false})
         end
     --
     --
