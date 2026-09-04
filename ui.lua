@@ -161,7 +161,7 @@
         end 
         
         library.font = Font.new(getcustomasset(library.directory .. "/fonts/main_encoded.ttf"), Enum.FontWeight.Regular)
-        -- library.font = library.font
+        library.Font = library.font
     -- 
 --
 
@@ -692,14 +692,14 @@
                     BackgroundTransparency = 1;
                     Name = "\0";
                     Visible = false;
-                    Size = dim2(1, 0, 0, 25);
+                    Size = dim2(1, 0, 0, 20);
                     BorderSizePixel = 0;
                 });
                 
                 library:create( "UIListLayout" , {
                     FillDirection = Enum.FillDirection.Horizontal;
                     Parent = items[ "subtab_holder" ];
-                    Padding = dim(0, 15);
+                    Padding = dim(0, 14);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                 });
 
@@ -707,7 +707,7 @@
                     Parent = items[ "tab" ];
                     BackgroundTransparency = 1;
                     Name = "\0";
-                    Size = dim2(1, 0, 1, -33);
+                    Size = dim2(1, 0, 1, -28);
                     BorderSizePixel = 0;
                 });
 
@@ -745,6 +745,7 @@
                         SortOrder = Enum.SortOrder.LayoutOrder;
                     });
                 end
+            end 
 
             function cfg.open_tab() 
                 local selected_tab = self.selected_tab
@@ -791,11 +792,21 @@
                     Parent = items[ "subtab_holder" ];
                     BackgroundTransparency = 1;
                     Text = sub_cfg.name;
-                    TextColor3 = rgb(128, 128, 128);
-                    FontFace = library.font;
-                    TextSize = 13;
+                    TextColor3 = rgb(140, 140, 140);
+                    FontFace = subprops and (subprops.font or subprops.FontFace) or library.font or library.Font;
+                    TextSize = subprops and (subprops.size or subprops.TextSize) or 11;
                     Size = dim2(0, 0, 1, 0);
                     AutomaticSize = Enum.AutomaticSize.X;
+                    AutoButtonColor = false;
+                });
+
+                sub_items[ "subtab_indicator" ] = library:create( "Frame" , {
+                    Parent = sub_items[ "subtab_btn" ];
+                    BorderSizePixel = 0;
+                    Size = dim2(1, 0, 0, 1);
+                    Position = dim2(0, 0, 1, 1);
+                    BackgroundColor3 = rgb(255, 255, 255);
+                    BackgroundTransparency = 1;
                 });
 
                 sub_items[ "subtab_content" ] = library:create( "Frame" , {
@@ -834,13 +845,31 @@
 
                 function sub_cfg.open_subtab()
                     if cfg.selected_subtab then
-                        cfg.selected_subtab.items[ "subtab_btn" ].TextColor3 = rgb(128, 128, 128)
+                        cfg.selected_subtab.items[ "subtab_btn" ].TextColor3 = rgb(140, 140, 140)
+                        if cfg.selected_subtab.items[ "subtab_indicator" ] then
+                            library:tween(cfg.selected_subtab.items[ "subtab_indicator" ], {BackgroundTransparency = 1})
+                        end
                         cfg.selected_subtab.items[ "subtab_content" ].Visible = false
                     end
                     sub_items[ "subtab_btn" ].TextColor3 = rgb(255, 255, 255)
+                    if sub_items[ "subtab_indicator" ] then
+                        library:tween(sub_items[ "subtab_indicator" ], {BackgroundTransparency = 0})
+                    end
                     sub_items[ "subtab_content" ].Visible = true
                     cfg.selected_subtab = sub_cfg
                 end
+
+                sub_items[ "subtab_btn" ].MouseEnter:Connect(function()
+                    if cfg.selected_subtab ~= sub_cfg then
+                        sub_items[ "subtab_btn" ].TextColor3 = rgb(190, 190, 190)
+                    end
+                end)
+
+                sub_items[ "subtab_btn" ].MouseLeave:Connect(function()
+                    if cfg.selected_subtab ~= sub_cfg then
+                        sub_items[ "subtab_btn" ].TextColor3 = rgb(140, 140, 140)
+                    end
+                end)
 
                 sub_items[ "subtab_btn" ].MouseButton1Down:Connect(function()
                     sub_cfg.open_subtab()
@@ -861,9 +890,13 @@
         end
 
         function library:Section(properties)
+            local raw_side = properties.side or properties.Side or "left"
+            local side_str = tostring(raw_side):lower()
+            local resolved_side = (side_str == "right" or side_str == "2") and "right" or "left"
+
             local cfg = {
                 name = properties.name or properties.Name or "section"; 
-                side = properties.side or properties.Side or "left";
+                side = resolved_side;
                 default = properties.default or properties.Default or false;
                 size = properties.size or properties.Size or 0.5; 
                 icon = properties.icon or properties.Icon or "http://www.roblox.com/asset/?id=6022668898";
@@ -871,6 +904,30 @@
                 items = {};
             };
             
+            self.column_sections = self.column_sections or { left = {}, right = {} }
+            table.insert(self.column_sections[cfg.side], cfg)
+
+            local function update_column_layout()
+                local list = self.column_sections[cfg.side]
+                if not list then return end
+                local visible_sections = {}
+                for _, s in ipairs(list) do
+                    if s.items and s.items.section_outline and s.items.section_outline.Visible then
+                        table.insert(visible_sections, s)
+                    end
+                end
+                local count = #visible_sections
+                if count == 0 then return end
+                local gap = 10
+                local total_gaps = (count - 1) * gap
+                for _, s in ipairs(visible_sections) do
+                    local scale = 1 / count
+                    local offset = -math.floor(total_gaps / count)
+                    s.items.section_outline.Size = dim2(1, 0, scale, offset)
+                end
+            end
+            cfg.update_layout = update_column_layout
+
             local items = cfg.items; do 
                 items[ "section_outline" ] = library:create( "Frame" , {
                     Name = "\0";
@@ -931,10 +988,10 @@
                 });
                 
                 items[ "scrolling" ] = library:create( "ScrollingFrame" , {
-                    ScrollBarImageColor3 = rgb(0, 0, 0);
+                    ScrollBarImageColor3 = rgb(60, 60, 60);
                     Active = true;
                     AutomaticCanvasSize = Enum.AutomaticSize.Y;
-                    ScrollBarThickness = 0;
+                    ScrollBarThickness = 2;
                     Parent = items[ "section_shadow_three" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
@@ -942,7 +999,8 @@
                     BackgroundColor3 = rgb(255, 255, 255);
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
-                    CanvasSize = dim2(0, 0, 0, 0)
+                    CanvasSize = dim2(0, 0, 0, 0);
+                    ClipsDescendants = true;
                 });
                 
                 items[ "elements" ] = library:create( "Frame" , {
@@ -1011,6 +1069,8 @@
                 });                
             end;
 
+            update_column_layout()
+
             items[ "section_outline" ].MouseEnter:Connect(function()
                 for _,instance in items[ "section_outline" ]:GetDescendants() do 
                     if instance:IsA("UICorner") then 
@@ -1041,8 +1101,18 @@
                 library:tween(items.text, {TextColor3 = rgb(178, 178, 178)})
             end)
 
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items.section_outline then
+                    items.section_outline.Visible = state
+                end
+                update_column_layout()
+            end
+            cfg.set_visible = cfg.SetVisibility
+
             return setmetatable(cfg, library)
-        end  
+        end
 
         function library:Toggle(options) 
             local cfg = {
@@ -1131,11 +1201,31 @@
                 });
             end;
             
+            cfg.child_sliders = {}
+
+            function cfg:Slider(slider_options)
+                local s = library.Slider(self, slider_options)
+                table.insert(cfg.child_sliders, s)
+                if not cfg.enabled then
+                    s:SetVisibility(false)
+                end
+                return s
+            end
+
             function cfg.set(bool)
+                cfg.enabled = bool
                 library:tween(items[ "text" ], {TextColor3 = bool and rgb(255, 255, 255) or rgb(178, 178, 178)})
                 library:tween(items[ "toggle_outline" ], {BackgroundTransparency = bool and 0 or 1})
                 library:tween(items[ "toggle_shading" ], {BackgroundTransparency = bool and 0 or 1})
                 library:tween(items[ "toggle_inline" ], {BackgroundColor3 = bool and rgb(255, 255, 255) or rgb(74, 74, 74)})
+
+                if cfg.child_sliders then
+                    for _, s in ipairs(cfg.child_sliders) do
+                        if s and s.SetVisibility then
+                            s:SetVisibility(bool)
+                        end
+                    end
+                end
 
                 cfg.callback(bool)
                 
@@ -1150,6 +1240,22 @@
             cfg.set(cfg.default)
 
             config_flags[cfg.flag] = cfg.set
+
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items[ "object" ] then
+                    items[ "object" ].Visible = state
+                end
+                if cfg.child_sliders then
+                    for _, s in ipairs(cfg.child_sliders) do
+                        if s and s.SetVisibility then
+                            s:SetVisibility(state and cfg.enabled)
+                        end
+                    end
+                end
+            end
+            cfg.set_visible = cfg.SetVisibility
 
             return setmetatable(cfg, library)
         end 
@@ -1294,6 +1400,16 @@
             
             cfg.set(cfg.default)
             config_flags[cfg.flag] = cfg.set
+
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items[ "object" ] then
+                    items[ "object" ].Visible = state
+                end
+            end
+            cfg.set_visible = cfg.SetVisibility
+            cfg.SetVisiblity = cfg.SetVisibility
 
             return setmetatable(cfg, library)
         end 
@@ -1578,6 +1694,19 @@
             cfg.refresh_options(cfg.options)
             cfg.set(cfg.default)
 
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items[ "object" ] then
+                    items[ "object" ].Visible = state
+                end
+                if not state and cfg.open then
+                    cfg.open = false
+                    cfg.set_visible(false)
+                end
+            end
+            cfg.SetVisiblity = cfg.SetVisibility
+
             local set = setmetatable(cfg, library)
 
             if cfg.name then 
@@ -1648,16 +1777,41 @@
                 items.text.Text = text
             end
 
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items[ "object" ] then
+                    items[ "object" ].Visible = state
+                end
+            end
+            cfg.set_visible = cfg.SetVisibility
+            cfg.SetVisiblity = cfg.SetVisibility
+
             return setmetatable(cfg, library)
         end 
         
         function library:Colorpicker(options) 
+            local init_color = options.color or options.Color or options.default or options.Default
+            if typeof(init_color) ~= "Color3" then
+                if type(init_color) == "table" and (init_color.Color or init_color.color) then
+                    init_color = init_color.Color or init_color.color
+                else
+                    init_color = color(1, 1, 1)
+                end
+            end
+            local init_alpha = 0
+            if options.alpha ~= nil then
+                init_alpha = (type(options.alpha) == "number" and options.alpha <= 1) and (1 - options.alpha) or 0
+            elseif options.Alpha ~= nil then
+                init_alpha = (type(options.Alpha) == "number" and options.Alpha <= 1) and (1 - options.Alpha) or 0
+            end
+
             local cfg = {
                 -- options
                 name = options.name or options.Name or "", 
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺",
-                color = options.color or options.Color or color(1, 1, 1), -- Default to white color if not provided
-                alpha = (options.alpha and 1 - options.alpha) or (options.Alpha and 1 - options.Alpha) or 0,
+                color = init_color,
+                alpha = init_alpha,
                 callback = options.callback or options.Callback or function() end,
 
                 -- ignore
@@ -1676,31 +1830,69 @@
 
             local items = cfg.items; do 
                 -- Component
-                    items[ "gear_holder" ] = library:create( "TextButton" , {
-                        Parent = self.items.object;
-                        AutoButtonColor = false;
-                        Text = "";
+                local parent_container = self.items.object or self.items.elements
+                local holder_parent = parent_container
+
+                if not self.items.object then
+                    items[ "row" ] = library:create( "Frame" , {
+                        Parent = self.items.elements;
                         BackgroundTransparency = 1;
                         Name = "\0";
-                        BorderColor3 = rgb(0, 0, 0);
-                        Size = dim2(0, 12, 0, 12);
+                        Size = dim2(1, 0, 0, 14);
                         BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(255, 255, 255)
+                        BackgroundColor3 = rgb(255, 255, 255);
                     });
-                    
-                    items[ "gear" ] = library:create( "Frame" , {
+                    items[ "label" ] = library:create( "TextLabel" , {
+                        FontFace = library.font;
+                        TextColor3 = rgb(178, 178, 178);
                         BorderColor3 = rgb(0, 0, 0);
-                        Parent = items[ "gear_holder" ];
-                        Name = "\0";
-                        Size = dim2(0, 12, 0, 12);
-                        BorderSizePixel = 1;
-                        BackgroundColor3 = cfg.color
+                        Text = cfg.name;
+                        Parent = items[ "row" ];
+                        BackgroundTransparency = 1;
+                        Position = dim2(0, 0, 0, 1);
+                        BorderSizePixel = 0;
+                        AutomaticSize = Enum.AutomaticSize.XY;
+                        TextSize = 10;
+                        BackgroundColor3 = rgb(255, 255, 255);
                     });
-                    
-                    library:create( "UIPadding" , {
-                        Parent = items[ "gear_holder" ];
-                        PaddingTop = dim(0, -1)
-                    });                
+                    library:create( "UIStroke" , {
+                        Parent = items[ "label" ]
+                    });
+                    holder_parent = items[ "row" ]
+                end
+
+                items[ "gear_holder" ] = library:create( "TextButton" , {
+                    Parent = holder_parent;
+                    AutoButtonColor = false;
+                    Text = "";
+                    BackgroundTransparency = 1;
+                    Name = "\0";
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(0, 14, 0, 12);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(255, 255, 255);
+                    AnchorPoint = not self.items.object and vec2(1, 0) or vec2(0, 0);
+                    Position = not self.items.object and dim2(1, 0, 0, 1) or dim2(0, 0, 0, 0);
+                });
+                
+                items[ "color_outline" ] = library:create( "Frame" , {
+                    BorderColor3 = rgb(0, 0, 0);
+                    Parent = items[ "gear_holder" ];
+                    Name = "\0";
+                    Size = dim2(1, 0, 1, 0);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(0, 0, 0);
+                });
+
+                items[ "color_box" ] = library:create( "Frame" , {
+                    BorderColor3 = rgb(0, 0, 0);
+                    Parent = items[ "color_outline" ];
+                    Name = "\0";
+                    Position = dim2(0, 1, 0, 1);
+                    Size = dim2(1, -2, 1, -2);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = cfg.color;
+                });
                 --
                 
                 -- Colorpicker
@@ -1975,29 +2167,14 @@
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     
-                    items[ "gear" ] = library:create( "ImageButton" , {
-                        ImageColor3 = rgb(178, 178, 178);
-                        AutoButtonColor = false;
-                        BorderColor3 = rgb(0, 0, 0);
-                        Parent = items[ "colorpicker_inline" ];
-                        Name = "\0";
-                        Image = "rbxassetid://99473719385675";
-                        BackgroundTransparency = 1;
-                        Position = dim2(0, 4, 0, 3);
-                        
-                        Size = dim2(0, 12, 0, 12);
-                        BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                    
-                    library:create( "TextLabel" , {
+                    items[ "title" ] = library:create( "TextLabel" , {
                         FontFace = library.font;
                         TextColor3 = rgb(178, 178, 178);
                         BorderColor3 = rgb(0, 0, 0);
                         Text = cfg.name;
                         Parent = items[ "colorpicker_outline" ];
                         BackgroundTransparency = 1;
-                        Position = dim2(0, 20, 0, 5);
+                        Position = dim2(0, 8, 0, 5);
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.XY;
                         TextSize = 10;
@@ -2005,21 +2182,28 @@
                     });
                     
                     library:create( "UIStroke" , {
-                        Parent = items[ "TextLabel" ]
+                        Parent = items[ "title" ]
                     });
                     
                     library:create( "UIPadding" , {
                         PaddingLeft = dim(0, 1);
-                        Parent = items[ "TextLabel" ]
+                        Parent = items[ "title" ]
                     });                
                 --  
             end;
 
             function cfg.set_visible(bool) 
                 items.colorpicker_outline.Visible = bool
-                items.colorpicker_outline.Position = dim2(0, items.gear_holder.AbsolutePosition.X - 5, 0, items.gear_holder.AbsolutePosition.Y + items.gear_holder.AbsoluteSize.Y + 60 - 19)
-
-                library.current = cfg
+                if bool then
+                    local px = items.gear_holder.AbsolutePosition.X - 5
+                    local py = items.gear_holder.AbsolutePosition.Y + items.gear_holder.AbsoluteSize.Y + 4
+                    if camera and camera.ViewportSize then
+                        if px + 165 > camera.ViewportSize.X then px = camera.ViewportSize.X - 170 end
+                        if py + 185 > camera.ViewportSize.Y then py = items.gear_holder.AbsolutePosition.Y - 185 end
+                    end
+                    items.colorpicker_outline.Position = dim2(0, px, 0, py)
+                    library.current = cfg
+                end
             end
 
             function cfg.set(color, alpha)
@@ -2041,7 +2225,9 @@
 
                 items.alpha_visualizer.ImageTransparency = 1 - a 
                 items.visualizer.BackgroundColor3 = Color
-                items.gear.BackgroundColor3 = Color
+                if items.color_box then
+                    items.color_box.BackgroundColor3 = Color
+                end
 
                 flags[cfg.flag] = {
                     Color = Color;
@@ -2053,7 +2239,7 @@
 
             function cfg.update_color() 
                 local mouse = uis:GetMouseLocation() 
-                local offset = vec2(mouse.X, mouse.Y - gui_offset) 
+                local offset = vec2(mouse.X, mouse.Y) 
 
                 if dragging_sat then	
                     s = math.clamp((offset - items.sat.AbsolutePosition).X / items.sat.AbsoluteSize.X, 0, 1)
@@ -2068,11 +2254,8 @@
             end
 
             items.gear_holder.MouseButton1Click:Connect(function()
-                cfg.set_visible(true)            
-            end)
-
-            items.gear.MouseButton1Click:Connect(function()
-                cfg.set_visible(false)            
+                cfg.open = not cfg.open
+                cfg.set_visible(cfg.open)            
             end)
 
             uis.InputChanged:Connect(function(input)
@@ -2103,9 +2286,23 @@
             end)
             
             items.saturation_outline.MouseButton1Down:Connect(function()
-                print("hiu")
                 dragging_sat = true  
             end)
+
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items.row then
+                    items.row.Visible = state
+                elseif items.gear_holder then
+                    items.gear_holder.Visible = state
+                end
+                if not state and cfg.open then
+                    cfg.open = false
+                    cfg.set_visible(false)
+                end
+            end
+            cfg.SetVisiblity = cfg.SetVisibility
 
             cfg.set(cfg.color, cfg.alpha)
             config_flags[cfg.flag] = cfg.set
@@ -2229,6 +2426,16 @@
             end
 
             config_flags[cfg.flag] = cfg.set
+
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items[ "object" ] then
+                    items[ "object" ].Visible = state
+                end
+            end
+            cfg.set_visible = cfg.SetVisibility
+            cfg.SetVisiblity = cfg.SetVisibility
 
             return setmetatable(cfg, library)
         end
@@ -2513,6 +2720,19 @@
             cfg.set({mode = cfg.mode, active = cfg.active, key = cfg.key})           
             config_flags[cfg.flag] = cfg.set
 
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items.text_label then
+                    items.text_label.Visible = state
+                end
+                if not state and items.modes then
+                    items.modes.Visible = false
+                end
+            end
+            cfg.set_visible = cfg.SetVisibility
+            cfg.SetVisiblity = cfg.SetVisibility
+
             return setmetatable(cfg, library)
         end
 
@@ -2596,6 +2816,16 @@
                 items[ "button_text" ].TextColor3 = rgb(255, 255, 255) 
                 library:tween(items[ "button_text" ], {TextColor3 = rgb(178, 178, 178)})
             end)
+
+            function cfg:SetVisibility(state)
+                if state == nil and type(self) == "boolean" then state = self end
+                cfg.visible = state
+                if items[ "button" ] then
+                    items[ "button" ].Visible = state
+                end
+            end
+            cfg.set_visible = cfg.SetVisibility
+            cfg.SetVisiblity = cfg.SetVisibility
             
             return setmetatable(cfg, library)
         end
