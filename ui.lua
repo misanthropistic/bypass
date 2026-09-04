@@ -481,7 +481,7 @@
             library[ "other" ] = library:create( "ScreenGui" , {
                 Parent = coregui;
                 Name = "\0";
-                Enabled = false;
+                Enabled = true;
                 ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
                 IgnoreGuiInset = true;
             }); 
@@ -539,7 +539,7 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0, 44);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 63, 1, -44);
+                    Size = dim2(0, 74, 1, -44);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -556,21 +556,22 @@
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 37)
+                    PaddingTop = dim(0, 22)
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "tab_button_holder" ];
-                    Padding = dim(0, 24);
-                    SortOrder = Enum.SortOrder.LayoutOrder
+                    Padding = dim(0, 18);
+                    SortOrder = Enum.SortOrder.LayoutOrder;
+                    HorizontalAlignment = Enum.HorizontalAlignment.Center;
                 });
                 
                 items[ "page_holder" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 63, 0, 45);
+                    Position = dim2(0, 74, 0, 45);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -63, 1, -45);
+                    Size = dim2(1, -74, 1, -45);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(12, 12, 12)
                 });                
@@ -664,14 +665,15 @@
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(0, 32, 0, 32);
+                        Size = dim2(0, 42, 0, 42);
                         AnchorPoint = vec2(0.5, 0);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
                         Position = dim2(0.5, 0, 0, 0);
                         Selectable = true;
                         BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(255, 255, 255)
+                        BackgroundColor3 = rgb(255, 255, 255);
+                        ScaleType = Enum.ScaleType.Fit;
                     });                       
                 -- 
 
@@ -695,7 +697,7 @@
                 });
                 
                 library:create( "UIPadding" , {
-                    PaddingTop = dim(0, 24);
+                    PaddingTop = dim(0, 4);
                     PaddingBottom = dim(0, 21);
                     Parent = items[ "tab" ];
                     PaddingRight = dim(0, 21);
@@ -707,8 +709,9 @@
                     BackgroundTransparency = 1;
                     Name = "\0";
                     Visible = false;
-                    Size = dim2(1, 0, 0, 20);
+                    Size = dim2(1, 0, 0, 16);
                     BorderSizePixel = 0;
+                    LayoutOrder = 0;
                 });
                 
                 library:create( "UIListLayout" , {
@@ -2918,62 +2921,52 @@
                     Name = "\0";
                     AutoButtonColor = false;
                     BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 0, 40);
+                    Size = dim2(1, 0, 0, 18);
                     Text = "";
-                });
-                items[ "card_bg" ] = library:create( "Frame" , {
-                    Parent = items[ "card" ];
-                    Size = dim2(1, 0, 1, 0);
-                    BackgroundColor3 = rgb(14, 14, 14);
-                    BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
                 });
 
-                library:create( "UIStroke" , { Parent = items[ "card_bg" ]; Color = rgb(30, 30, 30); Thickness = 1; ApplyStrokeMode = Enum.ApplyStrokeMode.Border });
-
                 items[ "avatar" ] = library:create( "ImageLabel" , {
-                    Parent = items[ "card_bg" ];
-                    Size = dim2(0, 32, 0, 32);
-                    Position = dim2(0, 4, 0, 4);
+                    Parent = items[ "card" ];
+                    Size = dim2(0, 14, 0, 14);
+                    Position = dim2(0, 2, 0.5, -7);
                     BackgroundTransparency = 1;
+                    BorderSizePixel = 0;
                     Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(cfg.user_id) .. "&w=48&h=48";
                 });
-                library:create( "UICorner" , { Parent = items[ "avatar" ]; CornerRadius = dim(1, 0) });
 
                 items[ "display_label" ] = library:create( "TextLabel" , {
-                    Parent = items[ "card_bg" ];
-                    Size = dim2(1, -44, 0, 16);
-                    Position = dim2(0, 40, 0, 4);
+                    Parent = items[ "card" ];
+                    Size = dim2(1, -20, 1, 0);
+                    Position = dim2(0, 20, 0, 0);
                     BackgroundTransparency = 1;
                     Text = cfg.display_name ~= "" and cfg.display_name or cfg.name;
-                    TextColor3 = rgb(255, 255, 255);
+                    TextColor3 = rgb(178, 178, 178);
                     TextXAlignment = Enum.TextXAlignment.Left;
                     FontFace = library.font;
-                    TextSize = 13;
+                    TextSize = 10;
+                    TextTruncate = Enum.TextTruncate.AtEnd;
+                    BorderSizePixel = 0;
                 });
-
-                items[ "name_label" ] = library:create( "TextLabel" , {
-                    Parent = items[ "card_bg" ];
-                    Size = dim2(1, -44, 0, 14);
-                    Position = dim2(0, 40, 0, 20);
-                    BackgroundTransparency = 1;
-                    Text = "@" .. cfg.name;
-                    TextColor3 = rgb(150, 150, 150);
-                    TextXAlignment = Enum.TextXAlignment.Left;
-                    FontFace = library.font;
-                    TextSize = 11;
-                });
+                library:create( "UIStroke" , { Parent = items[ "display_label" ] });
 
                 items["card"].MouseButton1Click:Connect(function()
                     cfg.callback()
+                    library:tween(items["display_label"], {TextColor3 = rgb(255, 255, 255)})
                 end)
                 items["card"].MouseEnter:Connect(function()
-                    library:tween(items["card_bg"], {BackgroundColor3 = rgb(25, 25, 25)})
+                    library:tween(items["display_label"], {TextColor3 = rgb(255, 255, 255)})
                 end)
                 items["card"].MouseLeave:Connect(function()
-                    library:tween(items["card_bg"], {BackgroundColor3 = rgb(14, 14, 14)})
+                    library:tween(items["display_label"], {TextColor3 = rgb(178, 178, 178)})
                 end)
             end
+            function cfg:SetText(text)
+                if items["display_label"] then
+                    items["display_label"].Text = tostring(text or cfg.name)
+                end
+            end
+            cfg.set = cfg.SetText
             function cfg:Destroy()
                 if items["card"] then items["card"]:Destroy() end
             end
@@ -3167,57 +3160,51 @@
 
 		function notifications:create_notification(options)
 			local cfg = {
-				name = options.name or "Hit: q3sm (finobe) in the Head for 100 Damage!",
+				name = options.name or options.content or "Notification";
 				color = options.color or rgb(255, 255, 255);
 				clickable = options.click or false;
                 duration = options.duration or 3;
 			}
 			
-			-- Instances
-				local outline = library:create("TextButton", {
-					Parent = library.items;
+				local outline = library:create("Frame", {
+					Parent = library.items or library.other;
 					Size = dim2(0, 0, 0, 0);
 					BorderColor3 = rgb(0, 0, 0);
 					BorderSizePixel = 0;
-					AutoButtonColor = false;
-					Text = "";
 					AutomaticSize = Enum.AutomaticSize.XY;
-					BackgroundColor3 = rgb(46, 46, 46)
+					BackgroundColor3 = rgb(0, 0, 0)
 				});
 
-				local inline = library:create("Frame", {
+				local shading = library:create("Frame", {
 					Parent = outline;
 					Position = dim2(0, 1, 0, 1);
 					BorderColor3 = rgb(0, 0, 0);
 					BorderSizePixel = 0;
 					AutomaticSize = Enum.AutomaticSize.XY;
-					BackgroundColor3 = rgb(21, 21, 21)
+					BackgroundColor3 = rgb(255, 255, 255)
 				});	
 				
-				local uigradient = library:create("UIGradient", {
-					Color = rgbseq{rgbkey(0, rgb(255, 0, 0)), rgbkey(0.17, rgb(255, 255, 0)), rgbkey(0.33, rgb(0, 255, 0)), rgbkey(0.5, rgb(0, 255, 255)), rgbkey(0.67, rgb(0, 0, 255)), rgbkey(0.83, rgb(255, 0, 255)), rgbkey(1, rgb(255, 0, 0))};
-					Transparency = numseq{numkey(0, -1), numkey(1, -1)};
-					Parent = menu_title
+				library:create("UIGradient", {
+                    Rotation = 90;
+					Color = rgbseq{rgbkey(0, rgb(33, 33, 33)), rgbkey(1, rgb(8, 8, 8))};
+					Parent = shading
 				});
 				
 				library:create("UIPadding", {
-					PaddingTop = dim(0, 7);
+					PaddingTop = dim(0, 6);
 					PaddingBottom = dim(0, 6);
-					Parent = inline;
+					Parent = shading;
 					PaddingRight = dim(0, 8);
-					PaddingLeft = dim(0, 4)
+					PaddingLeft = dim(0, 8)
 				});
 				
 				local misc_text = library:create("TextLabel", {
 					FontFace = library.font;
-					Parent = inline;
-					LineHeight = 1.75;
-					TextColor3 = rgb(255, 255, 255);
+					Parent = shading;
+					TextColor3 = rgb(178, 178, 178);
 					BorderColor3 = rgb(0, 0, 0);
-					Text = cfg.name; -- string.format("[ cht name ] %s", cfg.name);
+					Text = cfg.name;
 					AutomaticSize = Enum.AutomaticSize.XY;
-					Size = dim2(1, -4, 1, 0);
-					Position = dim2(0, 4, 0, -2);
 					BackgroundTransparency = 1;
 					TextXAlignment = Enum.TextXAlignment.Left;
 					BorderSizePixel = 0;
@@ -3225,6 +3212,7 @@
 					TextSize = 10;
 					BackgroundColor3 = rgb(255, 255, 255)
 				});
+                library:create("UIStroke", { Parent = misc_text });
 				
 				library:create("UIPadding", {
 					PaddingBottom = dim(0, 1);
@@ -3245,72 +3233,43 @@
 				local accent = library:create( "Frame" , {
 					Parent = outline;
 					Name = "\0";
-					Position = dim2(0, 1, 0, 1);
+					Position = dim2(0, 0, 0, 0);
 					BorderColor3 = rgb(0, 0, 0);
-					Size = dim2(0, 1, 1, -1);
+					Size = dim2(0, 1, 1, 0);
 					BorderSizePixel = 0;
 					BackgroundColor3 = cfg.color
 				});
-			-- 
 			
 			local index = #notifications.notifs + 1
 			notifications.notifs[index] = outline
 			
 			notifications:refresh_notifs()
-			tween_service:Create(outline, TweenInfo.new(1, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {AnchorPoint = vec2(0, 0)}):Play()
-			
-			for _, obj in outline:GetDescendants() do
-                if obj:IsA("Frame") or obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-                    library.fade(obj, "BackgroundTransparency", true)
-        
-                elseif obj:IsA("TextLabel") or obj:IsA("TextButton") then
-                    library.fade(obj, "TextTransparency", true)
-                    
-                elseif obj:IsA("UIStroke") then
-                    library.fade(obj, "Transparency", true)
-        
-                elseif obj:IsA("ScrollingFrame") then
-                    library.fade(obj, "ScrollBarImageTransparency", true)
-                end
-            end
-            print("fade1")
-
-			outline.Position = dim2(0, 20, 0, #notifications.notifs * 20);
+			outline.Position = dim2(0, 20, 0, 50);
 
 			if cfg.clickable then 
-				outline.MouseButton1Click:Connect(function()
-					notifications.notifs[index] = nil
-					task.wait(1)
-					outline:Destroy() 
-					notifications:refresh_notifs()
+				outline.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        notifications.notifs[index] = nil
+                        outline:Destroy() 
+                        notifications:refresh_notifs()
+                    end
 				end)
 			else 
-                -- booty code
 				task.spawn(function()
 					tween_service:Create(line, TweenInfo.new(cfg.duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Size = dim2(1, -1, 0, 1)}):Play()
 					task.wait(cfg.duration)
-                    print("fade2")
 					notifications.notifs[index] = nil
-					for _, obj in outline:GetDescendants() do
-                        if obj:IsA("Frame") or obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-                            library.fade(obj, "BackgroundTransparency", false)
-                
-                        elseif obj:IsA("TextLabel") or obj:IsA("TextButton") then
-                            library.fade(obj, "TextTransparency", false)
-                
-                        elseif obj:IsA("UIStroke") then
-                            library.fade(obj, "Transparency", false)
-                
-                        elseif obj:IsA("ScrollingFrame") then
-                            library.fade(obj, "ScrollBarImageTransparency", false)
-                        end
-                    end
-					task.wait(1)
+                    notifications:fade(outline, true)
+					task.wait(0.6)
 					outline:Destroy() 
 					notifications:refresh_notifs()
 				end)
 			end
 		end
+        notifications.notify = notifications.create_notification
+        function library:Notify(text, duration)
+            notifications:create_notification({name = tostring(text or ""), duration = duration or 3})
+        end
 	-- 
 -- 
 
