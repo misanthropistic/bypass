@@ -1268,7 +1268,8 @@
                     Parent = items[ "object" ];
                     Padding = dim(0, 5);
                     SortOrder = Enum.SortOrder.LayoutOrder;
-                    FillDirection = Enum.FillDirection.Horizontal
+                    FillDirection = Enum.FillDirection.Horizontal;
+                    VerticalAlignment = Enum.VerticalAlignment.Center;
                 });
                 
                 items[ "text" ] = library:create( "TextLabel" , {
@@ -1391,7 +1392,8 @@
                     Parent = items[ "object" ];
                     Padding = dim(0, 5);
                     SortOrder = Enum.SortOrder.LayoutOrder;
-                    FillDirection = Enum.FillDirection.Horizontal
+                    FillDirection = Enum.FillDirection.Horizontal;
+                    VerticalAlignment = Enum.VerticalAlignment.Center;
                 });
                 
                 items[ "slider_parent" ] = library:create( "TextButton" , {
@@ -1969,6 +1971,13 @@
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255);
                     });
+                    library:create( "UIListLayout" , {
+                        Parent = items[ "row" ];
+                        Padding = dim(0, 5);
+                        SortOrder = Enum.SortOrder.LayoutOrder;
+                        FillDirection = Enum.FillDirection.Horizontal;
+                        VerticalAlignment = Enum.VerticalAlignment.Center;
+                    });
                     items[ "label" ] = library:create( "TextLabel" , {
                         FontFace = library.font;
                         TextColor3 = rgb(178, 178, 178);
@@ -1976,7 +1985,6 @@
                         Text = cfg.name;
                         Parent = items[ "row" ];
                         BackgroundTransparency = 1;
-                        Position = dim2(0, 0, 0, 1);
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.XY;
                         TextSize = 10;
@@ -1998,8 +2006,8 @@
                     Size = dim2(0, 14, 0, 12);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(255, 255, 255);
-                    AnchorPoint = not self.items.object and vec2(1, 0) or vec2(0, 0);
-                    Position = not self.items.object and dim2(1, 0, 0, 1) or dim2(0, 0, 0, 0);
+                    AnchorPoint = vec2(0, 0);
+                    Position = dim2(0, 0, 0, 0);
                 });
                 
                 items[ "color_outline" ] = library:create( "Frame" , {
@@ -3047,31 +3055,31 @@
                     BorderColor3 = rgb(28, 28, 28);
                     BorderSizePixel = 1;
                     BackgroundTransparency = 0;
-                    Size = dim2(1, 0, 0, 28);
+                    Size = dim2(1, 0, 0, 24);
                     Text = "";
                 });
 
                 items[ "avatar" ] = library:create( "ImageLabel" , {
                     Parent = items[ "card" ];
-                    Size = dim2(0, 20, 0, 20);
-                    Position = dim2(0, 4, 0.5, -10);
+                    Size = dim2(0, 18, 0, 18);
+                    Position = dim2(0, 3, 0.5, -9);
                     BackgroundColor3 = rgb(8, 8, 8);
                     BorderColor3 = rgb(35, 35, 35);
-                    BorderSizePixel = 1;
+                    BorderSizePixel = 0;
                     Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(cfg.user_id) .. "&w=100&h=100";
                 });
 
                 local initialText = cfg.display_name ~= "" and cfg.display_name or cfg.name
                 items[ "display_label" ] = library:create( "TextLabel" , {
                     Parent = items[ "card" ];
-                    Size = dim2(1, -32, 1, 0);
-                    Position = dim2(0, 30, 0, 0);
+                    Size = dim2(1, -28, 1, 0);
+                    Position = dim2(0, 25, 0, 0);
                     BackgroundTransparency = 1;
                     Text = initialText;
                     TextColor3 = rgb(215, 215, 215);
                     TextXAlignment = Enum.TextXAlignment.Left;
                     FontFace = library.font;
-                    TextSize = 11;
+                    TextSize = 10;
                     RichText = true;
                     TextTruncate = Enum.TextTruncate.AtEnd;
                     BorderSizePixel = 0;
