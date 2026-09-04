@@ -138,10 +138,10 @@
     local notifications = library.notifications 
 
     -- Font importing system 
-        if not isfile(library.directory .. "/fonts/main.ttf") then 
-            pcall(function()
-                writefile(library.directory .. "/fonts/main.ttf", game:HttpGet("https://github.com/f1nobe7650/Nebula/raw/refs/heads/main/Minecraftia-Regular.ttf"))
-            end)
+        if isfile(library.directory .. "/fonts/main.ttf") then 
+            delfile(library.directory .. "/fonts/main.ttf")
+        else 
+            writefile(library.directory .. "/fonts/main.ttf", game:HttpGet("https://github.com/f1nobe7650/Nebula/raw/refs/heads/main/Minecraftia-Regular.ttf"))
         end 
         
         local minecraftia = {
@@ -151,25 +151,17 @@
                     name = "Regular",
                     weight = 400,
                     style = "normal",
-                    assetId = (isfile(library.directory .. "/fonts/main.ttf") and pcall(getcustomasset, library.directory .. "/fonts/main.ttf")) and getcustomasset(library.directory .. "/fonts/main.ttf") or ""
+                    assetId = getcustomasset(library.directory .. "/fonts/main.ttf")
                 }
             }
         }
         
         if not isfile(library.directory .. "/fonts/main_encoded.ttf") then 
-            pcall(function()
-                writefile(library.directory .. "/fonts/main_encoded.ttf", http_service:JSONEncode(minecraftia))
-            end)
+            writefile(library.directory .. "/fonts/main_encoded.ttf", http_service:JSONEncode(minecraftia))
         end 
         
-        pcall(function()
-            if isfile(library.directory .. "/fonts/main_encoded.ttf") then
-                library.font = Font.new(getcustomasset(library.directory .. "/fonts/main_encoded.ttf"), Enum.FontWeight.Regular)
-            end
-        end)
-        if not library.font then
-            library.font = Font.fromEnum(Enum.Font.Code)
-        end
+        library.font = Font.new(getcustomasset(library.directory .. "/fonts/main_encoded.ttf"), Enum.FontWeight.Regular)
+        -- library.font = library.font
     -- 
 --
 
@@ -322,8 +314,8 @@
                         )
                     )
 
-                    -- Drag delay: smooth interpolation tweening instead of instant position set
-                    library:tween(frame, {Position = current_position}, Enum.EasingStyle.Sine, 0.08)
+                    -- library:tween(frame, {Position = current_position}, Enum.EasingStyle.Linear, 0) -- heh, nobody will notice 
+                    frame.Position = current_position
                     library:close_current_element(nil) 
                 end
             end)
@@ -467,19 +459,15 @@
     
     -- Library element functions
         function library:window(properties)
-            local propTable = type(properties) == "table" and properties or {}
-            local windowName = (type(properties) == "string" and properties) or propTable.name or propTable.Name or "alternate"
-            local windowSize = propTable.size or propTable.Size or dim2(0, 650, 0, 400)
-            local windowLogo = propTable.logo or propTable.Logo or "rbxassetid://128155293790451"
             local cfg = { 
                 -- Properties
-                name = windowName;
-                size = windowSize;
-                logo = windowLogo;
+                name = properties.name or properties.Name or "nebula";
+                size = properties.size or properties.Size or dim2(0, 800, 0, 550);
+                logo = properties.logo or properties.Logo or "rbxassetid://128155293790451";
 
-                selected_tab = nil;
+                selected_tab;
                 items = {};
-                tweening = false;
+                tweening;
             }
             
             library[ "items" ] = library:create( "ScreenGui" , {
@@ -510,22 +498,48 @@
                     BackgroundColor3 = rgb(0, 0, 0)
                 }); items[ "window" ].Position = dim2(0, items[ "window" ].AbsolutePosition.X, 0, items[ "window" ].AbsolutePosition.Y)          
 
-                -- Top frame removed/zeroed to maximize content space
                 items[ "top_frame" ] = library:create( "Frame" , {
                     Name = "\0";
                     Parent = items[ "window" ];
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 0, 0);
+                    Size = dim2(1, 0, 0, 45);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
+                });
+                
+                items[ "logo" ] = library:create( "ImageLabel" , {
+                    BorderColor3 = rgb(0, 0, 0);
+                    Parent = items[ "top_frame" ];
+                    Name = "\0";
+                    Image = cfg.logo;
+                    BackgroundTransparency = 1;
+                    Position = dim2(0, 16, 0, 7);
+                    Size = dim2(0, 32, 0, 32);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(255, 255, 255)
+                });
+                
+                items[ "ui_title" ] = library:create( "TextLabel" , {
+                    FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal);
+                    TextColor3 = rgb(255, 255, 255);
+                    TextStrokeColor3 = rgb(255, 255, 255);
+                    Text = cfg.name;
+                    Parent = items[ "top_frame" ];
+                    Name = "\0";
+                    BackgroundTransparency = 1;
+                    Size = dim2(1, 0, 1, 0);
+                    BorderSizePixel = 0;
+                    BorderColor3 = rgb(0, 0, 0);
+                    TextSize = 35;
+                    BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
                 items[ "inline" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 0, 0, 0);
+                    Position = dim2(0, 0, 0, 44);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 75, 1, 0);
+                    Size = dim2(0, 63, 1, -44);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -542,21 +556,21 @@
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 12)
+                    PaddingTop = dim(0, 37)
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "tab_button_holder" ];
-                    Padding = dim(0, 8);
+                    Padding = dim(0, 24);
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
                 
                 items[ "page_holder" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 75, 0, 0);
+                    Position = dim2(0, 63, 0, 45);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -75, 1, 0);
+                    Size = dim2(1, -63, 1, -45);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(12, 12, 12)
                 });                
@@ -608,13 +622,10 @@
         end 
 
         function library:Tab(properties)
-            local propTable = type(properties) == "table" and properties or {}
-            local tabName = (type(properties) == "string" and properties) or propTable.name or propTable.Name or "visuals"
-            local tabIcon = propTable.icon or propTable.Icon or "http://www.roblox.com/asset/?id=6034767608"
             local cfg = {
                 -- properties
-                name = tabName; 
-                icon = tabIcon;
+                name = properties.name or properties.Name or "visuals"; 
+                icon = properties.icon or properties.Icon or "http://www.roblox.com/asset/?id=6034767608";
                 
                 items = {};
             } 
@@ -625,9 +636,10 @@
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
                         Text = "";
-                        Size = dim2(1, 0, 0, 48);
+                        Size = dim2(1, 0, 0, 0);
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
+                        AutomaticSize = Enum.AutomaticSize.Y;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
                     
@@ -637,71 +649,97 @@
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(0, 24, 0, 24);
+                        Size = dim2(0, 32, 0, 32);
                         AnchorPoint = vec2(0.5, 0);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
-                        Position = dim2(0.5, 0, 0, 4);
+                        Position = dim2(0.5, 0, 0, 0);
                         Selectable = true;
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
-                    });
-
-                    items[ "text_label" ] = library:create( "TextLabel" , {
-                        Parent = items[ "tab_button" ];
-                        BackgroundTransparency = 1;
-                        Text = cfg.name;
-                        FontFace = library.font;
-                        TextSize = 10;
-                        TextColor3 = rgb(128, 128, 128);
-                        Position = dim2(0, 0, 0, 30);
-                        Size = dim2(1, 0, 0, 14);
-                        TextXAlignment = Enum.TextXAlignment.Center;
-                        BorderSizePixel = 0;
-                    });
+                    });                       
                 -- 
 
-                -- Page directory
-                    items[ "tab" ] = library:create( "Frame" , {
-                        Parent = library.items;
+                -- SubTab layout setup
+                items[ "tab" ] = library:create( "Frame" , {
+                    Parent = library.items;
+                    BackgroundTransparency = 1;
+                    Name = "\0";
+                    Visible = false;
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(1, 0, 1, 0);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(255, 255, 255)
+                });
+                
+                library:create( "UIListLayout" , {
+                    FillDirection = Enum.FillDirection.Vertical;
+                    Parent = items[ "tab" ];
+                    Padding = dim(0, 8);
+                    SortOrder = Enum.SortOrder.LayoutOrder;
+                });
+                
+                library:create( "UIPadding" , {
+                    PaddingTop = dim(0, 24);
+                    PaddingBottom = dim(0, 21);
+                    Parent = items[ "tab" ];
+                    PaddingRight = dim(0, 21);
+                    PaddingLeft = dim(0, 21)
+                });     
+
+                items[ "subtab_holder" ] = library:create( "Frame" , {
+                    Parent = items[ "tab" ];
+                    BackgroundTransparency = 1;
+                    Name = "\0";
+                    Visible = false;
+                    Size = dim2(1, 0, 0, 25);
+                    BorderSizePixel = 0;
+                });
+                
+                library:create( "UIListLayout" , {
+                    FillDirection = Enum.FillDirection.Horizontal;
+                    Parent = items[ "subtab_holder" ];
+                    Padding = dim(0, 15);
+                    SortOrder = Enum.SortOrder.LayoutOrder;
+                });
+
+                items[ "subtab_content" ] = library:create( "Frame" , {
+                    Parent = items[ "tab" ];
+                    BackgroundTransparency = 1;
+                    Name = "\0";
+                    Size = dim2(1, 0, 1, -33);
+                    BorderSizePixel = 0;
+                });
+
+                -- Default main subtab (used if no subtabs are created)
+                cfg.default_subtab = library:create( "Frame" , {
+                    Parent = items[ "subtab_content" ];
+                    BackgroundTransparency = 1;
+                    Name = "\0";
+                    Size = dim2(1, 0, 1, 0);
+                    BorderSizePixel = 0;
+                });
+                
+                library:create( "UIListLayout" , {
+                    FillDirection = Enum.FillDirection.Horizontal;
+                    HorizontalFlex = Enum.UIFlexAlignment.Fill;
+                    Parent = cfg.default_subtab;
+                    Padding = dim(0, 21);
+                    SortOrder = Enum.SortOrder.LayoutOrder;
+                    VerticalFlex = Enum.UIFlexAlignment.Fill
+                });
+
+                for _,column in {"left", "right"} do 
+                    items[ column ] = library:create( "Frame" , {
+                        Parent = cfg.default_subtab;
                         BackgroundTransparency = 1;
                         Name = "\0";
-                        Visible = false;
                         BorderColor3 = rgb(0, 0, 0);
-                        Size = dim2(1, 0, 1, 0);
+                        Size = dim2(0, 100, 0, 100);
                         BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                    
-                    library:create( "UIListLayout" , {
-                        FillDirection = Enum.FillDirection.Horizontal;
-                        HorizontalFlex = Enum.UIFlexAlignment.Fill;
-                        Parent = items[ "tab" ];
-                        Padding = dim(0, 21);
-                        SortOrder = Enum.SortOrder.LayoutOrder;
-                        VerticalFlex = Enum.UIFlexAlignment.Fill
-                    });
-                    
-                    library:create( "UIPadding" , {
-                        PaddingTop = dim(0, 24);
-                        PaddingBottom = dim(0, 21);
-                        Parent = items[ "tab" ];
-                        PaddingRight = dim(0, 21);
-                        PaddingLeft = dim(0, 21)
-                    });     
-                    
-                    for _,column in {"left", "right"} do 
-                        items[ column ] = library:create( "Frame" , {
-                            Parent = items[ "tab" ];
-                            BackgroundTransparency = 1;
-                            Name = "\0";
-                            BorderColor3 = rgb(0, 0, 0);
-                            Size = dim2(0, 100, 0, 100);
-                            BorderSizePixel = 0;
-                            BackgroundColor3 = rgb(8, 8, 8)
-                        }); 
-                    end                  
-                -- 
+                        BackgroundColor3 = rgb(8, 8, 8)
+                    }); 
+                end                  
             end 
 
             function cfg.open_tab() 
@@ -709,20 +747,17 @@
                 
                 if selected_tab then 
                    selected_tab[ 1 ].ImageColor3 = rgb(128, 128, 128)
-                   if selected_tab[ 3 ] then selected_tab[ 3 ].TextColor3 = rgb(128, 128, 128) end
                    selected_tab[ 2 ].Parent = library.items
                    selected_tab[ 2 ].Visible = false
                 end
                 
                 items.image.ImageColor3 = rgb(255, 255, 255)
-                items.text_label.TextColor3 = rgb(255, 255, 255)
                 items.tab.Parent = self.items[ "page_holder" ]
                 items.tab.Visible = true
 
                 self.selected_tab = {
                     items.image;
                     items.tab;
-                    items.text_label;
                 }
 
                 library:close_current_element(nil) 
@@ -732,6 +767,83 @@
                 cfg.open_tab()
             end)
 
+            cfg.selected_subtab = nil
+
+            function cfg:SubTab(subprops)
+                local sub_cfg = {
+                    name = type(subprops) == "table" and (subprops.name or subprops.Name) or tostring(subprops or "SubTab");
+                    items = {};
+                }
+                
+                items[ "subtab_holder" ].Visible = true
+                if cfg.default_subtab then
+                    cfg.default_subtab:Destroy()
+                    cfg.default_subtab = nil
+                end
+
+                local sub_items = sub_cfg.items
+                
+                sub_items[ "subtab_btn" ] = library:create( "TextButton" , {
+                    Parent = items[ "subtab_holder" ];
+                    BackgroundTransparency = 1;
+                    Text = sub_cfg.name;
+                    TextColor3 = rgb(128, 128, 128);
+                    Font = Enum.Font.Gotham;
+                    TextSize = 13;
+                    Size = dim2(0, 0, 1, 0);
+                    AutomaticSize = Enum.AutomaticSize.X;
+                });
+
+                sub_items[ "subtab_content" ] = library:create( "Frame" , {
+                    Parent = items[ "subtab_content" ];
+                    BackgroundTransparency = 1;
+                    Name = "\0";
+                    Visible = false;
+                    Size = dim2(1, 0, 1, 0);
+                    BorderSizePixel = 0;
+                });
+                
+                library:create( "UIListLayout" , {
+                    FillDirection = Enum.FillDirection.Horizontal;
+                    HorizontalFlex = Enum.UIFlexAlignment.Fill;
+                    Parent = sub_items[ "subtab_content" ];
+                    Padding = dim(0, 21);
+                    SortOrder = Enum.SortOrder.LayoutOrder;
+                    VerticalFlex = Enum.UIFlexAlignment.Fill
+                });
+
+                for _,column in {"left", "right"} do 
+                    sub_items[ column ] = library:create( "Frame" , {
+                        Parent = sub_items[ "subtab_content" ];
+                        BackgroundTransparency = 1;
+                        Name = "\0";
+                        BorderColor3 = rgb(0, 0, 0);
+                        Size = dim2(0, 100, 0, 100);
+                        BorderSizePixel = 0;
+                    }); 
+                end
+
+                function sub_cfg.open_subtab()
+                    if cfg.selected_subtab then
+                        cfg.selected_subtab.items[ "subtab_btn" ].TextColor3 = rgb(128, 128, 128)
+                        cfg.selected_subtab.items[ "subtab_content" ].Visible = false
+                    end
+                    sub_items[ "subtab_btn" ].TextColor3 = rgb(255, 255, 255)
+                    sub_items[ "subtab_content" ].Visible = true
+                    cfg.selected_subtab = sub_cfg
+                end
+
+                sub_items[ "subtab_btn" ].MouseButton1Down:Connect(function()
+                    sub_cfg.open_subtab()
+                end)
+
+                if not cfg.selected_subtab then
+                    sub_cfg.open_subtab()
+                end
+
+                return setmetatable(sub_cfg, library)
+            end
+
             if not self.selected_tab then 
                 cfg.open_tab(true) 
             end
@@ -739,198 +851,14 @@
             return setmetatable(cfg, library)
         end
 
-        function library:SubTab(properties)
-            local propTable = type(properties) == "table" and properties or {}
-            local subName = (type(properties) == "string" and properties) or propTable.name or propTable.Name or "Sub"
+        function library:Section(properties)
             local cfg = {
-                name = subName;
-                items = {};
-            }
-
-            -- First SubTab call on this Tab: tear out the default horizontal columns
-            -- and build the subtab nav bar + content area infrastructure.
-            if not self.subtab_bar then
-                -- Remove the original layout objects and columns (they won't be used)
-                for _, v in self.items[ "tab" ]:GetChildren() do
-                    if v:IsA("UIListLayout") or v:IsA("UIPadding") then
-                        v:Destroy()
-                    end
-                end
-                self.items[ "left" ]:Destroy()
-                self.items[ "right" ]:Destroy()
-
-                -- Horizontal pill nav bar pinned to the top of the tab frame
-                self.subtab_bar = library:create( "Frame" , {
-                    Parent = self.items[ "tab" ];
-                    Name = "\0";
-                    Position = dim2(0, 0, 0, 0);
-                    BorderColor3 = rgb(0, 0, 0);
-                    BorderSizePixel = 0;
-                    Size = dim2(1, 0, 0, 26);
-                    BackgroundColor3 = rgb(14, 14, 14);
-                    ClipsDescendants = true;
-                });
-
-                library:create( "UIListLayout" , {
-                    Parent = self.subtab_bar;
-                    FillDirection = Enum.FillDirection.Horizontal;
-                    HorizontalAlignment = Enum.HorizontalAlignment.Left;
-                    VerticalAlignment = Enum.VerticalAlignment.Center;
-                    Padding = dim(0, 4);
-                    SortOrder = Enum.SortOrder.LayoutOrder
-                });
-
-                library:create( "UIPadding" , {
-                    Parent = self.subtab_bar;
-                    PaddingLeft = dim(0, 8);
-                    PaddingTop = dim(0, 3);
-                    PaddingBottom = dim(0, 3)
-                });
-
-                -- 1-px separator under nav bar
-                library:create( "Frame" , {
-                    Parent = self.subtab_bar;
-                    Name = "\0";
-                    AnchorPoint = vec2(0, 1);
-                    Position = dim2(0, 0, 1, 0);
-                    Size = dim2(1, 0, 0, 1);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(30, 30, 30)
-                });
-
-                -- Content wrapper occupying the space below the nav bar
-                self.subtab_content = library:create( "Frame" , {
-                    Parent = self.items[ "tab" ];
-                    Name = "\0";
-                    Position = dim2(0, 0, 0, 26);
-                    BackgroundTransparency = 1;
-                    BorderSizePixel = 0;
-                    Size = dim2(1, 0, 1, -26)
-                });
-
-                self.selected_subtab = nil
-            end
-
-            -- Clickable nav button
-            local btn_bg = library:create( "TextButton" , {
-                Parent = self.subtab_bar;
-                AutoButtonColor = false;
-                Text = cfg.name;
-                FontFace = library.font;
-                TextColor3 = rgb(100, 100, 100);
-                TextSize = 11;
-                Name = "\0";
-                BorderSizePixel = 0;
-                AutomaticSize = Enum.AutomaticSize.X;
-                Size = dim2(0, 0, 1, 0);
-                BackgroundColor3 = rgb(14, 14, 14)
-            });
-
-            library:create( "UIPadding" , {
-                Parent = btn_bg;
-                PaddingLeft = dim(0, 10);
-                PaddingRight = dim(0, 10)
-            });
-
-            -- Active indicator underline (animates in/out on tab switch)
-            local btn_line = library:create( "Frame" , {
-                Parent = btn_bg;
-                Name = "\0";
-                AnchorPoint = vec2(0, 1);
-                Position = dim2(0, 0, 1, 0);
-                Size = dim2(0, 0, 0, 2);
-                BorderSizePixel = 0;
-                ZIndex = 5;
-                BackgroundColor3 = rgb(210, 210, 210)
-            });
-
-            -- Content frame for this subtab's sections (holds left + right columns)
-            local content = library:create( "Frame" , {
-                Parent = self.subtab_content;
-                BackgroundTransparency = 1;
-                BorderSizePixel = 0;
-                Visible = false;
-                Size = dim2(1, 0, 1, 0)
-            });
-
-            library:create( "UIListLayout" , {
-                FillDirection = Enum.FillDirection.Horizontal;
-                HorizontalFlex = Enum.UIFlexAlignment.Fill;
-                Parent = content;
-                Padding = dim(0, 21);
-                SortOrder = Enum.SortOrder.LayoutOrder;
-                VerticalFlex = Enum.UIFlexAlignment.Fill
-            });
-
-            library:create( "UIPadding" , {
-                PaddingTop = dim(0, 24);
-                PaddingBottom = dim(0, 21);
-                Parent = content;
-                PaddingRight = dim(0, 21);
-                PaddingLeft = dim(0, 21)
-            });
-
-            for _, column in {"left", "right"} do
-                cfg.items[ column ] = library:create( "Frame" , {
-                    Parent = content;
-                    BackgroundTransparency = 1;
-                    Name = "\0";
-                    BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 100, 0, 100);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(8, 8, 8)
-                });
-            end
-
-            cfg.items[ "content" ] = content
-
-            function cfg.open_subtab()
-                local selected = self.selected_subtab
-
-                if selected then
-                    selected.content.Visible = false
-                    library:tween(selected.btn_bg, {TextColor3 = rgb(100, 100, 100)})
-                    library:tween(selected.btn_line, {Size = dim2(0, 0, 0, 2)})
-                end
-
-                content.Visible = true
-                library:tween(btn_bg, {TextColor3 = rgb(235, 235, 235)})
-                library:tween(btn_line, {Size = dim2(1, 0, 0, 2)})
-
-                self.selected_subtab = {
-                    content = content;
-                    btn_bg = btn_bg;
-                    btn_line = btn_line;
-                }
-
-                library:close_current_element(nil)
-            end
-
-            btn_bg.MouseButton1Click:Connect(function()
-                cfg.open_subtab()
-            end)
-
-            if not self.selected_subtab then
-                cfg.open_subtab()
-            end
-
-            return setmetatable(cfg, library)
-        end
-
-        function library:Section(properties, sideArg)
-            local propTable = type(properties) == "table" and properties or {}
-            local secName = (type(properties) == "string" and properties) or propTable.name or propTable.Name or "section"
-            local secSide = propTable.side or propTable.Side or sideArg or "left"
-            if type(secSide) == "number" then secSide = (secSide == 1 and "left" or "right") end
-            secSide = tostring(secSide):lower()
-            if secSide ~= "left" and secSide ~= "right" then secSide = "left" end
-            local cfg = {
-                name = secName; 
-                side = secSide;
-                default = propTable.default or propTable.Default or false;
-                size = propTable.size or propTable.Size or 0.5; 
-                icon = propTable.icon or propTable.Icon or "http://www.roblox.com/asset/?id=6022668898";
-                fading_toggle = propTable.fading or propTable.Fading or false;
+                name = properties.name or properties.Name or "section"; 
+                side = properties.side or properties.Side or "left";
+                default = properties.default or properties.Default or false;
+                size = properties.size or properties.Size or 0.5; 
+                icon = properties.icon or properties.Icon or "http://www.roblox.com/asset/?id=6022668898";
+                fading_toggle = properties.fading or properties.Fading or false;
                 items = {};
             };
             
@@ -1013,8 +941,8 @@
                     Parent = items[ "scrolling" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 14, 0, 14);
-                    Size = dim2(1, -28, 0, 0);
+                    Position = dim2(0, 12, 0, 12);
+                    Size = dim2(1, -24, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.Y;
                     BackgroundColor3 = rgb(255, 255, 255)
@@ -1022,7 +950,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "elements" ];
-                    Padding = dim(0, 6);
+                    Padding = dim(0, 5);
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
                 
@@ -1062,17 +990,6 @@
                     Size = dim2(0, 0, 0, 1);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(255, 255, 255)
-                });
-
-                -- Left accent bar (animated on hover)
-                items.accent_bar = library:create( "Frame" , {
-                    Parent = items[ "section_shadow_three" ];
-                    Name = "\0";
-                    Position = dim2(0, 0, 0, 0);
-                    Size = dim2(0, 2, 0, 0);
-                    BorderSizePixel = 0;
-                    ZIndex = 5;
-                    BackgroundColor3 = rgb(200, 200, 200)
                 });                
 
                 library:create( "UIStroke" , {
@@ -1098,7 +1015,6 @@
                 
                 library:tween(items.line, {Size = dim2(1, 0, 0, 1)})
                 library:tween(items.text, {TextColor3 = rgb(255, 255, 255)})
-                library:tween(items.accent_bar, {Size = dim2(0, 2, 1, 0)})
             end)
 
             items[ "section_outline" ].MouseLeave:Connect(function()
@@ -1114,7 +1030,6 @@
 
                 library:tween(items.line, {Size = dim2(0, 0, 0, 1)})
                 library:tween(items.text, {TextColor3 = rgb(178, 178, 178)})
-                library:tween(items.accent_bar, {Size = dim2(0, 2, 0, 0)})
             end)
 
             return setmetatable(cfg, library)
@@ -1138,9 +1053,10 @@
                     Text = "";
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 0, 15);
+                    Size = dim2(1, 0, 0, 12);
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
+                    -- AutomaticSize = Enum.AutomaticSize.Y;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1149,7 +1065,7 @@
                     BackgroundTransparency = 1;
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 14, 0, 14);
+                    Size = dim2(0, 12, 0, 12);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1177,7 +1093,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "object" ];
-                    Padding = dim(0, 6);
+                    Padding = dim(0, 5);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     FillDirection = Enum.FillDirection.Horizontal
                 });
@@ -1189,10 +1105,10 @@
                     Text = cfg.name;
                     Parent = items[ "object" ];
                     BackgroundTransparency = 1;
-                    Position = dim2(0, 14, 0, 0);
+                    Position = dim2(0, 12, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
-                    TextSize = 11;
+                    TextSize = 10;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1217,20 +1133,6 @@
                 flags[cfg.flag] = bool
             end 
             
-            items[ "object" ].MouseEnter:Connect(function()
-                if not cfg.enabled then
-                    library:tween(items[ "text" ], {TextColor3 = rgb(225, 225, 225)})
-                    library:tween(items[ "toggle_inline" ], {BackgroundColor3 = rgb(90, 90, 90)})
-                end
-            end)
-
-            items[ "object" ].MouseLeave:Connect(function()
-                if not cfg.enabled then
-                    library:tween(items[ "text" ], {TextColor3 = rgb(178, 178, 178)})
-                    library:tween(items[ "toggle_inline" ], {BackgroundColor3 = rgb(54, 54, 54)})
-                end
-            end)
-
             items[ "object" ].MouseButton1Click:Connect(function()
                 cfg.enabled = not cfg.enabled 
                 cfg.set(cfg.enabled)
@@ -1252,11 +1154,12 @@
                 callback = options.callback or options.Callback or function() end; 
                 show_value = options.ShowValue or options.show_value or true; 
 
-                -- value s                min = options.min or options.minimum or options.Min or options.Minimum or 0;
+                -- value settings
+                min = options.min or options.minimum or options.Min or options.Minimum or 0;
                 max = options.max or options.maximum or options.Max or options.Maximum or 100;
-                intervals = options.interval or options.decimal or options.float or options.Interval or options.Decimal or options.Float or 1;
+                intervals = options.interval or options.decimal or options.Interval or options.Decimal or 1;
                 default = options.default or options.Default or 10;
-                value = options.default or options.Default or 10; 
+                value = options.default or options.default or 10; 
 
                 -- ignore
                 dragging = false;
@@ -1268,7 +1171,7 @@
                     Parent = self.items.object or self.items.elements;
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Size = dim2(0, 0, 0, 16);
+                    Size = dim2(0, 0, 0, 12);
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
@@ -1277,7 +1180,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "object" ];
-                    Padding = dim(0, 6);
+                    Padding = dim(0, 5);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     FillDirection = Enum.FillDirection.Horizontal
                 });
@@ -1288,7 +1191,7 @@
                     Text = "";
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 110, 1, 0);
+                    Size = dim2(0, 100, 1, 0);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
@@ -1299,7 +1202,7 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0.5, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 0, 7);
+                    Size = dim2(1, 0, 0, 5);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1325,7 +1228,7 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0.5, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 6, 0, 13);
+                    Size = dim2(0, 4, 0, 9);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
@@ -1346,14 +1249,7 @@
 
                 if cfg.show_value then 
                     items[ "value" ] = setmetatable(cfg, library):Label({padding_top = 1})
-                end
-
-                items[ "slider_parent" ].MouseEnter:Connect(function()
-                    library:tween(items[ "inline" ], {BackgroundColor3 = rgb(255, 255, 200)})
-                end)
-                items[ "slider_parent" ].MouseLeave:Connect(function()
-                    library:tween(items[ "inline" ], {BackgroundColor3 = rgb(255, 255, 255)})
-                end)
+                end       
             end 
 
             function cfg.set(value)
@@ -1400,7 +1296,7 @@
                 -- Options
                 name = options.name or options.Name or nil;
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺";
-                options = options.items or options.Items or options.options or options.Options or options.Content or options.content or {"1", "2", "3"};
+                options = options.items or options.Items or {"1", "2", "3"};
                 callback = options.callback or options.Callback or function() end;
                 multi = options.multi or options.Multi or false;
 
@@ -1411,7 +1307,7 @@
                 items = {};
             }   
 
-            cfg.default = options.default or options.Default or (cfg.multi and {cfg.options[1]}) or cfg.options[1] or "None"1] or "None"
+            cfg.default = options.default or (cfg.multi and {cfg.items[1]}) or cfg.items[1] or "None"
             flags[cfg.flag] = cfg.default
             
             local items = cfg.items; do 
@@ -1439,7 +1335,7 @@
                         Text = "";
                         AutoButtonColor = false;
                         Name = "\0";
-                        Size = dim2(0, 0, 0, 19);
+                        Size = dim2(0, 0, 0, 16);
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.X;
                         BackgroundColor3 = rgb(0, 0, 0)
@@ -1455,15 +1351,6 @@
                         AutomaticSize = Enum.AutomaticSize.X;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
-
-                    items[ "dropdown_outline" ].MouseEnter:Connect(function()
-                        library:tween(items.inner_text, {TextColor3 = rgb(235, 235, 235)})
-                        library:tween(items.arrow, {ImageColor3 = rgb(235, 235, 235)})
-                    end)
-                    items[ "dropdown_outline" ].MouseLeave:Connect(function()
-                        library:tween(items.inner_text, {TextColor3 = rgb(178, 178, 178)})
-                        library:tween(items.arrow, {ImageColor3 = rgb(178, 178, 178)})
-                    end)
                     
                     library:create( "UIGradient" , {
                         Rotation = 90;
@@ -1595,19 +1482,6 @@
                 library:create( "UIPadding" , {
                     Parent = button
                 });
-
-                -- Hover state (only when not already selected)
-                button.MouseEnter:Connect(function()
-                    if button.TextColor3 ~= rgb(255, 255, 255) then
-                        library:tween(button, {TextColor3 = rgb(220, 220, 220)})
-                    end
-                end)
-
-                button.MouseLeave:Connect(function()
-                    if button.TextColor3 ~= rgb(255, 255, 255) then
-                        library:tween(button, {TextColor3 = rgb(178, 178, 178)})
-                    end
-                end)
 
                 return button
             end
@@ -1793,30 +1667,29 @@
 
             local items = cfg.items; do 
                 -- Component
-                    -- Color preview square (replaces gear icon; shows current color live)
-                    items[ "color_preview_outline" ] = library:create( "Frame" , {
+                    items[ "gear_holder" ] = library:create( "TextButton" , {
                         Parent = self.items.object;
-                        Name = "\0";
-                        BorderColor3 = rgb(0, 0, 0);
-                        Size = dim2(0, 14, 0, 14);
-                        BorderSizePixel = 1;
-                        BackgroundColor3 = rgb(0, 0, 0)
-                    });
-
-                    items[ "color_preview" ] = library:create( "TextButton" , {
-                        Parent = items[ "color_preview_outline" ];
                         AutoButtonColor = false;
                         Text = "";
+                        BackgroundTransparency = 1;
                         Name = "\0";
-                        Position = dim2(0, 1, 0, 1);
                         BorderColor3 = rgb(0, 0, 0);
-                        Size = dim2(1, -2, 1, -2);
+                        Size = dim2(0, 12, 0, 12);
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
-
+                    
+                    items[ "gear" ] = library:create( "Frame" , {
+                        BorderColor3 = rgb(0, 0, 0);
+                        Parent = items[ "gear_holder" ];
+                        Name = "\0";
+                        Size = dim2(0, 12, 0, 12);
+                        BorderSizePixel = 1;
+                        BackgroundColor3 = cfg.color
+                    });
+                    
                     library:create( "UIPadding" , {
-                        Parent = items[ "color_preview_outline" ];
+                        Parent = items[ "gear_holder" ];
                         PaddingTop = dim(0, -1)
                     });                
                 --
@@ -2129,30 +2002,13 @@
                     library:create( "UIPadding" , {
                         PaddingLeft = dim(0, 1);
                         Parent = items[ "TextLabel" ]
-                    });
-
-                    -- Hex readout label (top-right of colorpicker popup)
-                    items[ "hex_label" ] = library:create( "TextLabel" , {
-                        FontFace = library.font;
-                        TextColor3 = rgb(95, 95, 95);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Text = "#FFFFFF";
-                        Parent = items[ "colorpicker_inline" ];
-                        BackgroundTransparency = 1;
-                        AnchorPoint = vec2(1, 0);
-                        Position = dim2(1, -4, 0, 4);
-                        BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
-                        ZIndex = 10;
-                        TextSize = 9;
-                        BackgroundColor3 = rgb(255, 255, 255)
                     });                
                 --  
             end;
 
             function cfg.set_visible(bool) 
                 items.colorpicker_outline.Visible = bool
-                items.colorpicker_outline.Position = dim2(0, items.color_preview_outline.AbsolutePosition.X - 5, 0, items.color_preview_outline.AbsolutePosition.Y + items.color_preview_outline.AbsoluteSize.Y + 60 - 19)
+                items.colorpicker_outline.Position = dim2(0, items.gear_holder.AbsolutePosition.X - 5, 0, items.gear_holder.AbsolutePosition.Y + items.gear_holder.AbsoluteSize.Y + 60 - 19)
 
                 library.current = cfg
             end
@@ -2173,14 +2029,10 @@
                 items.satval_picker.Position = dim2(s, -1, 1 - v, -1)
 
                 items.color_saturation.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
-                items.color_saturation.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
 
                 items.alpha_visualizer.ImageTransparency = 1 - a 
                 items.visualizer.BackgroundColor3 = Color
-
-                -- Update the color preview square and hex readout
-                items.color_preview.BackgroundColor3 = Color
-                items.hex_label.Text = "#" .. Color:ToHex():upper()
+                items.gear.BackgroundColor3 = Color
 
                 flags[cfg.flag] = {
                     Color = Color;
@@ -2206,9 +2058,8 @@
                 cfg.set(nil, nil)
             end
 
-            items.color_preview.MouseButton1Click:Connect(function()
-                cfg.open = not cfg.open
-                cfg.set_visible(cfg.open)
+            items.gear_holder.MouseButton1Click:Connect(function()
+                cfg.set_visible(true)            
             end)
 
             items.gear.MouseButton1Click:Connect(function()
@@ -2227,7 +2078,7 @@
                     dragging_hue = false
                     dragging_alpha = false  
 
-                    if not (library:mouse_in_frame(items.color_preview_outline) or library:mouse_in_frame(items.colorpicker_outline)) then 
+                    if not (library:mouse_in_frame(items.gear_holder) or library:mouse_in_frame(items.colorpicker_outline)) then 
                         cfg.open = false
                         cfg.set_visible(false)
                     end
@@ -2407,16 +2258,9 @@
                         Parent = self.items.object;
                         BorderSizePixel = 0;
                         AutomaticSize = Enum.AutomaticSize.XY;
-                        TextSize = 11;
+                        TextSize = 10;
                         BackgroundColor3 = rgb(38, 38, 38)
                     });
-
-                    items.text_label.MouseEnter:Connect(function()
-                        library:tween(items.text_label, {BackgroundColor3 = rgb(65, 65, 65), TextColor3 = rgb(235, 235, 235)})
-                    end)
-                    items.text_label.MouseLeave:Connect(function()
-                        library:tween(items.text_label, {BackgroundColor3 = rgb(38, 38, 38), TextColor3 = rgb(178, 178, 178)})
-                    end)
 
                     library:create( "UIStroke" , {
                         Parent = items.text_label
@@ -2710,17 +2554,6 @@
                     Parent = items[ "button_shading" ];
                     Color = rgbseq{rgbkey(0, rgb(33, 33, 33)), rgbkey(1, rgb(8, 8, 8))}
                 });
-
-                -- Hover highlight overlay (transparent; tweens to subtle white on hover)
-                items[ "button_highlight" ] = library:create( "Frame" , {
-                    Parent = items[ "button_shading" ];
-                    Name = "\0";
-                    Size = dim2(1, 0, 1, 0);
-                    BorderSizePixel = 0;
-                    BackgroundTransparency = 1;
-                    ZIndex = 2;
-                    BackgroundColor3 = rgb(255, 255, 255)
-                });
                 
                 items[ "button_text" ] = library:create( "TextLabel" , {
                     FontFace = library.font;
@@ -2754,17 +2587,83 @@
                 items[ "button_text" ].TextColor3 = rgb(255, 255, 255) 
                 library:tween(items[ "button_text" ], {TextColor3 = rgb(178, 178, 178)})
             end)
-
-            items[ "button" ].MouseEnter:Connect(function()
-                library:tween(items[ "button_highlight" ], {BackgroundTransparency = 0.85})
-                library:tween(items[ "button_text" ], {TextColor3 = rgb(220, 220, 220)})
-            end)
-
-            items[ "button" ].MouseLeave:Connect(function()
-                library:tween(items[ "button_highlight" ], {BackgroundTransparency = 1})
-                library:tween(items[ "button_text" ], {TextColor3 = rgb(178, 178, 178)})
-            end)
             
+            return setmetatable(cfg, library)
+        end
+
+        function library:PlayerCard(options)
+            local cfg = {
+                name = options.name or options.Name or "PlayerName",
+                display_name = options.display_name or options.DisplayName or "",
+                user_id = options.user_id or options.UserId or 1,
+                callback = options.callback or options.Callback or function() end,
+                items = {};
+            }
+            local items = cfg.items; do
+                items[ "card" ] = library:create( "TextButton" , {
+                    Parent = self.items[ "elements" ];
+                    Name = "\0";
+                    AutoButtonColor = false;
+                    BackgroundTransparency = 1;
+                    Size = dim2(1, 0, 0, 40);
+                    Text = "";
+                });
+                items[ "card_bg" ] = library:create( "Frame" , {
+                    Parent = items[ "card" ];
+                    Size = dim2(1, 0, 1, 0);
+                    BackgroundColor3 = rgb(14, 14, 14);
+                    BorderColor3 = rgb(0, 0, 0);
+                    BorderSizePixel = 0;
+                });
+                library:create( "UICorner" , { Parent = items[ "card_bg" ]; CornerRadius = dim(0, 4) });
+                library:create( "UIStroke" , { Parent = items[ "card_bg" ]; Color = rgb(30, 30, 30); Thickness = 1; ApplyStrokeMode = Enum.ApplyStrokeMode.Border });
+
+                items[ "avatar" ] = library:create( "ImageLabel" , {
+                    Parent = items[ "card_bg" ];
+                    Size = dim2(0, 32, 0, 32);
+                    Position = dim2(0, 4, 0, 4);
+                    BackgroundTransparency = 1;
+                    Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(cfg.user_id) .. "&w=48&h=48";
+                });
+                library:create( "UICorner" , { Parent = items[ "avatar" ]; CornerRadius = dim(1, 0) });
+
+                items[ "display_label" ] = library:create( "TextLabel" , {
+                    Parent = items[ "card_bg" ];
+                    Size = dim2(1, -44, 0, 16);
+                    Position = dim2(0, 40, 0, 4);
+                    BackgroundTransparency = 1;
+                    Text = cfg.display_name ~= "" and cfg.display_name or cfg.name;
+                    TextColor3 = rgb(255, 255, 255);
+                    TextXAlignment = Enum.TextXAlignment.Left;
+                    Font = Enum.Font.GothamMedium;
+                    TextSize = 13;
+                });
+
+                items[ "name_label" ] = library:create( "TextLabel" , {
+                    Parent = items[ "card_bg" ];
+                    Size = dim2(1, -44, 0, 14);
+                    Position = dim2(0, 40, 0, 20);
+                    BackgroundTransparency = 1;
+                    Text = "@" .. cfg.name;
+                    TextColor3 = rgb(150, 150, 150);
+                    TextXAlignment = Enum.TextXAlignment.Left;
+                    Font = Enum.Font.Gotham;
+                    TextSize = 11;
+                });
+
+                items["card"].MouseButton1Click:Connect(function()
+                    cfg.callback()
+                end)
+                items["card"].MouseEnter:Connect(function()
+                    library:tween(items["card_bg"], {BackgroundColor3 = rgb(25, 25, 25)})
+                end)
+                items["card"].MouseLeave:Connect(function()
+                    library:tween(items["card_bg"], {BackgroundColor3 = rgb(14, 14, 14)})
+                end)
+            end
+            function cfg:Destroy()
+                if items["card"] then items["card"]:Destroy() end
+            end
             return setmetatable(cfg, library)
         end
 
@@ -2894,6 +2793,39 @@
             section:Label({Name = "UI Bind"}):Keybind({callback = function(bool) window.toggle_menu(bool) print(window.tweening) end, default = false})
         end
     --
+    --
+    -- Watermark library
+        local watermark_obj = nil
+        function library:Watermark(text)
+            if not watermark_obj then
+                watermark_obj = library:create("TextLabel", {
+                    Parent = library.other;
+                    Position = dim2(0, 20, 0, 20);
+                    Size = dim2(0, 0, 0, 20);
+                    AutomaticSize = Enum.AutomaticSize.X;
+                    Text = " " .. text .. " ";
+                    TextColor3 = rgb(255, 255, 255);
+                    BackgroundColor3 = rgb(15, 15, 15);
+                    BorderColor3 = rgb(255, 255, 255);
+                    BorderSizePixel = 1;
+                    Font = Enum.Font.GothamMedium;
+                    TextSize = 13;
+                    TextXAlignment = Enum.TextXAlignment.Left;
+                })
+                library:create("UIPadding", {
+                    Parent = watermark_obj;
+                    PaddingLeft = dim(0, 6);
+                    PaddingRight = dim(0, 6);
+                })
+            else
+                watermark_obj.Text = " " .. text .. " "
+            end
+            return {
+                SetText = function(self, t) watermark_obj.Text = " " .. t .. " " end,
+                SetVisibility = function(self, v) watermark_obj.Visible = v end
+            }
+        end
+    --
 
     -- Notification library
 		local notifications = library.notifications
@@ -2928,6 +2860,7 @@
 				name = options.name or "Hit: q3sm (finobe) in the Head for 100 Damage!",
 				color = options.color or rgb(255, 255, 255);
 				clickable = options.click or false;
+                duration = options.duration or 3;
 			}
 			
 			-- Instances
@@ -3044,8 +2977,8 @@
 			else 
                 -- booty code
 				task.spawn(function()
-					tween_service:Create(line, TweenInfo.new(3, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = dim2(1, -1, 0, 1)}):Play()
-					task.wait(5)
+					tween_service:Create(line, TweenInfo.new(cfg.duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Size = dim2(1, -1, 0, 1)}):Play()
+					task.wait(cfg.duration)
                     print("fade2")
 					notifications.notifs[index] = nil
 					for _, obj in outline:GetDescendants() do
