@@ -551,9 +551,9 @@
                     Name = "\0";
                     Position = dim2(0, 0, 0, 44);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 74, 1, -44);
+                    Size = dim2(0, 96, 1, -44);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(0, 0, 0)
+                    BackgroundColor3 = rgb(10, 10, 14);
                 });
                 
                 items[ "tab_button_holder" ] = library:create( "Frame" , {
@@ -563,7 +563,7 @@
                     BorderColor3 = rgb(0, 0, 0);
                     Size = dim2(1, -2, 1, -2);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(14, 14, 14)
+                    BackgroundColor3 = rgb(14, 14, 18);
                 });
                 
                 library:create( "UIPadding" , {
@@ -574,7 +574,7 @@
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "tab_button_holder" ];
-                    Padding = dim(0, 8);
+                    Padding = dim(0, 10);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     HorizontalAlignment = Enum.HorizontalAlignment.Center;
                 });
@@ -582,11 +582,11 @@
                 items[ "page_holder" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
                     Name = "\0";
-                    Position = dim2(0, 74, 0, 45);
+                    Position = dim2(0, 96, 0, 45);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -74, 1, -45);
+                    Size = dim2(1, -96, 1, -45);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(12, 12, 12)
+                    BackgroundColor3 = rgb(12, 12, 16);
                 });
 
                 items[ "tab_tooltip" ] = library:create( "Frame" , {
@@ -594,8 +594,8 @@
                     Name = "TabTooltip";
                     Visible = false;
                     ZIndex = 300;
-                    BackgroundColor3 = rgb(15, 15, 15);
-                    BorderColor3 = rgb(45, 45, 45);
+                    BackgroundColor3 = rgb(18, 18, 24);
+                    BorderColor3 = rgb(45, 45, 60);
                     BorderSizePixel = 1;
                     AutomaticSize = Enum.AutomaticSize.XY;
                 });
@@ -697,7 +697,7 @@
                 -- properties
                 name = prop_is_string and properties or (type(properties) == "table" and (properties.name or properties.Name)) or "visuals"; 
                 icon = (type(properties) == "table" and (properties.icon or properties.Icon)) or "http://www.roblox.com/asset/?id=6034767608";
-                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 50;
+                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 68;
                 
                 items = {};
             } 
@@ -708,13 +708,13 @@
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
                         Text = "";
-                        Size = dim2(0, 52, 0, 52);
+                        Size = dim2(0, 76, 0, 76);
                         BorderSizePixel = 0;
                         AutoButtonColor = false;
                     });
                     
                     items[ "image" ] = library:create( "ImageLabel" , {
-                        ImageColor3 = rgb(120, 120, 120);
+                        ImageColor3 = rgb(135, 135, 150);
                         Active = false;
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
@@ -733,7 +733,7 @@
                     -- Tooltip and hover interactions
                     items[ "tab_button" ].MouseEnter:Connect(function()
                         if not (self.selected_tab and self.selected_tab[ 2 ] == items.tab) then
-                            library:tween(items.image, {ImageColor3 = rgb(200, 200, 200)}, Enum.EasingStyle.Quad, 0.15)
+                            library:tween(items.image, {ImageColor3 = rgb(220, 220, 235)}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
                         local tip_text = self.items[ "tab_tooltip_text" ]
@@ -742,14 +742,14 @@
                             local btn_pos = items[ "tab_button" ].AbsolutePosition
                             local win_pos = self.items[ "window" ].AbsolutePosition
                             local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 10
-                            tip.Position = dim2(0, 78, 0, rel_y)
+                            tip.Position = dim2(0, 102, 0, rel_y)
                             tip.Visible = true
                         end
                     end)
 
                     items[ "tab_button" ].MouseLeave:Connect(function()
                         if not (self.selected_tab and self.selected_tab[ 2 ] == items.tab) then
-                            library:tween(items.image, {ImageColor3 = rgb(120, 120, 120)}, Enum.EasingStyle.Quad, 0.15)
+                            library:tween(items.image, {ImageColor3 = rgb(135, 135, 150)}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
                         if tip then
@@ -3005,28 +3005,32 @@
                     Parent = self.items[ "elements" ];
                     Name = "\0";
                     AutoButtonColor = false;
-                    BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 0, 18);
+                    BackgroundColor3 = rgb(16, 16, 22);
+                    BorderColor3 = rgb(32, 32, 42);
+                    BorderSizePixel = 1;
+                    BackgroundTransparency = 0;
+                    Size = dim2(1, 0, 0, 36);
                     Text = "";
-                    BorderSizePixel = 0;
                 });
 
                 items[ "avatar" ] = library:create( "ImageLabel" , {
                     Parent = items[ "card" ];
-                    Size = dim2(0, 14, 0, 14);
-                    Position = dim2(0, 2, 0.5, -7);
-                    BackgroundTransparency = 1;
-                    BorderSizePixel = 0;
-                    Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(cfg.user_id) .. "&w=48&h=48";
+                    Size = dim2(0, 28, 0, 28);
+                    Position = dim2(0, 4, 0.5, -14);
+                    BackgroundColor3 = rgb(10, 10, 14);
+                    BorderColor3 = rgb(40, 40, 52);
+                    BorderSizePixel = 1;
+                    Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(cfg.user_id) .. "&w=100&h=100";
                 });
 
+                local initialText = cfg.display_name ~= "" and (cfg.display_name .. " <font color=\"#888899\">(@" .. cfg.name .. ")</font>") or cfg.name
                 items[ "display_label" ] = library:create( "TextLabel" , {
                     Parent = items[ "card" ];
-                    Size = dim2(1, -22, 1, 0);
-                    Position = dim2(0, 22, 0, 0);
+                    Size = dim2(1, -38, 1, 0);
+                    Position = dim2(0, 38, 0, 0);
                     BackgroundTransparency = 1;
-                    Text = cfg.display_name ~= "" and cfg.display_name or cfg.name;
-                    TextColor3 = rgb(180, 180, 180);
+                    Text = initialText;
+                    TextColor3 = rgb(210, 210, 220);
                     TextXAlignment = Enum.TextXAlignment.Left;
                     FontFace = library.font;
                     TextSize = 11;
@@ -3037,18 +3041,29 @@
 
                 items["card"].MouseButton1Click:Connect(function()
                     cfg.callback()
-                    library:tween(items["display_label"], {TextColor3 = rgb(255, 255, 255)})
+                    library:tween(items["card"], {BackgroundColor3 = rgb(30, 30, 42), BorderColor3 = rgb(70, 70, 95)})
+                    task.delay(0.15, function()
+                        library:tween(items["card"], {BackgroundColor3 = rgb(22, 22, 30), BorderColor3 = rgb(45, 45, 60)})
+                    end)
                 end)
                 items["card"].MouseEnter:Connect(function()
+                    library:tween(items["card"], {BackgroundColor3 = rgb(22, 22, 30), BorderColor3 = rgb(50, 50, 68)})
                     library:tween(items["display_label"], {TextColor3 = rgb(255, 255, 255)})
                 end)
                 items["card"].MouseLeave:Connect(function()
-                    library:tween(items["display_label"], {TextColor3 = rgb(180, 180, 180)})
+                    library:tween(items["card"], {BackgroundColor3 = rgb(16, 16, 22), BorderColor3 = rgb(32, 32, 42)})
+                    library:tween(items["display_label"], {TextColor3 = rgb(210, 210, 220)})
                 end)
             end
             function cfg:SetText(text)
                 if items["display_label"] then
                     items["display_label"].Text = tostring(text or cfg.name)
+                end
+            end
+            function cfg:SetUserId(userId)
+                cfg.user_id = userId
+                if items["avatar"] then
+                    items["avatar"].Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(userId or 1) .. "&w=100&h=100"
                 end
             end
             cfg.set = cfg.SetText
