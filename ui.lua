@@ -463,7 +463,7 @@
                 -- Properties
                 name = properties.name or properties.Name or "nebula";
                 size = properties.size or properties.Size or dim2(0, 650, 0, 400);
-                logo = properties.logo or properties.Logo or "rbxassetid://128155293790451";
+                logo = (properties.logo ~= false and properties.logo) or (properties.Logo ~= false and properties.Logo) or nil;
 
                 selected_tab;
                 items = {};
@@ -507,22 +507,25 @@
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
                 
-                items[ "logo" ] = library:create( "ImageLabel" , {
-                    BorderColor3 = rgb(0, 0, 0);
-                    Parent = items[ "top_frame" ];
-                    Name = "\0";
-                    Image = cfg.logo;
-                    BackgroundTransparency = 1;
-                    Position = dim2(0, 16, 0, 7);
-                    Size = dim2(0, 32, 0, 32);
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(255, 255, 255)
-                });
+                if cfg.logo and cfg.logo ~= "" then
+                    items[ "logo" ] = library:create( "ImageLabel" , {
+                        BorderColor3 = rgb(0, 0, 0);
+                        Parent = items[ "top_frame" ];
+                        Name = "\0";
+                        Image = cfg.logo;
+                        BackgroundTransparency = 1;
+                        Position = dim2(0, 16, 0, 7);
+                        Size = dim2(0, 32, 0, 32);
+                        BorderSizePixel = 0;
+                        BackgroundColor3 = rgb(255, 255, 255)
+                    });
+                end
                 
                 items[ "ui_title" ] = library:create( "TextLabel" , {
                     FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal);
-                    TextColor3 = rgb(255, 255, 255);
-                    TextStrokeColor3 = rgb(255, 255, 255);
+                    TextColor3 = rgb(235, 235, 235);
+                    TextStrokeColor3 = rgb(0, 0, 0);
+                    TextStrokeTransparency = 0.8;
                     Text = cfg.name;
                     Parent = items[ "top_frame" ];
                     Name = "\0";
@@ -530,8 +533,17 @@
                     Size = dim2(1, 0, 1, 0);
                     BorderSizePixel = 0;
                     BorderColor3 = rgb(0, 0, 0);
-                    TextSize = 35;
+                    TextSize = 22;
                     BackgroundColor3 = rgb(255, 255, 255)
+                });
+                
+                items[ "top_divider" ] = library:create( "Frame" , {
+                    Parent = items[ "top_frame" ];
+                    Name = "\0";
+                    Position = dim2(0, 0, 1, -1);
+                    Size = dim2(1, 0, 0, 1);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(26, 26, 26);
                 });
                 
                 items[ "inline" ] = library:create( "Frame" , {
@@ -556,12 +568,13 @@
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 22)
+                    PaddingTop = dim(0, 12);
+                    PaddingBottom = dim(0, 12);
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "tab_button_holder" ];
-                    Padding = dim(0, 18);
+                    Padding = dim(0, 8);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     HorizontalAlignment = Enum.HorizontalAlignment.Center;
                 });
@@ -574,7 +587,44 @@
                     Size = dim2(1, -74, 1, -45);
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(12, 12, 12)
-                });                
+                });
+
+                items[ "tab_tooltip" ] = library:create( "Frame" , {
+                    Parent = items[ "window" ];
+                    Name = "TabTooltip";
+                    Visible = false;
+                    ZIndex = 300;
+                    BackgroundColor3 = rgb(18, 18, 18);
+                    BorderSizePixel = 0;
+                    AutomaticSize = Enum.AutomaticSize.XY;
+                });
+                library:create( "UICorner" , {
+                    Parent = items[ "tab_tooltip" ];
+                    CornerRadius = dim(0, 6);
+                });
+                library:create( "UIStroke" , {
+                    Parent = items[ "tab_tooltip" ];
+                    Color = rgb(45, 45, 45);
+                    Thickness = 1;
+                });
+                library:create( "UIPadding" , {
+                    Parent = items[ "tab_tooltip" ];
+                    PaddingTop = dim(0, 5);
+                    PaddingBottom = dim(0, 5);
+                    PaddingLeft = dim(0, 9);
+                    PaddingRight = dim(0, 9);
+                });
+                items[ "tab_tooltip_text" ] = library:create( "TextLabel" , {
+                    Parent = items[ "tab_tooltip" ];
+                    BackgroundTransparency = 1;
+                    TextColor3 = rgb(245, 245, 245);
+                    FontFace = library.font or Font.fromEnum(Enum.Font.GothamMedium);
+                    TextSize = 12;
+                    Text = "";
+                    BorderSizePixel = 0;
+                    AutomaticSize = Enum.AutomaticSize.XY;
+                    ZIndex = 301;
+                });
             end 
 
             do -- Other
@@ -606,6 +656,10 @@
 
                 if bool then 
                     items[ "window" ].Visible = true
+                else
+                    if items[ "tab_tooltip" ] then
+                        items[ "tab_tooltip" ].Visible = false
+                    end
                 end
 
                 local Children = items[ "window" ]:GetDescendants()
@@ -633,15 +687,25 @@
                     items[ "window" ].Visible = bool
                 end)
             end 
+
+            function cfg:SetVisible(bool)
+                cfg.toggle_menu(bool)
+            end
+            function cfg:SetOpen(bool)
+                cfg.toggle_menu(bool)
+            end
+            cfg.Main = items[ "window" ]
                 
             return setmetatable(cfg, library)
         end 
 
         function library:Tab(properties)
+            local prop_is_string = type(properties) == "string"
             local cfg = {
                 -- properties
-                name = properties.name or properties.Name or "visuals"; 
-                icon = properties.icon or properties.Icon or "http://www.roblox.com/asset/?id=6034767608";
+                name = prop_is_string and properties or (type(properties) == "table" and (properties.name or properties.Name)) or "visuals"; 
+                icon = (type(properties) == "table" and (properties.icon or properties.Icon)) or "http://www.roblox.com/asset/?id=6034767608";
+                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 50;
                 
                 items = {};
             } 
@@ -652,29 +716,77 @@
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
                         Text = "";
-                        Size = dim2(1, 0, 0, 0);
+                        Size = dim2(0, 52, 0, 52);
                         BorderColor3 = rgb(0, 0, 0);
                         BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.Y;
-                        BackgroundColor3 = rgb(255, 255, 255)
+                        BackgroundColor3 = rgb(25, 25, 25);
+                        AutoButtonColor = false;
+                    });
+
+                    library:create( "UICorner" , {
+                        Parent = items[ "tab_button" ];
+                        CornerRadius = dim(0, 8);
+                    });
+
+                    items[ "indicator" ] = library:create( "Frame" , {
+                        Parent = items[ "tab_button" ];
+                        Position = dim2(0, -6, 0.5, 0);
+                        AnchorPoint = vec2(0, 0.5);
+                        Size = dim2(0, 3, 0, 0);
+                        BorderSizePixel = 0;
+                        BackgroundColor3 = rgb(255, 255, 255);
+                        BackgroundTransparency = 1;
+                    });
+                    library:create( "UICorner" , {
+                        Parent = items[ "indicator" ];
+                        CornerRadius = dim(0, 2);
                     });
                     
                     items[ "image" ] = library:create( "ImageLabel" , {
-                        ImageColor3 = rgb(128, 128, 128);
-                        Active = true;
+                        ImageColor3 = rgb(120, 120, 120);
+                        Active = false;
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(0, 42, 0, 42);
-                        AnchorPoint = vec2(0.5, 0);
+                        Size = dim2(0, cfg.icon_size, 0, cfg.icon_size);
+                        AnchorPoint = vec2(0.5, 0.5);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
-                        Position = dim2(0.5, 0, 0, 0);
-                        Selectable = true;
+                        Position = dim2(0.5, 0, 0.5, 0);
+                        Selectable = false;
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255);
                         ScaleType = Enum.ScaleType.Fit;
                     });                       
+
+                    -- Tooltip and hover interactions
+                    items[ "tab_button" ].MouseEnter:Connect(function()
+                        if not (self.selected_tab and self.selected_tab[ 3 ] == items.tab_button) then
+                            library:tween(items.tab_button, {BackgroundTransparency = 0.6}, Enum.EasingStyle.Quad, 0.15)
+                            library:tween(items.image, {ImageColor3 = rgb(200, 200, 200)}, Enum.EasingStyle.Quad, 0.15)
+                        end
+                        local tip = self.items[ "tab_tooltip" ]
+                        local tip_text = self.items[ "tab_tooltip_text" ]
+                        if tip and tip_text then
+                            tip_text.Text = cfg.name
+                            local btn_pos = items[ "tab_button" ].AbsolutePosition
+                            local win_pos = self.items[ "window" ].AbsolutePosition
+                            local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 12
+                            tip.Position = dim2(0, 78, 0, rel_y)
+                            tip.Visible = true
+                        end
+                    end)
+
+                    items[ "tab_button" ].MouseLeave:Connect(function()
+                        if not (self.selected_tab and self.selected_tab[ 3 ] == items.tab_button) then
+                            library:tween(items.tab_button, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
+                            library:tween(items.image, {ImageColor3 = rgb(120, 120, 120)}, Enum.EasingStyle.Quad, 0.15)
+                        end
+                        local tip = self.items[ "tab_tooltip" ]
+                        if tip then
+                            tip.Visible = false
+                        end
+                    end)
                 -- 
 
                 -- SubTab layout setup
@@ -692,16 +804,16 @@
                 library:create( "UIListLayout" , {
                     FillDirection = Enum.FillDirection.Vertical;
                     Parent = items[ "tab" ];
-                    Padding = dim(0, 8);
+                    Padding = dim(0, 22);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                 });
                 
                 library:create( "UIPadding" , {
-                    PaddingTop = dim(0, 4);
-                    PaddingBottom = dim(0, 21);
+                    PaddingTop = dim(0, 16);
+                    PaddingBottom = dim(0, 16);
                     Parent = items[ "tab" ];
-                    PaddingRight = dim(0, 21);
-                    PaddingLeft = dim(0, 21)
+                    PaddingRight = dim(0, 20);
+                    PaddingLeft = dim(0, 20)
                 });     
 
                 items[ "subtab_holder" ] = library:create( "Frame" , {
@@ -709,7 +821,7 @@
                     BackgroundTransparency = 1;
                     Name = "\0";
                     Visible = false;
-                    Size = dim2(1, 0, 0, 16);
+                    Size = dim2(1, 0, 0, 20);
                     BorderSizePixel = 0;
                     LayoutOrder = 0;
                 });
@@ -717,7 +829,7 @@
                 library:create( "UIListLayout" , {
                     FillDirection = Enum.FillDirection.Horizontal;
                     Parent = items[ "subtab_holder" ];
-                    Padding = dim(0, 14);
+                    Padding = dim(0, 16);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                 });
 
@@ -725,8 +837,9 @@
                     Parent = items[ "tab" ];
                     BackgroundTransparency = 1;
                     Name = "\0";
-                    Size = dim2(1, 0, 1, -28);
+                    Size = dim2(1, 0, 1, -32);
                     BorderSizePixel = 0;
+                    LayoutOrder = 1;
                 });
 
                 -- Default main subtab (used if no subtabs are created)
@@ -769,18 +882,30 @@
                 local selected_tab = self.selected_tab
                 
                 if selected_tab then 
-                   selected_tab[ 1 ].ImageColor3 = rgb(128, 128, 128)
+                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(120, 120, 120)}, Enum.EasingStyle.Quad, 0.15)
+                   if selected_tab[ 3 ] then
+                       library:tween(selected_tab[ 3 ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
+                   end
+                   if selected_tab[ 4 ] then
+                       library:tween(selected_tab[ 4 ], {Size = dim2(0, 3, 0, 0), BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
+                   end
                    selected_tab[ 2 ].Parent = library.items
                    selected_tab[ 2 ].Visible = false
                 end
                 
-                items.image.ImageColor3 = rgb(255, 255, 255)
+                library:tween(items.image, {ImageColor3 = rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.15)
+                library:tween(items.tab_button, {BackgroundTransparency = 0.35}, Enum.EasingStyle.Quad, 0.15)
+                if items.indicator then
+                    library:tween(items.indicator, {Size = dim2(0, 3, 0, 24), BackgroundTransparency = 0}, Enum.EasingStyle.Quad, 0.15)
+                end
                 items.tab.Parent = self.items[ "page_holder" ]
                 items.tab.Visible = true
 
                 self.selected_tab = {
                     items.image;
                     items.tab;
+                    items.tab_button;
+                    items.indicator;
                 }
 
                 library:close_current_element(nil) 
@@ -799,6 +924,7 @@
                 }
                 
                 items[ "subtab_holder" ].Visible = true
+                items[ "subtab_content" ].Size = dim2(1, 0, 1, -74)
                 if cfg.default_subtab then
                     cfg.default_subtab:Destroy()
                     cfg.default_subtab = nil
@@ -810,9 +936,9 @@
                     Parent = items[ "subtab_holder" ];
                     BackgroundTransparency = 1;
                     Text = sub_cfg.name;
-                    TextColor3 = rgb(140, 140, 140);
+                    TextColor3 = rgb(130, 130, 130);
                     FontFace = subprops and (subprops.font or subprops.FontFace) or library.font or library.Font;
-                    TextSize = subprops and (subprops.size or subprops.TextSize) or 11;
+                    TextSize = subprops and (subprops.size or subprops.TextSize) or 12;
                     Size = dim2(0, 0, 1, 0);
                     AutomaticSize = Enum.AutomaticSize.X;
                     AutoButtonColor = false;
@@ -821,10 +947,14 @@
                 sub_items[ "subtab_indicator" ] = library:create( "Frame" , {
                     Parent = sub_items[ "subtab_btn" ];
                     BorderSizePixel = 0;
-                    Size = dim2(1, 0, 0, 1);
-                    Position = dim2(0, 0, 1, 1);
+                    Size = dim2(1, 0, 0, 2);
+                    Position = dim2(0, 0, 1, 2);
                     BackgroundColor3 = rgb(255, 255, 255);
                     BackgroundTransparency = 1;
+                });
+                library:create( "UICorner" , {
+                    Parent = sub_items[ "subtab_indicator" ];
+                    CornerRadius = dim(0, 1);
                 });
 
                 sub_items[ "subtab_content" ] = library:create( "Frame" , {
@@ -863,15 +993,15 @@
 
                 function sub_cfg.open_subtab()
                     if cfg.selected_subtab then
-                        cfg.selected_subtab.items[ "subtab_btn" ].TextColor3 = rgb(140, 140, 140)
+                        library:tween(cfg.selected_subtab.items[ "subtab_btn" ], {TextColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
                         if cfg.selected_subtab.items[ "subtab_indicator" ] then
-                            library:tween(cfg.selected_subtab.items[ "subtab_indicator" ], {BackgroundTransparency = 1})
+                            library:tween(cfg.selected_subtab.items[ "subtab_indicator" ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
                         end
                         cfg.selected_subtab.items[ "subtab_content" ].Visible = false
                     end
-                    sub_items[ "subtab_btn" ].TextColor3 = rgb(255, 255, 255)
+                    library:tween(sub_items[ "subtab_btn" ], {TextColor3 = rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.15)
                     if sub_items[ "subtab_indicator" ] then
-                        library:tween(sub_items[ "subtab_indicator" ], {BackgroundTransparency = 0})
+                        library:tween(sub_items[ "subtab_indicator" ], {BackgroundTransparency = 0}, Enum.EasingStyle.Quad, 0.15)
                     end
                     sub_items[ "subtab_content" ].Visible = true
                     cfg.selected_subtab = sub_cfg
@@ -879,13 +1009,13 @@
 
                 sub_items[ "subtab_btn" ].MouseEnter:Connect(function()
                     if cfg.selected_subtab ~= sub_cfg then
-                        sub_items[ "subtab_btn" ].TextColor3 = rgb(190, 190, 190)
+                        library:tween(sub_items[ "subtab_btn" ], {TextColor3 = rgb(200, 200, 200)}, Enum.EasingStyle.Quad, 0.15)
                     end
                 end)
 
                 sub_items[ "subtab_btn" ].MouseLeave:Connect(function()
                     if cfg.selected_subtab ~= sub_cfg then
-                        sub_items[ "subtab_btn" ].TextColor3 = rgb(140, 140, 140)
+                        library:tween(sub_items[ "subtab_btn" ], {TextColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
                     end
                 end)
 
@@ -3104,21 +3234,29 @@
                 watermark_obj = library:create("TextLabel", {
                     Parent = library.other;
                     Position = dim2(0, 20, 0, 20);
-                    Size = dim2(0, 0, 0, 20);
+                    Size = dim2(0, 0, 0, 22);
                     AutomaticSize = Enum.AutomaticSize.X;
                     Text = " " .. text .. " ";
-                    TextColor3 = rgb(255, 255, 255);
-                    BackgroundColor3 = rgb(15, 15, 15);
-                    BorderColor3 = rgb(255, 255, 255);
-                    BorderSizePixel = 1;
+                    TextColor3 = rgb(235, 235, 235);
+                    BackgroundColor3 = rgb(18, 18, 18);
+                    BorderSizePixel = 0;
                     FontFace = library.font;
-                    TextSize = 13;
+                    TextSize = 12;
                     TextXAlignment = Enum.TextXAlignment.Left;
+                })
+                library:create("UICorner", {
+                    Parent = watermark_obj;
+                    CornerRadius = dim(0, 4);
+                })
+                library:create("UIStroke", {
+                    Parent = watermark_obj;
+                    Color = rgb(45, 45, 45);
+                    Thickness = 1;
                 })
                 library:create("UIPadding", {
                     Parent = watermark_obj;
-                    PaddingLeft = dim(0, 6);
-                    PaddingRight = dim(0, 6);
+                    PaddingLeft = dim(0, 8);
+                    PaddingRight = dim(0, 8);
                 })
             else
                 watermark_obj.Text = " " .. text .. " "
