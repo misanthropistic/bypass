@@ -828,7 +828,7 @@
                         cfg.selected_subtab.items[ "subtab_btn" ].TextColor3 = rgb(128, 128, 128)
                         cfg.selected_subtab.items[ "subtab_content" ].Visible = false
                     end
-                    sub_items[ "subtab_btn" ].TextColor3 = library.theme.accent
+                    sub_items[ "subtab_btn" ].TextColor3 = rgb(255, 255, 255)
                     sub_items[ "subtab_content" ].Visible = true
                     cfg.selected_subtab = sub_cfg
                 end
@@ -2806,7 +2806,7 @@
                     Text = " " .. text .. " ";
                     TextColor3 = rgb(255, 255, 255);
                     BackgroundColor3 = rgb(15, 15, 15);
-                    BorderColor3 = library.theme.accent;
+                    BorderColor3 = rgb(255, 255, 255);
                     BorderSizePixel = 1;
                     Font = Enum.Font.GothamMedium;
                     TextSize = 13;
