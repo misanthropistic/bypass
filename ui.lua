@@ -1890,8 +1890,13 @@
             end 
 
             function cfg.set(text)
-                items.text.Text = text
+                items.text.Text = tostring(text or "")
             end
+            function cfg:SetText(text)
+                local str = (type(self) == "table") and text or self
+                items.text.Text = tostring(str or "")
+            end
+            cfg.Set = cfg.SetText
 
             function cfg:SetVisibility(state)
                 if state == nil and type(self) == "boolean" then state = self end
@@ -1902,6 +1907,12 @@
             end
             cfg.set_visible = cfg.SetVisibility
             cfg.SetVisiblity = cfg.SetVisibility
+
+            function cfg:Destroy()
+                if items[ "object" ] then
+                    items[ "object" ]:Destroy()
+                end
+            end
 
             return setmetatable(cfg, library)
         end 
@@ -2963,6 +2974,7 @@
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
                     TextSize = 10;
+                    RichText = true;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -2993,6 +3005,27 @@
             end
             cfg.set_visible = cfg.SetVisibility
             cfg.SetVisiblity = cfg.SetVisibility
+
+            function cfg:SetText(text)
+                cfg.name = tostring(text or "")
+                if items[ "button_text" ] then
+                    items[ "button_text" ].Text = cfg.name
+                end
+            end
+            cfg.set = cfg.SetText
+            cfg.Set = cfg.SetText
+
+            function cfg:SetState(boolState)
+                if items[ "button_text" ] then
+                    items[ "button_text" ].TextColor3 = boolState and rgb(255, 255, 255) or rgb(178, 178, 178)
+                end
+            end
+
+            function cfg:Destroy()
+                if items[ "button" ] then
+                    items[ "button" ]:Destroy()
+                end
+            end
             
             return setmetatable(cfg, library)
         end
