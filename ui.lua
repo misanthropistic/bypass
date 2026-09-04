@@ -462,7 +462,7 @@
             local cfg = { 
                 -- Properties
                 name = properties.name or properties.Name or "nebula";
-                size = properties.size or properties.Size or dim2(0, 720, 0, 540);
+                size = properties.size or properties.Size or dim2(0, 650, 0, 400);
                 logo = (properties.logo ~= false and properties.logo) or (properties.Logo ~= false and properties.Logo) or nil;
 
                 selected_tab;
