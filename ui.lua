@@ -2550,6 +2550,8 @@
 
             return setmetatable(cfg, library)
         end
+        library.TextBox = library.Textbox
+        library.textbox = library.Textbox
 
         function library:Keybind(options) 
             local init_key = options.key or options.Key or options.default or options.Default
@@ -3182,6 +3184,7 @@
     --
     -- Watermark library
         local watermark_obj = nil
+        local watermark_visible = true
         function library:Watermark(text)
             if not watermark_obj then
                 watermark_obj = library:create("TextLabel", {
@@ -3197,18 +3200,65 @@
                     FontFace = library.font;
                     TextSize = 12;
                     TextXAlignment = Enum.TextXAlignment.Left;
+                    Active = true;
+                    Selectable = true;
                 })
                 library:create("UIPadding", {
                     Parent = watermark_obj;
                     PaddingLeft = dim(0, 6);
                     PaddingRight = dim(0, 6);
                 })
+
+                -- Draggable Watermark
+                local dragging = false
+                local drag_start = nil
+                local start_pos = nil
+
+                watermark_obj.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        dragging = true
+                        drag_start = input.Position
+                        start_pos = watermark_obj.Position
+                    end
+                end)
+
+                watermark_obj.InputEnded:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        dragging = false
+                    end
+                end)
+
+                library:connection(uis.InputChanged, function(input)
+                    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                        local delta = input.Position - drag_start
+                        watermark_obj.Position = UDim2.new(
+                            start_pos.X.Scale,
+                            start_pos.X.Offset + delta.X,
+                            start_pos.Y.Scale,
+                            start_pos.Y.Offset + delta.Y
+                        )
+                    end
+                end)
             else
                 watermark_obj.Text = " " .. text .. " "
             end
+
+            watermark_obj.Visible = (watermark_visible == true)
+
             return {
-                SetText = function(self, t) watermark_obj.Text = " " .. t .. " " end,
-                SetVisibility = function(self, v) watermark_obj.Visible = v end
+                Object = watermark_obj,
+                SetText = function(self, t)
+                    if watermark_obj then
+                        watermark_obj.Text = " " .. t .. " "
+                        watermark_obj.Visible = (watermark_visible == true)
+                    end
+                end,
+                SetVisibility = function(self, v)
+                    watermark_visible = (v == true)
+                    if watermark_obj then
+                        watermark_obj.Visible = watermark_visible
+                    end
+                end
             }
         end
     --
