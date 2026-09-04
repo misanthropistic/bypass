@@ -75,80 +75,87 @@
     library.themes = {
         ["Classic"] = {
             Accent = rgb(255, 255, 255),
-            WindowBg = rgb(0, 0, 0),
-            TopFrameBg = rgb(0, 0, 0),
-            InlineBg = rgb(8, 8, 8),
-            PageHolderBg = rgb(8, 8, 8),
+            WindowBg = rgb(10, 10, 10),
+            TopFrameBg = rgb(14, 14, 14),
+            InlineBg = rgb(10, 10, 10),
+            PageHolderBg = rgb(10, 10, 10),
             Text = rgb(235, 235, 235),
             SubText = rgb(178, 178, 178),
-            Border = rgb(26, 26, 26),
-            ToggleActive = rgb(255, 255, 255)
+            Border = rgb(40, 40, 40),
+            ToggleActive = rgb(220, 220, 220),
+            AccentGradient = { rgbkey(0, rgb(255, 255, 255)), rgbkey(1, rgb(160, 160, 160)) }
         },
         ["Red"] = {
             Accent = rgb(235, 55, 55),
-            WindowBg = rgb(8, 0, 0),
-            TopFrameBg = rgb(15, 2, 2),
-            InlineBg = rgb(12, 4, 4),
-            PageHolderBg = rgb(12, 4, 4),
-            Text = rgb(255, 220, 220),
-            SubText = rgb(200, 140, 140),
-            Border = rgb(60, 20, 20),
-            ToggleActive = rgb(235, 55, 55)
+            WindowBg = rgb(12, 6, 6),
+            TopFrameBg = rgb(20, 10, 10),
+            InlineBg = rgb(14, 7, 7),
+            PageHolderBg = rgb(14, 7, 7),
+            Text = rgb(255, 230, 230),
+            SubText = rgb(210, 160, 160),
+            Border = rgb(80, 25, 25),
+            ToggleActive = rgb(235, 55, 55),
+            AccentGradient = { rgbkey(0, rgb(255, 80, 80)), rgbkey(1, rgb(160, 20, 20)) }
         },
         ["Blood"] = {
             Accent = rgb(180, 0, 0),
-            WindowBg = rgb(5, 0, 0),
-            TopFrameBg = rgb(10, 0, 0),
-            InlineBg = rgb(8, 2, 2),
-            PageHolderBg = rgb(8, 2, 2),
-            Text = rgb(240, 180, 180),
-            SubText = rgb(160, 90, 90),
-            Border = rgb(80, 10, 10),
-            ToggleActive = rgb(180, 0, 0)
+            WindowBg = rgb(8, 2, 2),
+            TopFrameBg = rgb(16, 4, 4),
+            InlineBg = rgb(10, 3, 3),
+            PageHolderBg = rgb(10, 3, 3),
+            Text = rgb(240, 190, 190),
+            SubText = rgb(170, 100, 100),
+            Border = rgb(90, 15, 15),
+            ToggleActive = rgb(180, 0, 0),
+            AccentGradient = { rgbkey(0, rgb(200, 20, 20)), rgbkey(1, rgb(100, 0, 0)) }
         },
         ["Galaxy"] = {
-            Accent = rgb(140, 70, 255),
-            WindowBg = rgb(6, 4, 15),
-            TopFrameBg = rgb(10, 6, 25),
-            InlineBg = rgb(10, 8, 20),
-            PageHolderBg = rgb(10, 8, 20),
-            Text = rgb(230, 220, 255),
-            SubText = rgb(160, 145, 200),
-            Border = rgb(45, 30, 80),
-            ToggleActive = rgb(150, 80, 255)
+            Accent = rgb(160, 90, 255),
+            WindowBg = rgb(8, 6, 18),
+            TopFrameBg = rgb(15, 10, 30),
+            InlineBg = rgb(11, 8, 22),
+            PageHolderBg = rgb(11, 8, 22),
+            Text = rgb(235, 225, 255),
+            SubText = rgb(175, 155, 215),
+            Border = rgb(65, 40, 105),
+            ToggleActive = rgb(160, 90, 255),
+            AccentGradient = { rgbkey(0, rgb(180, 110, 255)), rgbkey(1, rgb(100, 40, 180)) }
         },
         ["Purple"] = {
-            Accent = rgb(185, 80, 255),
-            WindowBg = rgb(12, 4, 18),
-            TopFrameBg = rgb(18, 6, 28),
-            InlineBg = rgb(14, 6, 22),
-            PageHolderBg = rgb(14, 6, 22),
-            Text = rgb(245, 225, 255),
-            SubText = rgb(180, 145, 210),
-            Border = rgb(65, 25, 95),
-            ToggleActive = rgb(185, 80, 255)
+            Accent = rgb(195, 90, 255),
+            WindowBg = rgb(14, 6, 20),
+            TopFrameBg = rgb(24, 10, 32),
+            InlineBg = rgb(16, 7, 24),
+            PageHolderBg = rgb(16, 7, 24),
+            Text = rgb(245, 230, 255),
+            SubText = rgb(190, 155, 220),
+            Border = rgb(80, 35, 115),
+            ToggleActive = rgb(195, 90, 255),
+            AccentGradient = { rgbkey(0, rgb(215, 120, 255)), rgbkey(1, rgb(130, 40, 190)) }
         },
         ["Ice Mode"] = {
-            Accent = rgb(80, 200, 255),
-            WindowBg = rgb(2, 10, 16),
-            TopFrameBg = rgb(4, 16, 26),
-            InlineBg = rgb(5, 12, 20),
-            PageHolderBg = rgb(5, 12, 20),
-            Text = rgb(220, 245, 255),
-            SubText = rgb(135, 185, 210),
-            Border = rgb(25, 60, 90),
-            ToggleActive = rgb(80, 200, 255)
+            Accent = rgb(0, 190, 255),
+            WindowBg = rgb(4, 12, 18),
+            TopFrameBg = rgb(8, 20, 30),
+            InlineBg = rgb(6, 14, 22),
+            PageHolderBg = rgb(6, 14, 22),
+            Text = rgb(225, 248, 255),
+            SubText = rgb(145, 195, 220),
+            Border = rgb(35, 75, 110),
+            ToggleActive = rgb(0, 190, 255),
+            AccentGradient = { rgbkey(0, rgb(80, 220, 255)), rgbkey(1, rgb(0, 130, 190)) }
         },
         ["Yellow"] = {
-            Accent = rgb(255, 215, 0),
-            WindowBg = rgb(14, 12, 2),
-            TopFrameBg = rgb(22, 18, 4),
-            InlineBg = rgb(16, 14, 4),
-            PageHolderBg = rgb(16, 14, 4),
-            Text = rgb(255, 250, 220),
-            SubText = rgb(200, 185, 130),
-            Border = rgb(75, 65, 15),
-            ToggleActive = rgb(255, 215, 0)
+            Accent = rgb(255, 200, 0),
+            WindowBg = rgb(16, 14, 4),
+            TopFrameBg = rgb(26, 22, 6),
+            InlineBg = rgb(18, 15, 5),
+            PageHolderBg = rgb(18, 15, 5),
+            Text = rgb(255, 252, 225),
+            SubText = rgb(210, 195, 140),
+            Border = rgb(90, 78, 20),
+            ToggleActive = rgb(255, 200, 0),
+            AccentGradient = { rgbkey(0, rgb(255, 220, 50)), rgbkey(1, rgb(180, 140, 0)) }
         }
     }
     library.current_theme_name = "Classic"
@@ -163,7 +170,12 @@
             local items = library.window_obj.items
             if items["window"] then items["window"].BackgroundColor3 = t.WindowBg end
             if items["top_frame"] then items["top_frame"].BackgroundColor3 = t.TopFrameBg end
-            if items["top_divider"] then items["top_divider"].BackgroundColor3 = t.Border end
+            if items["top_divider"] then 
+                items["top_divider"].BackgroundColor3 = t.Accent
+            end
+            if items["top_divider_glow"] then
+                items["top_divider_glow"].BackgroundColor3 = t.Accent
+            end
             if items["inline"] then items["inline"].BackgroundColor3 = t.InlineBg end
             if items["page_holder"] then items["page_holder"].BackgroundColor3 = t.PageHolderBg end
             if items["ui_title"] then items["ui_title"].TextColor3 = t.Text end
@@ -638,10 +650,16 @@
                 items[ "top_divider" ] = library:create( "Frame" , {
                     Parent = items[ "top_frame" ];
                     Name = "\0";
-                    Position = dim2(0, 0, 1, -1);
-                    Size = dim2(1, 0, 0, 1);
+                    Position = dim2(0, 0, 1, -2);
+                    Size = dim2(1, 0, 0, 2);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(26, 26, 26);
+                    BackgroundColor3 = rgb(255, 255, 255);
+                });
+                
+                library:create( "UIGradient" , {
+                    Rotation = 0;
+                    Parent = items[ "top_divider" ];
+                    Color = rgbseq{rgbkey(0, rgb(255, 255, 255)), rgbkey(0.5, rgb(180, 180, 180)), rgbkey(1, rgb(255, 255, 255))}
                 });
                 
                 items[ "inline" ] = library:create( "Frame" , {
@@ -1409,10 +1427,13 @@
 
             function cfg.set(bool)
                 cfg.enabled = bool
-                library:tween(items[ "text" ], {TextColor3 = bool and rgb(255, 255, 255) or rgb(178, 178, 178)})
+                local curTheme = library.current_theme
+                local activeCol = (curTheme and curTheme.ToggleActive) or rgb(255, 255, 255)
+                local subCol = (curTheme and curTheme.SubText) or rgb(178, 178, 178)
+                library:tween(items[ "text" ], {TextColor3 = bool and activeCol or subCol})
                 library:tween(items[ "toggle_outline" ], {BackgroundTransparency = bool and 0 or 1})
                 library:tween(items[ "toggle_shading" ], {BackgroundTransparency = bool and 0 or 1})
-                library:tween(items[ "toggle_inline" ], {BackgroundColor3 = bool and rgb(255, 255, 255) or rgb(74, 74, 74)})
+                library:tween(items[ "toggle_inline" ], {BackgroundColor3 = bool and activeCol or rgb(54, 54, 54)})
 
                 if cfg.child_sliders then
                     for _, s in ipairs(cfg.child_sliders) do
