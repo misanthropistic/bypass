@@ -1,4 +1,4 @@
--- Variables 
+ 
     local uis = game:GetService("UserInputService") 
     local players = game:GetService("Players") 
     local ws = game:GetService("Workspace")
@@ -56,9 +56,9 @@
     local find = table.find 
     local remove = table.remove
     local concat = table.concat
--- 
+ 
 
--- Library init
+ Library init
     getgenv().library = {
         directory = "monolithhh",
         folders = {
@@ -192,7 +192,7 @@
     local config_flags = library.config_flags
     local notifications = library.notifications 
 
-    -- Font importing system 
+     Font importing system 
         if isfile(library.directory .. "/fonts/main.ttf") then 
             delfile(library.directory .. "/fonts/main.ttf")
         else 
@@ -217,11 +217,10 @@
         
         library.font = Font.new(getcustomasset(library.directory .. "/fonts/main_encoded.ttf"), Enum.FontWeight.Regular)
         library.Font = library.font
-    -- 
---
+     
 
--- Library functions 
-    -- Misc functions
+ Library functions 
+     Misc functions
         function library:tween(obj, properties, easing_style, time) 
             local tween = tween_service:Create(obj, TweenInfo.new(time or 0.25, easing_style or Enum.EasingStyle.Quint, Enum.EasingDirection.InOut, 0, false, 0), properties)
             tween:Play()
@@ -317,7 +316,7 @@
                         )
                     )
 
-                    -- library:tween(frame, {Size = current_size}, Enum.EasingStyle.Linear, 0.05) -- nobody will ntoice this aswell 👿
+                     library:tween(frame, {Size = current_size}, Enum.EasingStyle.Linear, 0.05)  nobody will ntoice this aswell 👿
                     frame.Size = current_size
                 end
             end)
@@ -495,7 +494,7 @@
         end
 
         function library:unload_menu() 
-            -- Safely disconnect all tracked signals/connections
+             Safely disconnect all tracked signals/connections
             if type(library.connections) == "table" then
                 for index, connection in pairs(library.connections) do 
                     pcall(function()
@@ -509,7 +508,7 @@
                 table.clear(library.connections)
             end
 
-            -- Destroy screen GUI instances
+             Destroy screen GUI instances
             if library[ "items" ] then 
                 pcall(function() library[ "items" ]:Destroy() end)
                 library[ "items" ] = nil
@@ -520,7 +519,7 @@
                 library[ "other" ] = nil
             end 
 
-            -- Clean up watermark if created
+             Clean up watermark if created
             pcall(function()
                 if watermark_obj then
                     watermark_obj:Destroy()
@@ -528,7 +527,7 @@
                 end
             end)
 
-            -- Clean up keybind list and custom cursor
+             Clean up keybind list and custom cursor
             pcall(function()
                 if library.cleanup_keybind_list then
                     library.cleanup_keybind_list()
@@ -540,7 +539,7 @@
                 end
             end)
 
-            -- Clean up notifications
+             Clean up notifications
             pcall(function()
                 if library.notifications and type(library.notifications.notifs) == "table" then
                     for _, notif in pairs(library.notifications.notifs) do
@@ -550,7 +549,7 @@
                 end
             end)
 
-            -- Clear active references and state
+             Clear active references and state
             library.window_obj = nil
             library.current = nil
             library.current_open = nil
@@ -559,12 +558,12 @@
         library.Unload = function(self) return library:unload_menu() end
         library.unload = function(self) return library:unload_menu() end
         library.unloadMenu = function(self) return library:unload_menu() end
-    --
     
-    -- Library element functions
+    
+     Library element functions
         function library:window(properties)
             local cfg = { 
-                -- Properties
+                 Properties
                 name = properties.name or properties.Name or "nebula";
                 size = properties.size or properties.Size or dim2(0, 760, 0, 460);
                 logo = (properties.logo ~= false and properties.logo) or (properties.Logo ~= false and properties.Logo) or nil;
@@ -740,7 +739,7 @@
                 });
             end 
 
-            do -- Other
+            do  Other
                 library:draggify(items[ "window" ])
                 if items[ "top_frame" ] then
                     library:draggify(items[ "top_frame" ], items[ "window" ])
@@ -822,7 +821,7 @@
         function library:Tab(properties)
             local prop_is_string = type(properties) == "string"
             local cfg = {
-                -- properties
+                 properties
                 name = prop_is_string and properties or (type(properties) == "table" and (properties.name or properties.Name)) or "visuals"; 
                 icon = (type(properties) == "table" and (properties.icon or properties.Icon)) or "http://www.roblox.com/asset/?id=6034767608";
                 icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 70;
@@ -831,7 +830,7 @@
             } 
 
             local items = cfg.items; do                
-                -- Tab buttons 
+                 Tab buttons 
                     local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
 
                     items[ "tab_button" ] = library:create( "TextButton" , {
@@ -860,9 +859,9 @@
                         ScaleType = Enum.ScaleType.Fit;
                         ZIndex = 7;
                     });                       
-                -- 
+                 
 
-                -- SubTab layout setup
+                 SubTab layout setup
                 items[ "tab" ] = library:create( "Frame" , {
                     Parent = library.items;
                     BackgroundTransparency = 1;
@@ -915,7 +914,7 @@
                     LayoutOrder = 1;
                 });
 
-                -- Default main subtab (used if no subtabs are created)
+                 Default main subtab (used if no subtabs are created)
                 cfg.default_subtab = library:create( "Frame" , {
                     Parent = items[ "subtab_content" ];
                     BackgroundTransparency = 1;
@@ -1394,21 +1393,21 @@
         
         function library:Slider(options) 
             local cfg = {
-                -- Options
+                 Options
                 name = options.name or options.Name or nil;
                 suffix = options.suffix or options.Suffix or "";
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺";
                 callback = options.callback or options.Callback or function() end; 
                 show_value = options.ShowValue or options.show_value or true; 
 
-                -- value settings
+                 value settings
                 min = options.min or options.minimum or options.Min or options.Minimum or 0;
                 max = options.max or options.maximum or options.Max or options.Maximum or 100;
                 intervals = options.interval or options.decimal or options.Interval or options.Decimal or 1;
                 default = options.default or options.Default or 10;
                 value = options.default or options.default or 10; 
 
-                -- ignore
+                 ignore
                 dragging = false;
                 items = {}
             } 
@@ -1595,14 +1594,14 @@
             local cfg = {
                 obj_type = "dropdown";
 
-                -- Options
+                 Options
                 name = options.name or options.Name or nil;
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺";
                 options = options.items or options.Items or {"1", "2", "3"};
                 callback = options.callback or options.Callback or function() end;
                 multi = options.multi or options.Multi or false;
 
-                -- Ignore these 
+                 Ignore these 
                 open = false;
                 option_instances = {};
                 multi_items = {};
@@ -1613,7 +1612,7 @@
             flags[cfg.flag] = cfg.default
             
             local items = cfg.items; do 
-                -- Element
+                 Element
                     items[ "object" ] = library:create( "Frame" , {
                         Parent = self.items.object or self.items.elements;
                         Name = "\0";
@@ -1706,9 +1705,9 @@
                         BorderSizePixel = 0;
                         BackgroundColor3 = rgb(255, 255, 255)
                     });
-                -- 
+                 
 
-                -- Element Holder
+                 Element Holder
                     items[ "dropdown_holder" ] = library:create( "Frame" , {
                         Parent = library.items;
                         Size = dim2(0, 110, 0, 0);
@@ -1752,7 +1751,7 @@
                         PaddingTop = dim(0, 3);
                         Parent = items[ "holder_shading" ]
                     });            
-                -- 
+                 
             end 
 
             function cfg.render_option(text)
@@ -1890,7 +1889,7 @@
             local cfg = {
                 name = options.Name or options.name or "Label",
 
-                -- ignore
+                 ignore
                 padding_top = options.PaddingTop or options.padding_top or 0;
                 padding_bottom = options.PaddingBottom or options.padding_bottom or 0;
 
@@ -1988,14 +1987,14 @@
             end
 
             local cfg = {
-                -- options
+                 options
                 name = options.name or options.Name or "", 
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺",
                 color = init_color,
                 alpha = init_alpha,
                 callback = options.callback or options.Callback or function() end,
 
-                -- ignore
+                 ignore
                 open = false, 
                 items = {};
             }
@@ -2010,7 +2009,7 @@
             flags[cfg.flag] = {Color = cfg.color, Transparency = cfg.alpha}
 
             local items = cfg.items; do 
-                -- Component
+                 Component
                 local parent_container = self.items.object or self.items.elements
                 local holder_parent = parent_container
 
@@ -2080,9 +2079,9 @@
                     BorderSizePixel = 0;
                     BackgroundColor3 = cfg.color;
                 });
-                --
                 
-                -- Colorpicker
+                
+                 Colorpicker
                     items[ "colorpicker_outline" ] = library:create( "Frame" , {
                         Parent = library.items;
                         Visible = false;
@@ -2376,7 +2375,7 @@
                         PaddingLeft = dim(0, 1);
                         Parent = items[ "title" ]
                     });                
-                --  
+                  
             end;
 
             function cfg.set_visible(bool) 
@@ -2985,11 +2984,11 @@
 
         function library:Button(options) 
             local cfg = {
-                -- options
+                 options
                 name = options.name or options.Name or "TextBox",
                 callback = options.callback or options.Callback or function() end,
 
-                -- ignore
+                 ignore
                 items = {};
             }
             
@@ -3240,12 +3239,12 @@
                 });
             end 
 
-            function cfg.refresh_options(options_to_refresh) -- ignore goofy parameter
+            function cfg.refresh_options(options_to_refresh)  ignore goofy parameter
                 for _,option in cfg.data_store do 
                     option:Destroy()
                 end
 
-                for _, option_data in options_to_refresh do -- haha u skids no next >_<
+                for _, option_data in options_to_refresh do  haha u skids no next >_<
                     local button = library:create( "TextButton" , {
                         FontFace = fonts.small;
                         TextColor3 = rgb(0, 0, 0);
@@ -3382,9 +3381,9 @@
                 library:notify("Deleted config: " .. name, 2)
             end})
         end
-    --
-    --
-    -- Watermark library
+    
+    
+     Watermark library
         local watermark_obj = nil
         local watermark_label = nil
         local watermark_visible = true
@@ -3443,7 +3442,7 @@
                     ZIndex = 4;
                 })
 
-                -- Draggable Watermark
+                 Draggable Watermark
                 local dragging = false
                 local drag_start = nil
                 local start_pos = nil
@@ -3498,9 +3497,9 @@
                 end
             }
         end
-    --
+    
 
-    -- Keybind list library
+     Keybind list library
         local keybind_list_obj = nil
         local keybind_list_visible = false
 
@@ -3598,7 +3597,7 @@
                 PaddingRight = dim(0, 8);
             })
 
-            -- Dragging
+             Dragging
             local kl_dragging = false
             local kl_drag_start = nil
             local kl_start_pos = nil
@@ -3728,7 +3727,7 @@
             end
         end
 
-        -- Custom Cursor
+         Custom Cursor
         local cursor_enabled = true
         local cursor_frame = nil
         local cursor_connection = nil
@@ -3755,8 +3754,8 @@
                     local len = 5
                     local thick = 1
 
-                    -- 4 sides: Top, Bottom, Left, Right
-                    -- Top arm
+                     4 sides: Top, Bottom, Left, Right
+                     Top arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Top";
@@ -3768,7 +3767,7 @@
                         ZIndex = 100001;
                     })
 
-                    -- Bottom arm
+                     Bottom arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Bottom";
@@ -3780,7 +3779,7 @@
                         ZIndex = 100001;
                     })
 
-                    -- Left arm
+                     Left arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Left";
@@ -3792,7 +3791,7 @@
                         ZIndex = 100001;
                     })
 
-                    -- Right arm
+                     Right arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Right";
@@ -3843,9 +3842,9 @@
             task.wait(0.1)
             pcall(function() library:SetCustomCursor(true) end)
         end)
-    --
+    
 
-    -- Notification library
+     Notification library
 		local notifications = library.notifications
 
 		function notifications:refresh_notifs() 
