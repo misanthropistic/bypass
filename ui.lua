@@ -67,7 +67,7 @@ return function()
         config_flags = {},
         connections = {},   
         notifications = {notifs = {}},
-        current_open; 
+        current_open,
     }
 
     local bwTheme = {
@@ -3691,7 +3691,7 @@ return function()
             end
         end
 
-         Custom Cursor
+        -- Custom Cursor
         local cursor_enabled = true
         local cursor_frame = nil
         local cursor_connection = nil
