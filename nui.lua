@@ -72,99 +72,29 @@
         current_open; 
     }
 
+    local yellowTheme = {
+        Accent = rgb(255, 215, 0),
+        WindowBg = rgb(10, 10, 10),
+        TopFrameBg = rgb(14, 14, 14),
+        InlineBg = rgb(12, 12, 12),
+        PageHolderBg = rgb(9, 9, 9),
+        Text = rgb(255, 255, 255),
+        SubText = rgb(180, 180, 180),
+        Border = rgb(42, 42, 42),
+        ToggleActive = rgb(255, 215, 0),
+        AccentGradient = { rgbkey(0, rgb(255, 230, 80)), rgbkey(0.5, rgb(255, 215, 0)), rgbkey(1, rgb(200, 150, 0)) }
+    }
+
     library.themes = {
-        ["Classic"] = {
-            Accent = rgb(255, 255, 255),
-            WindowBg = rgb(10, 10, 10),
-            TopFrameBg = rgb(14, 14, 14),
-            InlineBg = rgb(10, 10, 10),
-            PageHolderBg = rgb(10, 10, 10),
-            Text = rgb(235, 235, 235),
-            SubText = rgb(178, 178, 178),
-            Border = rgb(40, 40, 40),
-            ToggleActive = rgb(220, 220, 220),
-            AccentGradient = { rgbkey(0, rgb(255, 255, 255)), rgbkey(1, rgb(160, 160, 160)) }
-        },
-        ["Red"] = {
-            Accent = rgb(235, 55, 55),
-            WindowBg = rgb(12, 6, 6),
-            TopFrameBg = rgb(20, 10, 10),
-            InlineBg = rgb(14, 7, 7),
-            PageHolderBg = rgb(14, 7, 7),
-            Text = rgb(255, 230, 230),
-            SubText = rgb(210, 160, 160),
-            Border = rgb(80, 25, 25),
-            ToggleActive = rgb(235, 55, 55),
-            AccentGradient = { rgbkey(0, rgb(255, 80, 80)), rgbkey(1, rgb(160, 20, 20)) }
-        },
-        ["Blood"] = {
-            Accent = rgb(180, 0, 0),
-            WindowBg = rgb(8, 2, 2),
-            TopFrameBg = rgb(16, 4, 4),
-            InlineBg = rgb(10, 3, 3),
-            PageHolderBg = rgb(10, 3, 3),
-            Text = rgb(240, 190, 190),
-            SubText = rgb(170, 100, 100),
-            Border = rgb(90, 15, 15),
-            ToggleActive = rgb(180, 0, 0),
-            AccentGradient = { rgbkey(0, rgb(200, 20, 20)), rgbkey(1, rgb(100, 0, 0)) }
-        },
-        ["Galaxy"] = {
-            Accent = rgb(160, 90, 255),
-            WindowBg = rgb(8, 6, 18),
-            TopFrameBg = rgb(15, 10, 30),
-            InlineBg = rgb(11, 8, 22),
-            PageHolderBg = rgb(11, 8, 22),
-            Text = rgb(235, 225, 255),
-            SubText = rgb(175, 155, 215),
-            Border = rgb(65, 40, 105),
-            ToggleActive = rgb(160, 90, 255),
-            AccentGradient = { rgbkey(0, rgb(180, 110, 255)), rgbkey(1, rgb(100, 40, 180)) }
-        },
-        ["Purple"] = {
-            Accent = rgb(195, 90, 255),
-            WindowBg = rgb(14, 6, 20),
-            TopFrameBg = rgb(24, 10, 32),
-            InlineBg = rgb(16, 7, 24),
-            PageHolderBg = rgb(16, 7, 24),
-            Text = rgb(245, 230, 255),
-            SubText = rgb(190, 155, 220),
-            Border = rgb(80, 35, 115),
-            ToggleActive = rgb(195, 90, 255),
-            AccentGradient = { rgbkey(0, rgb(215, 120, 255)), rgbkey(1, rgb(130, 40, 190)) }
-        },
-        ["Ice Mode"] = {
-            Accent = rgb(0, 190, 255),
-            WindowBg = rgb(4, 12, 18),
-            TopFrameBg = rgb(8, 20, 30),
-            InlineBg = rgb(6, 14, 22),
-            PageHolderBg = rgb(6, 14, 22),
-            Text = rgb(225, 248, 255),
-            SubText = rgb(145, 195, 220),
-            Border = rgb(35, 75, 110),
-            ToggleActive = rgb(0, 190, 255),
-            AccentGradient = { rgbkey(0, rgb(80, 220, 255)), rgbkey(1, rgb(0, 130, 190)) }
-        },
-        ["Yellow"] = {
-            Accent = rgb(255, 215, 0),
-            WindowBg = rgb(10, 10, 10),
-            TopFrameBg = rgb(14, 14, 14),
-            InlineBg = rgb(12, 12, 12),
-            PageHolderBg = rgb(9, 9, 9),
-            Text = rgb(255, 255, 255),
-            SubText = rgb(180, 180, 180),
-            Border = rgb(42, 42, 42),
-            ToggleActive = rgb(255, 215, 0),
-            AccentGradient = { rgbkey(0, rgb(255, 230, 80)), rgbkey(0.5, rgb(255, 215, 0)), rgbkey(1, rgb(200, 150, 0)) }
-        }
+        ["Yellow"] = yellowTheme,
+        ["Default"] = yellowTheme
     }
     library.current_theme_name = "Yellow"
-    library.current_theme = library.themes["Yellow"]
+    library.current_theme = yellowTheme
 
     function library:SetTheme(themeName)
-        local t = library.themes[themeName]
-        if not t then return end
-        library.current_theme_name = themeName
+        local t = library.themes[themeName] or yellowTheme
+        library.current_theme_name = "Yellow"
         library.current_theme = t
 
         if library.window_obj and library.window_obj.items then
@@ -565,21 +495,58 @@
         end
 
         function library:unload_menu() 
+            -- Safely disconnect all tracked signals/connections
+            if type(library.connections) == "table" then
+                for index, connection in pairs(library.connections) do 
+                    pcall(function()
+                        if typeof(connection) == "RBXScriptConnection" then
+                            connection:Disconnect()
+                        elseif type(connection) == "table" and type(connection.Disconnect) == "function" then
+                            connection:Disconnect()
+                        end
+                    end)
+                end
+                table.clear(library.connections)
+            end
+
+            -- Destroy screen GUI instances
             if library[ "items" ] then 
-                library[ "items" ]:Destroy()
+                pcall(function() library[ "items" ]:Destroy() end)
+                library[ "items" ] = nil
             end
 
             if library[ "other" ] then 
-                library[ "other" ]:Destroy()
+                pcall(function() library[ "other" ]:Destroy() end)
+                library[ "other" ] = nil
             end 
-            
-            for index, connection in library.connections do 
-                connection:Disconnect() 
-                connection = nil 
-            end
-            
-            library = nil 
+
+            -- Clean up watermark if created
+            pcall(function()
+                if watermark_obj then
+                    watermark_obj:Destroy()
+                    watermark_obj = nil
+                end
+            end)
+
+            -- Clean up notifications
+            pcall(function()
+                if library.notifications and type(library.notifications.notifs) == "table" then
+                    for _, notif in pairs(library.notifications.notifs) do
+                        pcall(function() notif:Destroy() end)
+                    end
+                    table.clear(library.notifications.notifs)
+                end
+            end)
+
+            -- Clear active references and state
+            library.window_obj = nil
+            library.current = nil
+            library.current_open = nil
         end 
+
+        library.Unload = function(self) return library:unload_menu() end
+        library.unload = function(self) return library:unload_menu() end
+        library.unloadMenu = function(self) return library:unload_menu() end
     --
     
     -- Library element functions
@@ -594,6 +561,11 @@
                 items = {};
                 tweening;
             }
+
+            cfg.Unload = function(self) return library:unload_menu() end
+            cfg.unload = function(self) return library:unload_menu() end
+            cfg.unload_menu = function(self) return library:unload_menu() end
+            cfg.unloadMenu = function(self) return library:unload_menu() end
             
             library[ "items" ] = library:create( "ScreenGui" , {
                 Parent = coregui;
@@ -678,7 +650,7 @@
                     Transparency = 0.3;
                 });
 
-                local sidebarW = 76
+                local sidebarW = 80
                 local contentY = topBarH + 1
 
                 items[ "inline" ] = library:create( "Frame" , {
@@ -861,7 +833,7 @@
                 -- properties
                 name = prop_is_string and properties or (type(properties) == "table" and (properties.name or properties.Name)) or "visuals"; 
                 icon = (type(properties) == "table" and (properties.icon or properties.Icon)) or "http://www.roblox.com/asset/?id=6034767608";
-                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 68;
+                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 58;
                 
                 items = {};
             } 
@@ -874,7 +846,7 @@
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
                         Text = "";
-                        Size = dim2(0, 68, 0, 52);
+                        Size = dim2(0, 72, 0, 60);
                         BorderSizePixel = 0;
                         AutoButtonColor = false;
                         ZIndex = 6;
@@ -886,7 +858,7 @@
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(0, 48, 0, 48);
+                        Size = dim2(0, 58, 0, 58);
                         AnchorPoint = vec2(0.5, 0.5);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
@@ -912,7 +884,7 @@
                             local btn_pos = items[ "tab_button" ].AbsolutePosition
                             local win_pos = self.items[ "window" ].AbsolutePosition
                             local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 10
-                            tip.Position = dim2(0, 84, 0, rel_y)
+                            tip.Position = dim2(0, 88, 0, rel_y)
                             tip.Visible = true
                         end
                     end)
@@ -3599,7 +3571,8 @@
         function library:Notify(text, duration)
             notifications:create_notification({name = tostring(text or ""), duration = duration or 3})
         end
-	-- 
--- 
+        library.Unload = library.unload_menu
+        library.unload = library.unload_menu
+        library.unloadMenu = library.unload_menu
 
 return library, notifications
