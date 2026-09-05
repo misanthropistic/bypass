@@ -146,19 +146,20 @@
             AccentGradient = { rgbkey(0, rgb(80, 220, 255)), rgbkey(1, rgb(0, 130, 190)) }
         },
         ["Yellow"] = {
-            Accent = rgb(255, 200, 0),
-            WindowBg = rgb(16, 14, 4),
-            TopFrameBg = rgb(26, 22, 6),
-            InlineBg = rgb(18, 15, 5),
-            PageHolderBg = rgb(18, 15, 5),
-            Text = rgb(255, 252, 225),
-            SubText = rgb(210, 195, 140),
-            Border = rgb(90, 78, 20),
-            ToggleActive = rgb(255, 200, 0),
-            AccentGradient = { rgbkey(0, rgb(255, 220, 50)), rgbkey(1, rgb(180, 140, 0)) }
+            Accent = rgb(255, 215, 0),
+            WindowBg = rgb(10, 10, 10),
+            TopFrameBg = rgb(14, 14, 14),
+            InlineBg = rgb(10, 10, 10),
+            PageHolderBg = rgb(10, 10, 10),
+            Text = rgb(245, 245, 245),
+            SubText = rgb(180, 180, 180),
+            Border = rgb(45, 45, 45),
+            ToggleActive = rgb(255, 215, 0),
+            AccentGradient = { rgbkey(0, rgb(255, 225, 60)), rgbkey(1, rgb(215, 160, 0)) }
         }
     }
-    library.current_theme_name = "Classic"
+    library.current_theme_name = "Yellow"
+    library.current_theme = library.themes["Yellow"]
 
     function library:SetTheme(themeName)
         local t = library.themes[themeName]
@@ -572,7 +573,7 @@
             local cfg = { 
                 -- Properties
                 name = properties.name or properties.Name or "nebula";
-                size = properties.size or properties.Size or dim2(0, 650, 0, 400);
+                size = properties.size or properties.Size or dim2(0, 780, 0, 560);
                 logo = (properties.logo ~= false and properties.logo) or (properties.Logo ~= false and properties.Logo) or nil;
 
                 selected_tab;
@@ -1456,8 +1457,10 @@
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
+                local curTheme = library.current_theme
+                local sliderGrad = (curTheme and curTheme.AccentGradient) or {rgbkey(0, rgb(255, 255, 255)), rgbkey(1, rgb(93, 93, 93))}
                 library:create( "UIGradient" , {
-                    Color = rgbseq{rgbkey(0, rgb(255, 255, 255)), rgbkey(1, rgb(93, 93, 93))};
+                    Color = rgbseq(sliderGrad);
                     Parent = items[ "gradient_holder" ]
                 });
                 
@@ -1472,6 +1475,7 @@
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
                 
+                local thumbCol = (curTheme and curTheme.Accent) or rgb(255, 255, 255)
                 items[ "inline" ] = library:create( "Frame" , {
                     Parent = items[ "slider" ];
                     Name = "\0";
@@ -1479,7 +1483,7 @@
                     BorderColor3 = rgb(0, 0, 0);
                     Size = dim2(1, -2, 1, -2);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(255, 255, 255)
+                    BackgroundColor3 = thumbCol
                 });
                 
                 if cfg.name then
@@ -1517,7 +1521,7 @@
                 end       
             end 
 
-            function cfg.set(value)
+            function cfg.set(value, ignore_callback)
                 cfg.value = clamp(library:round(value, cfg.intervals), cfg.min, cfg.max)
                 
                 items[ "slider" ].Position = dim2((cfg.value - cfg.min) / (cfg.max - cfg.min), 0, 0.5, 0)
@@ -1527,7 +1531,9 @@
                 end
 
                 flags[cfg.flag] = cfg.value
-                cfg.callback(flags[cfg.flag])
+                if not ignore_callback then
+                    cfg.callback(flags[cfg.flag])
+                end
             end
 
             items[ "slider_parent" ].MouseButton1Down:Connect(function()
@@ -1548,7 +1554,7 @@
                 end 
             end)
             
-            cfg.set(cfg.default)
+            cfg.set(cfg.default, true)
             config_flags[cfg.flag] = cfg.set
 
             function cfg:SetVisibility(state)
@@ -1764,8 +1770,7 @@
                 
                 library.current = cfg
             end
-            
-            function cfg.set(value)
+             function cfg.set(value, ignore_callback)
                 local selected = {}
                 local isTable = type(value) == "table"
 
@@ -1782,7 +1787,9 @@
                 items.inner_text.Text = if isTable then concat(selected, ", ") else selected[1] or ""
                 flags[cfg.flag] = if isTable then selected else selected[1]
                 
-                cfg.callback(flags[cfg.flag]) 
+                if not ignore_callback then
+                    cfg.callback(flags[cfg.flag]) 
+                end
             end
             
             function cfg.refresh_options(list) 
@@ -1802,7 +1809,7 @@
                             
                             if selected_index then 
                                 remove(cfg.multi_items, selected_index)
-                            else
+                            else 
                                 insert(cfg.multi_items, button.Text)
                             end
                             
@@ -1834,7 +1841,7 @@
             config_flags[cfg.flag] = cfg.set
             
             cfg.refresh_options(cfg.options)
-            cfg.set(cfg.default)
+            cfg.set(cfg.default, true)
 
             function cfg:SetVisibility(state)
                 if state == nil and type(self) == "boolean" then state = self end
