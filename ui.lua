@@ -723,7 +723,7 @@
                 });
             end 
 
-            do  Other
+            do 
                 library:draggify(items[ "window" ])
                 if items[ "top_frame" ] then
                     library:draggify(items[ "top_frame" ], items[ "window" ])
@@ -3212,7 +3212,7 @@
                     option:Destroy()
                 end
 
-                for _, option_data in options_to_refresh do  haha u skids no next >_<
+                for _, option_data in options_to_refresh do
                     local button = library:create( "TextButton" , {
                         FontFace = fonts.small;
                         TextColor3 = rgb(0, 0, 0);
