@@ -3943,38 +3943,23 @@ local function uiLibrary()
 			
 			local outline = library:create("Frame", {
 				Parent = library.items or library.other;
-				Size = dim2(0, 0, 0, 0);
-				BorderColor3 = rgb(35, 35, 35);
-				BorderSizePixel = 1;
-				AutomaticSize = Enum.AutomaticSize.XY;
-				BackgroundColor3 = rgb(10, 10, 10);
+				Size = dim2(0, 180, 0, 0);
+				BorderSizePixel = 0;
+				AutomaticSize = Enum.AutomaticSize.Y;
+				BackgroundColor3 = rgb(18, 18, 18);
 				ClipsDescendants = false;
 			});
 
-			library:create("ImageLabel", {
+			library:create("UICorner", {
 				Parent = outline;
-				Name = "Glow";
-				ImageColor3 = rgb(0, 0, 0);
-				ScaleType = Enum.ScaleType.Slice;
-				ImageTransparency = 0.65;
-				BorderColor3 = rgb(0, 0, 0);
-				Size = dim2(1, 40, 1, 40);
-				Image = "rbxassetid://18245826428";
-				BackgroundTransparency = 1;
-				Position = dim2(0, -20, 0, -20);
-				BorderSizePixel = 0;
-				SliceCenter = rect(vec2(21, 21), vec2(79, 79));
-				ZIndex = 0;
+				CornerRadius = dim(0, 4);
 			});
 
-			local top_line = library:create("Frame", {
+			library:create("UIStroke", {
 				Parent = outline;
-				Name = "TopLine";
-				Position = dim2(0, 0, 0, 0);
-				Size = dim2(1, 0, 0, 1);
-				BackgroundColor3 = rgb(255, 255, 255);
-				BorderSizePixel = 0;
-				ZIndex = 4;
+				Color = rgb(45, 45, 45);
+				Thickness = 1;
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border;
 			});
 
 			local left_bar = library:create("Frame", {
@@ -3987,18 +3972,23 @@ local function uiLibrary()
 				ZIndex = 4;
 			});
 
+			library:create("UICorner", {
+				Parent = left_bar;
+				CornerRadius = dim(0, 2);
+			});
+
 			local content_padding = library:create("UIPadding", {
 				Parent = outline;
-				PaddingTop = dim(0, 7);
-				PaddingBottom = dim(0, 8);
-				PaddingLeft = dim(0, 11);
-				PaddingRight = dim(0, 13);
+				PaddingTop = dim(0, 8);
+				PaddingBottom = dim(0, 9);
+				PaddingLeft = dim(0, 12);
+				PaddingRight = dim(0, 14);
 			});
 
 			local misc_text = library:create("TextLabel", {
 				FontFace = library.font;
 				Parent = outline;
-				TextColor3 = rgb(240, 240, 240);
+				TextColor3 = rgb(220, 220, 220);
 				BorderColor3 = rgb(0, 0, 0);
 				Text = cfg.name;
 				AutomaticSize = Enum.AutomaticSize.XY;
@@ -4006,18 +3996,24 @@ local function uiLibrary()
 				TextXAlignment = Enum.TextXAlignment.Left;
 				BorderSizePixel = 0;
 				ZIndex = 2;
-				TextSize = 11;
+				TextSize = 12;
+				TextWrapped = true;
 			});
 
 			local line = library:create("Frame", {
 				Parent = outline;
 				Name = "TimerLine";
-				Position = dim2(0, 0, 1, -1);
+				Position = dim2(0, 0, 1, -2);
 				BorderColor3 = rgb(0, 0, 0);
-				Size = dim2(1, 0, 0, 1);
+				Size = dim2(1, 0, 0, 2);
 				BorderSizePixel = 0;
-				BackgroundColor3 = rgb(255, 255, 255);
+				BackgroundColor3 = cfg.color or rgb(255, 255, 255);
 				ZIndex = 5;
+			});
+
+			library:create("UICorner", {
+				Parent = line;
+				CornerRadius = dim(0, 2);
 			});
 			
 			local index = #notifications.notifs + 1
