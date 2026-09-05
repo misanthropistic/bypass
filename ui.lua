@@ -1,4 +1,4 @@
-return function()
+local function uiLibrary()
     local uis = game:GetService("UserInputService") 
     local players = game:GetService("Players") 
     local ws = game:GetService("Workspace")
@@ -416,15 +416,31 @@ return function()
         end 
 
         function library:get_config()
-            local Config = {}
+            local Config = {
+                version = "1.0",
+                timestamp = os.time(),
+                settings = {}
+            }
             
-            for _, v in next, flags do
-                if type(v) == "table" and v.key then
-                    Config[_] = {active = v.active, mode = v.mode, key = tostring(v.key)}
-                elseif type(v) == "table" and v["Transparency"] and v["Color"] then
-                    Config[_] = {Transparency = v["Transparency"], Color = v["Color"]:ToHex()}
+            for flagName, flagValue in next, flags do
+                if type(flagValue) == "table" and flagValue.key then
+                    Config.settings[flagName] = {
+                        type = "keybind",
+                        active = flagValue.active,
+                        mode = flagValue.mode,
+                        key = tostring(flagValue.key)
+                    }
+                elseif type(flagValue) == "table" and flagValue["Transparency"] and flagValue["Color"] then
+                    Config.settings[flagName] = {
+                        type = "colorpicker",
+                        transparency = flagValue["Transparency"],
+                        color = flagValue["Color"]:ToHex()
+                    }
                 else
-                    Config[_] = v
+                    Config.settings[flagName] = {
+                        type = "value",
+                        value = flagValue
+                    }
                 end
             end 
             
@@ -433,24 +449,71 @@ return function()
 
         function library:load_config(config_json) 
             local config = http_service:JSONDecode(config_json)
+            local settings = config.settings or config
             
-            for _, v in config do 
-                local function_set = library.config_flags[_]
+            for flagName, configData in pairs(settings) do
+                local function_set = library.config_flags[flagName]
                 
-                if _ == "config_name_list" then 
+                if flagName == "config_name_list" then 
                     continue 
                 end
 
                 if function_set then 
-                    if type(v) == "table" and v["Transparency"] and v["Color"] then
-                        function_set(hex(v["Color"]), v["Transparency"])
-                    elseif type(v) == "table" and v["active"] then 
-                        function_set(v)
+                    -- Handle new format with type info
+                    if type(configData) == "table" and configData.type then
+                        if configData.type == "colorpicker" and configData.color then
+                            function_set(hex(configData.color), configData.transparency or 0)
+                        elseif configData.type == "keybind" and configData.active ~= nil then 
+                            function_set({
+                                active = configData.active,
+                                mode = configData.mode,
+                                key = configData.key
+                            })
+                        else
+                            function_set(configData.value)
+                        end
+                    -- Handle old format for backward compatibility
+                    elseif type(configData) == "table" and configData["Transparency"] and configData["Color"] then
+                        function_set(hex(configData["Color"]), configData["Transparency"])
+                    elseif type(configData) == "table" and configData["active"] then 
+                        function_set(configData)
                     else
-                        function_set(v)
+                        function_set(configData)
                     end
                 end 
             end 
+        end 
+        
+        function library:validate_config(config_json)
+            local ok, config = pcall(function()
+                return http_service:JSONDecode(config_json)
+            end)
+            if not ok then
+                return false, "Invalid JSON format"
+            end
+            
+            if type(config) ~= "table" then
+                return false, "Config is not a table"
+            end
+            
+            -- Check for version and metadata (new format)
+            if config.version and config.timestamp then
+                if type(config.settings) ~= "table" then
+                    return false, "Settings field missing in new format"
+                end
+            elseif type(config) == "table" then
+                -- Old format validation - at least some settings should exist
+                local hasSettings = false
+                for _ in pairs(config) do
+                    hasSettings = true
+                    break
+                end
+                if not hasSettings then
+                    return false, "Config has no settings"
+                end
+            end
+            
+            return true, "Config is valid"
         end 
         
         function library:round(number, float) 
@@ -3348,6 +3411,26 @@ return function()
                 library:update_config_list()
                 library:notify("Deleted config: " .. name, 2)
             end})
+            
+            section:Button({name = "Validate Config", callback = function() 
+                local name = flags["config_name_text"]
+                if not name or name:gsub("%s+", "") == "" then 
+                    library:notify("Please enter a config name!", 2)
+                    return 
+                end
+                local path = library.directory .. "/configs/" .. name .. ".cfg"
+                local ok, data = pcall(readfile, path)
+                if ok and data then
+                    local isValid, message = library:validate_config(data)
+                    if isValid then
+                        library:notify("Config is valid! " .. message, 2)
+                    else
+                        library:notify("Config error: " .. message, 3)
+                    end
+                else
+                    library:notify("Could not read config file", 3)
+                end
+            end})
         end
     
     
@@ -3957,4 +4040,5 @@ return function()
         library.unloadMenu = library.unload_menu
 
         return library, notifications
-end
+    end
+    return uiLibrary
