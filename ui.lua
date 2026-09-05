@@ -3718,8 +3718,8 @@ return function()
                     local len = 5
                     local thick = 1
 
-                     4 sides: Top, Bottom, Left, Right
-                     Top arm
+                    -- 4 sides: Top, Bottom, Left, Right
+                    -- Top arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Top";
@@ -3731,7 +3731,7 @@ return function()
                         ZIndex = 100001;
                     })
 
-                     Bottom arm
+                    -- Bottom arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Bottom";
@@ -3743,7 +3743,7 @@ return function()
                         ZIndex = 100001;
                     })
 
-                     Left arm
+                    -- Left arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Left";
@@ -3755,7 +3755,7 @@ return function()
                         ZIndex = 100001;
                     })
 
-                     Right arm
+                    -- Right arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Right";
