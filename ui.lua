@@ -370,7 +370,7 @@
                         )
                     )
 
-                    target.Position = current_position
+                    tween_service:Create(target, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = current_position}):Play()
                     library:close_current_element(nil) 
                 end
             end)
@@ -608,12 +608,24 @@
                     Size = cfg.size;
                     BorderSizePixel = 1;
                     BackgroundColor3 = curTheme.WindowBg or rgb(10, 10, 10);
-                    ClipsDescendants = true;
+                    ClipsDescendants = false;
                 }); items[ "window" ].Position = dim2(0, items[ "window" ].AbsolutePosition.X, 0, items[ "window" ].AbsolutePosition.Y)          
 
-                library:create("UICorner", {
+                items[ "glow" ] = library:create( "ImageLabel" , {
                     Parent = items[ "window" ];
-                    CornerRadius = dim(0, 6);
+                    Name = "Glow";
+                    ImageColor3 = rgb(0, 0, 0);
+                    ScaleType = Enum.ScaleType.Slice;
+                    ImageTransparency = 0.65;
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(1, 40, 1, 40);
+                    Image = "rbxassetid://18245826428";
+                    BackgroundTransparency = 1;
+                    Position = dim2(0, -20, 0, -20);
+                    BackgroundColor3 = rgb(255, 255, 255);
+                    BorderSizePixel = 0;
+                    SliceCenter = rect(vec2(21, 21), vec2(79, 79));
+                    ZIndex = 0;
                 });
 
                 local topBarH = 34
@@ -1134,11 +1146,6 @@
                     Size = dim2(1, 0, 1, 0);
                     BorderSizePixel = 1;
                     BackgroundColor3 = rgb(14, 14, 14)
-                });
-                
-                library:create( "UICorner" , {
-                    Parent = items[ "section_outline" ];
-                    CornerRadius = dim(0, 4)
                 });
 
                 items[ "section_shadow" ] = items[ "section_outline" ]
@@ -3335,24 +3342,25 @@
                     BackgroundColor3 = rgb(10, 10, 10);
                     BorderColor3 = rgb(35, 35, 35);
                     BorderSizePixel = 1;
-                    ClipsDescendants = true;
+                    ClipsDescendants = false;
                     Active = true;
                     Selectable = true;
                 })
 
-                library:create("UICorner", {
+                library:create("ImageLabel", {
                     Parent = watermark_obj;
-                    CornerRadius = dim(0, 4);
-                })
-
-                library:create("Frame", {
-                    Parent = watermark_obj;
-                    Name = "TopLine";
-                    Size = dim2(1, 0, 0, 1);
-                    Position = dim2(0, 0, 0, 0);
-                    BackgroundColor3 = rgb(255, 255, 255);
+                    Name = "Glow";
+                    ImageColor3 = rgb(0, 0, 0);
+                    ScaleType = Enum.ScaleType.Slice;
+                    ImageTransparency = 0.65;
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(1, 40, 1, 40);
+                    Image = "rbxassetid://18245826428";
+                    BackgroundTransparency = 1;
+                    Position = dim2(0, -20, 0, -20);
                     BorderSizePixel = 0;
-                    ZIndex = 5;
+                    SliceCenter = rect(vec2(21, 21), vec2(79, 79));
+                    ZIndex = 0;
                 })
 
                 library:create("UIPadding", {
@@ -3401,12 +3409,13 @@
                 library:connection(uis.InputChanged, function(input)
                     if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
                         local delta = input.Position - drag_start
-                        watermark_obj.Position = UDim2.new(
+                        local targetPos = UDim2.new(
                             start_pos.X.Scale,
                             start_pos.X.Offset + delta.X,
                             start_pos.Y.Scale,
                             start_pos.Y.Offset + delta.Y
                         )
+                        tween_service:Create(watermark_obj, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = targetPos}):Play()
                     end
                 end)
             else
@@ -3453,14 +3462,25 @@
                 BackgroundColor3 = rgb(10, 10, 10);
                 BorderColor3 = rgb(35, 35, 35);
                 BorderSizePixel = 1;
-                ClipsDescendants = true;
+                ClipsDescendants = false;
                 Visible = false;
                 ZIndex = 50;
             })
 
-            library:create("UICorner", {
+            library:create("ImageLabel", {
                 Parent = kl_frame;
-                CornerRadius = dim(0, 5);
+                Name = "Glow";
+                ImageColor3 = rgb(0, 0, 0);
+                ScaleType = Enum.ScaleType.Slice;
+                ImageTransparency = 0.65;
+                BorderColor3 = rgb(0, 0, 0);
+                Size = dim2(1, 40, 1, 40);
+                Image = "rbxassetid://18245826428";
+                BackgroundTransparency = 1;
+                Position = dim2(0, -20, 0, -20);
+                BorderSizePixel = 0;
+                SliceCenter = rect(vec2(21, 21), vec2(79, 79));
+                ZIndex = 49;
             })
 
             local kl_header = library:create("Frame", {
@@ -3472,22 +3492,12 @@
                 ZIndex = 51;
             })
 
-            local kl_top_line = library:create("Frame", {
-                Parent = kl_header;
-                Name = "TopLine";
-                Size = dim2(1, 0, 0, 1);
-                Position = dim2(0, 0, 0, 0);
-                BackgroundColor3 = rgb(255, 255, 255);
-                BorderSizePixel = 0;
-                ZIndex = 52;
-            })
-
             local kl_bot_divider = library:create("Frame", {
                 Parent = kl_header;
                 Name = "BottomDivider";
                 Size = dim2(1, 0, 0, 1);
                 Position = dim2(0, 0, 1, -1);
-                BackgroundColor3 = rgb(28, 28, 28);
+                BackgroundColor3 = rgb(255, 255, 255);
                 BorderSizePixel = 0;
                 ZIndex = 52;
             })
@@ -3554,12 +3564,13 @@
             library:connection(uis.InputChanged, function(input)
                 if kl_dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
                     local delta = input.Position - kl_drag_start
-                    kl_frame.Position = UDim2.new(
+                    local targetPos = UDim2.new(
                         kl_start_pos.X.Scale,
                         kl_start_pos.X.Offset + delta.X,
                         kl_start_pos.Y.Scale,
                         kl_start_pos.Y.Offset + delta.Y
                     )
+                    tween_service:Create(kl_frame, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = targetPos}):Play()
                 end
             end)
 
@@ -3662,7 +3673,7 @@
         end
 
         -- Custom Cursor
-        local cursor_enabled = false
+        local cursor_enabled = true
         local cursor_frame = nil
         local cursor_connection = nil
 
@@ -3671,12 +3682,13 @@
 
             if cursor_enabled then
                 if not cursor_frame or not cursor_frame.Parent then
+                    local initPos = uis:GetMouseLocation()
                     cursor_frame = library:create("Frame", {
                         Parent = library.other;
                         Name = "CustomCursor";
                         Size = dim2(0, 0, 0, 0);
-                        Position = dim2(0, mouse.X, 0, mouse.Y);
-                        AnchorPoint = vec2(0.5, 0.5);
+                        Position = dim2(0, initPos.X, 0, initPos.Y);
+                        AnchorPoint = vec2(0, 0);
                         BackgroundTransparency = 1;
                         BorderSizePixel = 0;
                         ZIndex = 100000;
@@ -3685,14 +3697,14 @@
 
                     local gap = 3
                     local len = 5
-                    local thick = 2
+                    local thick = 1
 
                     -- 4 sides: Top, Bottom, Left, Right
                     -- Top arm
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Top";
-                        Position = dim2(0, -1, 0, -gap - len);
+                        Position = dim2(0, 0, 0, -gap - len);
                         Size = dim2(0, thick, 0, len);
                         BackgroundColor3 = rgb(255, 255, 255);
                         BorderColor3 = rgb(0, 0, 0);
@@ -3704,7 +3716,7 @@
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Bottom";
-                        Position = dim2(0, -1, 0, gap);
+                        Position = dim2(0, 0, 0, gap + 1);
                         Size = dim2(0, thick, 0, len);
                         BackgroundColor3 = rgb(255, 255, 255);
                         BorderColor3 = rgb(0, 0, 0);
@@ -3716,7 +3728,7 @@
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Left";
-                        Position = dim2(0, -gap - len, 0, -1);
+                        Position = dim2(0, -gap - len, 0, 0);
                         Size = dim2(0, len, 0, thick);
                         BackgroundColor3 = rgb(255, 255, 255);
                         BorderColor3 = rgb(0, 0, 0);
@@ -3728,7 +3740,7 @@
                     library:create("Frame", {
                         Parent = cursor_frame;
                         Name = "Right";
-                        Position = dim2(0, gap, 0, -1);
+                        Position = dim2(0, gap + 1, 0, 0);
                         Size = dim2(0, len, 0, thick);
                         BackgroundColor3 = rgb(255, 255, 255);
                         BorderColor3 = rgb(0, 0, 0);
@@ -3739,13 +3751,16 @@
                     if not cursor_connection then
                         cursor_connection = run.RenderStepped:Connect(function()
                             if cursor_enabled and cursor_frame then
-                                cursor_frame.Position = dim2(0, mouse.X, 0, mouse.Y)
+                                local mouseLoc = uis:GetMouseLocation()
+                                cursor_frame.Position = dim2(0, mouseLoc.X, 0, mouseLoc.Y)
                                 uis.MouseIconEnabled = false
                             end
                         end)
                     end
                 end
 
+                local curLoc = uis:GetMouseLocation()
+                cursor_frame.Position = dim2(0, curLoc.X, 0, curLoc.Y)
                 cursor_frame.Visible = true
                 uis.MouseIconEnabled = false
             else
@@ -3767,6 +3782,11 @@
             end
             uis.MouseIconEnabled = true
         end
+
+        task.spawn(function()
+            task.wait(0.1)
+            pcall(function() library:SetCustomCursor(true) end)
+        end)
     --
 
     -- Notification library
@@ -3812,12 +3832,23 @@
 				BorderSizePixel = 1;
 				AutomaticSize = Enum.AutomaticSize.XY;
 				BackgroundColor3 = rgb(10, 10, 10);
-				ClipsDescendants = true;
+				ClipsDescendants = false;
 			});
 
-			library:create("UICorner", {
+			library:create("ImageLabel", {
 				Parent = outline;
-				CornerRadius = dim(0, 5);
+				Name = "Glow";
+				ImageColor3 = rgb(0, 0, 0);
+				ScaleType = Enum.ScaleType.Slice;
+				ImageTransparency = 0.65;
+				BorderColor3 = rgb(0, 0, 0);
+				Size = dim2(1, 40, 1, 40);
+				Image = "rbxassetid://18245826428";
+				BackgroundTransparency = 1;
+				Position = dim2(0, -20, 0, -20);
+				BorderSizePixel = 0;
+				SliceCenter = rect(vec2(21, 21), vec2(79, 79));
+				ZIndex = 0;
 			});
 
 			local top_line = library:create("Frame", {
