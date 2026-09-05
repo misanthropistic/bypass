@@ -1,4 +1,4 @@
- 
+return function()
     local uis = game:GetService("UserInputService") 
     local players = game:GetService("Players") 
     local ws = game:GetService("Workspace")
@@ -3207,7 +3207,7 @@
                 });
             end 
 
-            function cfg.refresh_options(options_to_refresh)  ignore goofy parameter
+            function cfg.refresh_options(options_to_refresh)  -- ignore goofy parameter
                 for _,option in cfg.data_store do 
                     option:Destroy()
                 end
@@ -3956,4 +3956,5 @@
         library.unload = library.unload_menu
         library.unloadMenu = library.unload_menu
 
-return library, notifications
+        return library, notifications
+end
