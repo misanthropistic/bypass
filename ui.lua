@@ -149,13 +149,13 @@
             Accent = rgb(255, 215, 0),
             WindowBg = rgb(10, 10, 10),
             TopFrameBg = rgb(14, 14, 14),
-            InlineBg = rgb(10, 10, 10),
-            PageHolderBg = rgb(10, 10, 10),
-            Text = rgb(245, 245, 245),
+            InlineBg = rgb(12, 12, 12),
+            PageHolderBg = rgb(9, 9, 9),
+            Text = rgb(255, 255, 255),
             SubText = rgb(180, 180, 180),
-            Border = rgb(45, 45, 45),
+            Border = rgb(42, 42, 42),
             ToggleActive = rgb(255, 215, 0),
-            AccentGradient = { rgbkey(0, rgb(255, 225, 60)), rgbkey(1, rgb(215, 160, 0)) }
+            AccentGradient = { rgbkey(0, rgb(255, 230, 80)), rgbkey(0.5, rgb(255, 215, 0)), rgbkey(1, rgb(200, 150, 0)) }
         }
     }
     library.current_theme_name = "Yellow"
@@ -173,13 +173,32 @@
             if items["top_frame"] then items["top_frame"].BackgroundColor3 = t.TopFrameBg end
             if items["top_divider"] then 
                 items["top_divider"].BackgroundColor3 = t.Accent
+                local grad = items["top_divider"]:FindFirstChildOfClass("UIGradient")
+                if grad and t.AccentGradient then
+                    grad.Color = rgbseq(t.AccentGradient)
+                end
             end
             if items["top_divider_glow"] then
                 items["top_divider_glow"].BackgroundColor3 = t.Accent
             end
             if items["inline"] then items["inline"].BackgroundColor3 = t.InlineBg end
             if items["page_holder"] then items["page_holder"].BackgroundColor3 = t.PageHolderBg end
-            if items["ui_title"] then items["ui_title"].TextColor3 = t.Text end
+            if items["ui_title"] then items["ui_title"].TextColor3 = t.Accent end
+            if items["ui_badge"] then
+                items["ui_badge"].TextColor3 = t.Accent
+                items["ui_badge"].BorderColor3 = t.Accent
+            end
+            if items["top_dot"] then items["top_dot"].BackgroundColor3 = t.Accent end
+            if items["top_logo"] then items["top_logo"].ImageColor3 = t.Accent end
+            if items["tab_tooltip_text"] then items["tab_tooltip_text"].TextColor3 = t.Accent end
+            if items["tab_tooltip"] then items["tab_tooltip"].BorderColor3 = t.Accent end
+        end
+
+        if library.window_obj and library.window_obj.selected_tab then
+            local sel = library.window_obj.selected_tab
+            if sel[1] then library:tween(sel[1], {ImageColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
+            if sel[3] then library:tween(sel[3], {BackgroundColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
+            if sel[4] then library:tween(sel[4], {BackgroundColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
         end
     end
 
@@ -386,16 +405,17 @@
             return (y_cond and x_cond)
         end
 
-        function library:draggify(frame)
+        function library:draggify(frame, targetFrame)
+            local target = targetFrame or frame
             local dragging = false 
-            local start_size = frame.Position
+            local start_size = target.Position
             local start 
 
             frame.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     dragging = true
                     start = input.Position
-                    start_size = frame.Position
+                    start_size = target.Position
                 end
             end)
 
@@ -415,18 +435,17 @@
                         clamp(
                             start_size.X.Offset + (input.Position.X - start.X),
                             0,
-                            viewport_x - frame.Size.X.Offset
+                            viewport_x - target.Size.X.Offset
                         ),
                         0,
                         math.clamp(
                             start_size.Y.Offset + (input.Position.Y - start.Y),
                             0,
-                            viewport_y - frame.Size.Y.Offset
+                            viewport_y - target.Size.Y.Offset
                         )
                     )
 
-                    -- library:tween(frame, {Position = current_position}, Enum.EasingStyle.Linear, 0) -- heh, nobody will notice 
-                    frame.Position = current_position
+                    target.Position = current_position
                     library:close_current_element(nil) 
                 end
             end)
@@ -598,59 +617,215 @@
             }); 
 
             local items = cfg.items; do
+                local curTheme = library.current_theme or library.themes["Yellow"]
+
                 items[ "window" ] = library:create( "Frame" , {
                     Parent = library.items;
                     Name = "\0";
                     Visible = false;
                     Position = dim2(0.5, -cfg.size.X.Offset / 2, 0.5, -cfg.size.Y.Offset / 2);
-                    BorderColor3 = rgb(0, 0, 0);
+                    BorderColor3 = rgb(35, 35, 35);
                     Size = cfg.size;
-                    BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(0, 0, 0)
+                    BorderSizePixel = 1;
+                    BackgroundColor3 = curTheme.WindowBg or rgb(10, 10, 10);
+                    ClipsDescendants = true;
                 }); items[ "window" ].Position = dim2(0, items[ "window" ].AbsolutePosition.X, 0, items[ "window" ].AbsolutePosition.Y)          
 
+                library:create("UICorner", {
+                    Parent = items[ "window" ];
+                    CornerRadius = dim(0, 6);
+                });
+
+                local topBarH = 40
+
                 items[ "top_frame" ] = library:create( "Frame" , {
-                    Name = "\0";
+                    Name = "TopBar";
                     Parent = items[ "window" ];
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, 0, 0, 0);
-                    Visible = false;
+                    Size = dim2(1, 0, 0, topBarH);
+                    Visible = true;
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(0, 0, 0)
+                    ZIndex = 5;
+                    BackgroundColor3 = curTheme.TopFrameBg or rgb(14, 14, 14);
                 });
                 
                 items[ "top_divider" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
-                    Name = "\0";
-                    Position = dim2(0, 0, 0, 0);
+                    Name = "TopDivider";
+                    Position = dim2(0, 0, 0, topBarH);
                     Size = dim2(1, 0, 0, 2);
                     BorderSizePixel = 0;
                     ZIndex = 10;
-                    BackgroundColor3 = rgb(255, 255, 255);
+                    BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
                 });
                 
+                local gradColors = (curTheme and curTheme.AccentGradient) or {
+                    rgbkey(0, rgb(255, 230, 80)),
+                    rgbkey(0.5, rgb(255, 215, 0)),
+                    rgbkey(1, rgb(200, 150, 0))
+                }
                 library:create( "UIGradient" , {
                     Rotation = 0;
                     Parent = items[ "top_divider" ];
-                    Color = rgbseq{rgbkey(0, rgb(255, 255, 255)), rgbkey(0.5, rgb(180, 180, 180)), rgbkey(1, rgb(255, 255, 255))}
+                    Color = rgbseq(gradColors);
                 });
-                
+
+                items[ "top_divider_glow" ] = library:create( "Frame" , {
+                    Parent = items[ "window" ];
+                    Name = "TopDividerGlow";
+                    Position = dim2(0, 0, 0, topBarH + 2);
+                    Size = dim2(1, 0, 0, 3);
+                    BorderSizePixel = 0;
+                    ZIndex = 9;
+                    BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
+                    BackgroundTransparency = 0.85;
+                });
+                library:create( "UIGradient" , {
+                    Rotation = 90;
+                    Parent = items[ "top_divider_glow" ];
+                    Transparency = numseq{ numkey(0, 0.85), numkey(1, 1) };
+                });
+
+                items[ "title_container" ] = library:create( "Frame" , {
+                    Parent = items[ "top_frame" ];
+                    Name = "TitleContainer";
+                    Position = dim2(0, 16, 0.5, 0);
+                    AnchorPoint = vec2(0, 0.5);
+                    Size = dim2(0, 300, 0, 24);
+                    BackgroundTransparency = 1;
+                    BorderSizePixel = 0;
+                    ZIndex = 6;
+                });
+
+                library:create( "UIListLayout" , {
+                    Parent = items[ "title_container" ];
+                    FillDirection = Enum.FillDirection.Horizontal;
+                    Padding = dim(0, 8);
+                    VerticalAlignment = Enum.VerticalAlignment.Center;
+                    SortOrder = Enum.SortOrder.LayoutOrder;
+                });
+
+                if cfg.logo and type(cfg.logo) == "string" and cfg.logo ~= "" then
+                    items[ "top_logo" ] = library:create( "ImageLabel" , {
+                        Parent = items[ "title_container" ];
+                        Name = "Logo";
+                        Size = dim2(0, 18, 0, 18);
+                        BackgroundTransparency = 1;
+                        BorderSizePixel = 0;
+                        Image = cfg.logo;
+                        ImageColor3 = curTheme.Accent or rgb(255, 215, 0);
+                        ScaleType = Enum.ScaleType.Fit;
+                        LayoutOrder = 1;
+                        ZIndex = 7;
+                    });
+                else
+                    items[ "top_dot" ] = library:create( "Frame" , {
+                        Parent = items[ "title_container" ];
+                        Name = "Dot";
+                        Size = dim2(0, 7, 0, 7);
+                        BorderSizePixel = 0;
+                        BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
+                        LayoutOrder = 1;
+                        ZIndex = 7;
+                    });
+                    library:create( "UICorner" , {
+                        Parent = items[ "top_dot" ];
+                        CornerRadius = dim(1, 0);
+                    });
+                end
+
+                items[ "ui_title" ] = library:create( "TextLabel" , {
+                    Parent = items[ "title_container" ];
+                    Name = "Title";
+                    Text = cfg.name or "alternate";
+                    TextColor3 = curTheme.Accent or rgb(255, 215, 0);
+                    TextSize = 13;
+                    FontFace = library.font or Font.fromEnum(Enum.Font.GothamBold);
+                    TextXAlignment = Enum.TextXAlignment.Left;
+                    TextYAlignment = Enum.TextYAlignment.Center;
+                    Size = dim2(0, 0, 1, 0);
+                    AutomaticSize = Enum.AutomaticSize.X;
+                    BackgroundTransparency = 1;
+                    BorderSizePixel = 0;
+                    LayoutOrder = 2;
+                    ZIndex = 7;
+                });
+
+                library:create( "UIStroke" , {
+                    Parent = items[ "ui_title" ];
+                    Color = rgb(0, 0, 0);
+                    Thickness = 1;
+                    Transparency = 0.5;
+                });
+
+                items[ "ui_badge" ] = library:create( "TextLabel" , {
+                    Parent = items[ "title_container" ];
+                    Name = "Badge";
+                    Text = "LIVE";
+                    TextColor3 = curTheme.Accent or rgb(255, 215, 0);
+                    TextSize = 9;
+                    FontFace = library.font or Font.fromEnum(Enum.Font.GothamBold);
+                    TextXAlignment = Enum.TextXAlignment.Center;
+                    TextYAlignment = Enum.TextYAlignment.Center;
+                    Size = dim2(0, 32, 0, 15);
+                    BackgroundColor3 = rgb(25, 23, 8);
+                    BorderColor3 = curTheme.Accent or rgb(255, 215, 0);
+                    BorderSizePixel = 1;
+                    LayoutOrder = 3;
+                    ZIndex = 7;
+                });
+                library:create( "UICorner" , {
+                    Parent = items[ "ui_badge" ];
+                    CornerRadius = dim(0, 3);
+                });
+
+                items[ "ui_hint" ] = library:create( "TextLabel" , {
+                    Parent = items[ "top_frame" ];
+                    Name = "Hint";
+                    Text = "[RCtrl] Toggle";
+                    TextColor3 = rgb(85, 85, 85);
+                    TextSize = 10;
+                    FontFace = library.font or Font.fromEnum(Enum.Font.Code);
+                    TextXAlignment = Enum.TextXAlignment.Right;
+                    TextYAlignment = Enum.TextYAlignment.Center;
+                    Position = dim2(1, -16, 0.5, 0);
+                    AnchorPoint = vec2(1, 0.5);
+                    Size = dim2(0, 100, 1, 0);
+                    BackgroundTransparency = 1;
+                    BorderSizePixel = 0;
+                    ZIndex = 6;
+                });
+
+                local sidebarW = 60
+                local contentY = topBarH + 2
+
                 items[ "inline" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
-                    Name = "\0";
-                    Position = dim2(0, 0, 0, 2);
+                    Name = "Sidebar";
+                    Position = dim2(0, 0, 0, contentY);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 70, 1, -2);
+                    Size = dim2(0, sidebarW, 1, -contentY);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(8, 8, 8);
+                    BackgroundColor3 = curTheme.InlineBg or rgb(12, 12, 12);
+                    ZIndex = 3;
+                });
+
+                library:create( "Frame" , {
+                    Parent = items[ "inline" ];
+                    Name = "SidebarDivider";
+                    Position = dim2(1, -1, 0, 0);
+                    Size = dim2(0, 1, 1, 0);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = rgb(26, 26, 26);
+                    ZIndex = 4;
                 });
                 
                 items[ "tab_button_holder" ] = library:create( "ScrollingFrame" , {
                     Parent = items[ "inline" ];
-                    Name = "\0";
-                    Position = dim2(0, 1, 0, 1);
+                    Name = "TabHolder";
+                    Position = dim2(0, 0, 0, 0);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -2, 1, -2);
+                    Size = dim2(1, -1, 1, 0);
                     BorderSizePixel = 0;
                     BackgroundTransparency = 1;
                     ClipsDescendants = true;
@@ -658,12 +833,13 @@
                     ScrollBarImageTransparency = 1;
                     CanvasSize = dim2(0, 0, 0, 0);
                     AutomaticCanvasSize = Enum.AutomaticSize.Y;
+                    ZIndex = 5;
                 });
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 8);
-                    PaddingBottom = dim(0, 8);
+                    PaddingTop = dim(0, 10);
+                    PaddingBottom = dim(0, 10);
                 });
                 
                 library:create( "UIListLayout" , {
@@ -675,12 +851,13 @@
                 
                 items[ "page_holder" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
-                    Name = "\0";
-                    Position = dim2(0, 70, 0, 2);
+                    Name = "PageHolder";
+                    Position = dim2(0, sidebarW, 0, contentY);
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(1, -70, 1, -2);
+                    Size = dim2(1, -sidebarW, 1, -contentY);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(8, 8, 8);
+                    BackgroundColor3 = curTheme.PageHolderBg or rgb(9, 9, 9);
+                    ZIndex = 2;
                 });
 
                 items[ "tab_tooltip" ] = library:create( "Frame" , {
@@ -688,10 +865,14 @@
                     Name = "TabTooltip";
                     Visible = false;
                     ZIndex = 300;
-                    BackgroundColor3 = rgb(12, 12, 12);
-                    BorderColor3 = rgb(35, 35, 35);
+                    BackgroundColor3 = rgb(14, 14, 14);
+                    BorderColor3 = curTheme.Accent or rgb(255, 215, 0);
                     BorderSizePixel = 1;
                     AutomaticSize = Enum.AutomaticSize.XY;
+                });
+                library:create( "UICorner" , {
+                    Parent = items[ "tab_tooltip" ];
+                    CornerRadius = dim(0, 4);
                 });
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_tooltip" ];
@@ -703,7 +884,7 @@
                 items[ "tab_tooltip_text" ] = library:create( "TextLabel" , {
                     Parent = items[ "tab_tooltip" ];
                     BackgroundTransparency = 1;
-                    TextColor3 = rgb(235, 235, 235);
+                    TextColor3 = curTheme.Accent or rgb(255, 215, 0);
                     FontFace = library.font or Font.fromEnum(Enum.Font.Code);
                     TextSize = 11;
                     Text = "";
@@ -715,6 +896,9 @@
 
             do -- Other
                 library:draggify(items[ "window" ])
+                if items[ "top_frame" ] then
+                    library:draggify(items[ "top_frame" ], items[ "window" ])
+                end
                 library:resizify(items[ "window" ])
             end 
             
@@ -802,13 +986,37 @@
 
             local items = cfg.items; do                
                 -- Tab buttons 
+                    local curTheme = library.current_theme or library.themes["Yellow"]
+
                     items[ "tab_button" ] = library:create( "TextButton" , {
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
+                        BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
                         Text = "";
-                        Size = dim2(0, 80, 0, 80);
+                        Size = dim2(0, 42, 0, 42);
                         BorderSizePixel = 0;
                         AutoButtonColor = false;
+                        ZIndex = 6;
+                    });
+
+                    library:create( "UICorner" , {
+                        Parent = items[ "tab_button" ];
+                        CornerRadius = dim(0, 7);
+                    });
+
+                    items[ "tab_indicator" ] = library:create( "Frame" , {
+                        Parent = items[ "tab_button" ];
+                        Name = "Indicator";
+                        Size = dim2(0, 3, 0, 20);
+                        Position = dim2(0, 1, 0.5, -10);
+                        BorderSizePixel = 0;
+                        BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
+                        BackgroundTransparency = 1;
+                        ZIndex = 8;
+                    });
+                    library:create( "UICorner" , {
+                        Parent = items[ "tab_indicator" ];
+                        CornerRadius = dim(0, 2);
                     });
                     
                     items[ "image" ] = library:create( "ImageLabel" , {
@@ -817,21 +1025,23 @@
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(1, -6, 1, -6);
+                        Size = dim2(0, 22, 0, 22);
                         AnchorPoint = vec2(0.5, 0.5);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
                         Position = dim2(0.5, 0, 0.5, 0);
                         Selectable = false;
                         BorderSizePixel = 0;
-                        BackgroundColor3 = rgb(255, 255, 255);
                         ScaleType = Enum.ScaleType.Fit;
+                        ZIndex = 7;
                     });                       
 
                     -- Tooltip and hover interactions
                     items[ "tab_button" ].MouseEnter:Connect(function()
-                        if not (self.selected_tab and self.selected_tab[ 2 ] == items.tab) then
-                            library:tween(items.image, {ImageColor3 = rgb(235, 235, 235)}, Enum.EasingStyle.Quad, 0.15)
+                        local isActive = self.selected_tab and self.selected_tab[ 2 ] == items.tab
+                        if not isActive then
+                            library:tween(items.image, {ImageColor3 = rgb(230, 230, 230)}, Enum.EasingStyle.Quad, 0.15)
+                            library:tween(items.tab_button, {BackgroundTransparency = 0.92, BackgroundColor3 = rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
                         local tip_text = self.items[ "tab_tooltip_text" ]
@@ -840,14 +1050,16 @@
                             local btn_pos = items[ "tab_button" ].AbsolutePosition
                             local win_pos = self.items[ "window" ].AbsolutePosition
                             local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 10
-                            tip.Position = dim2(0, 76, 0, rel_y)
+                            tip.Position = dim2(0, 68, 0, rel_y)
                             tip.Visible = true
                         end
                     end)
 
                     items[ "tab_button" ].MouseLeave:Connect(function()
-                        if not (self.selected_tab and self.selected_tab[ 2 ] == items.tab) then
+                        local isActive = self.selected_tab and self.selected_tab[ 2 ] == items.tab
+                        if not isActive then
                             library:tween(items.image, {ImageColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
+                            library:tween(items.tab_button, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
                         if tip then
@@ -947,20 +1159,33 @@
 
             function cfg.open_tab() 
                 local selected_tab = self.selected_tab
+                local curTheme = library.current_theme or library.themes["Yellow"]
                 
                 if selected_tab then 
-                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(120, 120, 120)}, Enum.EasingStyle.Quad, 0.15)
+                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
+                   if selected_tab[ 3 ] then
+                       library:tween(selected_tab[ 3 ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
+                   end
+                   if selected_tab[ 4 ] then
+                       library:tween(selected_tab[ 4 ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
+                   end
                    selected_tab[ 2 ].Parent = library.items
                    selected_tab[ 2 ].Visible = false
                 end
                 
-                library:tween(items.image, {ImageColor3 = rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.15)
+                library:tween(items.image, {ImageColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
+                if items.tab_indicator then
+                    library:tween(items.tab_indicator, {BackgroundTransparency = 0, BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
+                end
+                library:tween(items.tab_button, {BackgroundTransparency = 0.88, BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
                 items.tab.Parent = self.items[ "page_holder" ]
                 items.tab.Visible = true
 
                 self.selected_tab = {
                     items.image;
                     items.tab;
+                    items.tab_indicator;
+                    items.tab_button;
                 }
 
                 library:close_current_element(nil) 
@@ -1043,6 +1268,7 @@
                 end
 
                 function sub_cfg.open_subtab()
+                    local curTheme = library.current_theme or library.themes["Yellow"]
                     if cfg.selected_subtab then
                         library:tween(cfg.selected_subtab.items[ "subtab_btn" ], {TextColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
                         if cfg.selected_subtab.items[ "subtab_indicator" ] then
@@ -1050,8 +1276,9 @@
                         end
                         cfg.selected_subtab.items[ "subtab_content" ].Visible = false
                     end
-                    library:tween(sub_items[ "subtab_btn" ], {TextColor3 = rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.15)
+                    library:tween(sub_items[ "subtab_btn" ], {TextColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
                     if sub_items[ "subtab_indicator" ] then
+                        sub_items[ "subtab_indicator" ].BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0)
                         library:tween(sub_items[ "subtab_indicator" ], {BackgroundTransparency = 0}, Enum.EasingStyle.Quad, 0.15)
                     end
                     sub_items[ "subtab_content" ].Visible = true
@@ -1182,9 +1409,11 @@
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
                 
+                local curTheme = library.current_theme or library.themes["Yellow"]
+
                 items.text = library:create( "TextLabel" , {
                     FontFace = library.font;
-                    TextColor3 = rgb(185, 185, 185);
+                    TextColor3 = curTheme.Accent or rgb(255, 215, 0);
                     BorderColor3 = rgb(0, 0, 0);
                     Text = " " .. cfg.name .. " ";
                     Parent = items[ "section_outline" ];
@@ -1203,7 +1432,7 @@
                     BorderColor3 = rgb(0, 0, 0);
                     Size = dim2(1, 0, 0, 1);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = rgb(80, 80, 80)
+                    BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
                 });                
 
                 library:create( "UIStroke" , {
@@ -1215,12 +1444,13 @@
 
             items[ "section_outline" ].MouseEnter:Connect(function()
                 library:tween(items[ "section_outline" ], {BorderColor3 = rgb(65, 65, 65)})
-                library:tween(items.text, {TextColor3 = rgb(255, 255, 255)})
+                library:tween(items.text, {TextColor3 = rgb(255, 240, 120)})
             end)
 
             items[ "section_outline" ].MouseLeave:Connect(function()
                 library:tween(items[ "section_outline" ], {BorderColor3 = rgb(35, 35, 35)})
-                library:tween(items.text, {TextColor3 = rgb(185, 185, 185)})
+                local curTheme = library.current_theme or library.themes["Yellow"]
+                library:tween(items.text, {TextColor3 = curTheme.Accent or rgb(255, 215, 0)})
             end)
 
             function cfg:SetVisibility(state)
