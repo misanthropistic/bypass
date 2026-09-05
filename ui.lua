@@ -72,8 +72,8 @@
         current_open; 
     }
 
-    local yellowTheme = {
-        Accent = rgb(255, 215, 0),
+    local bwTheme = {
+        Accent = rgb(255, 255, 255),
         WindowBg = rgb(10, 10, 10),
         TopFrameBg = rgb(14, 14, 14),
         InlineBg = rgb(12, 12, 12),
@@ -81,20 +81,22 @@
         Text = rgb(255, 255, 255),
         SubText = rgb(180, 180, 180),
         Border = rgb(42, 42, 42),
-        ToggleActive = rgb(255, 215, 0),
-        AccentGradient = { rgbkey(0, rgb(255, 230, 80)), rgbkey(0.5, rgb(255, 215, 0)), rgbkey(1, rgb(200, 150, 0)) }
+        ToggleActive = rgb(255, 255, 255),
+        AccentGradient = { rgbkey(0, rgb(255, 255, 255)), rgbkey(0.5, rgb(215, 215, 215)), rgbkey(1, rgb(160, 160, 160)) }
     }
 
     library.themes = {
-        ["Yellow"] = yellowTheme,
-        ["Default"] = yellowTheme
+        ["BlackAndWhite"] = bwTheme,
+        ["White"] = bwTheme,
+        ["Default"] = bwTheme,
+        ["Yellow"] = bwTheme
     }
-    library.current_theme_name = "Yellow"
-    library.current_theme = yellowTheme
+    library.current_theme_name = "BlackAndWhite"
+    library.current_theme = bwTheme
 
     function library:SetTheme(themeName)
-        local t = library.themes[themeName] or yellowTheme
-        library.current_theme_name = "Yellow"
+        local t = library.themes[themeName] or bwTheme
+        library.current_theme_name = "BlackAndWhite"
         library.current_theme = t
 
         if library.window_obj and library.window_obj.items then
@@ -117,8 +119,6 @@
             end
             if items["top_dot"] then items["top_dot"].BackgroundColor3 = t.Accent end
             if items["top_logo"] then items["top_logo"].ImageColor3 = t.Accent end
-            if items["tab_tooltip_text"] then items["tab_tooltip_text"].TextColor3 = t.Accent end
-            if items["tab_tooltip"] then items["tab_tooltip"].BorderColor3 = t.Accent end
         end
 
         if library.window_obj and library.window_obj.selected_tab then
@@ -585,7 +585,7 @@
             }); 
 
             local items = cfg.items; do
-                local curTheme = library.current_theme or library.themes["Yellow"]
+                local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
 
                 items[ "window" ] = library:create( "Frame" , {
                     Parent = library.items;
@@ -624,14 +624,14 @@
                     Size = dim2(1, 0, 0, 1);
                     BorderSizePixel = 0;
                     ZIndex = 10;
-                    BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
+                    BackgroundColor3 = curTheme.Accent or rgb(255, 255, 255);
                 });
 
                 items[ "ui_title" ] = library:create( "TextLabel" , {
                     Parent = items[ "top_frame" ];
                     Name = "Title";
                     Text = cfg.name or "alternate";
-                    TextColor3 = curTheme.Accent or rgb(255, 215, 0);
+                    TextColor3 = curTheme.Accent or rgb(255, 255, 255);
                     TextSize = 19;
                     FontFace = library.font or Font.fromEnum(Enum.Font.GothamBold);
                     TextXAlignment = Enum.TextXAlignment.Left;
@@ -651,7 +651,7 @@
                     Transparency = 0.3;
                 });
 
-                local sidebarW = 88
+                local sidebarW = 112
                 local contentY = topBarH + 1
 
                 items[ "inline" ] = library:create( "Frame" , {
@@ -713,39 +713,6 @@
                     BorderSizePixel = 0;
                     BackgroundColor3 = curTheme.PageHolderBg or rgb(9, 9, 9);
                     ZIndex = 2;
-                });
-
-                items[ "tab_tooltip" ] = library:create( "Frame" , {
-                    Parent = items[ "window" ];
-                    Name = "TabTooltip";
-                    Visible = false;
-                    ZIndex = 300;
-                    BackgroundColor3 = rgb(14, 14, 14);
-                    BorderColor3 = curTheme.Accent or rgb(255, 215, 0);
-                    BorderSizePixel = 1;
-                    AutomaticSize = Enum.AutomaticSize.XY;
-                });
-                library:create( "UICorner" , {
-                    Parent = items[ "tab_tooltip" ];
-                    CornerRadius = dim(0, 4);
-                });
-                library:create( "UIPadding" , {
-                    Parent = items[ "tab_tooltip" ];
-                    PaddingTop = dim(0, 4);
-                    PaddingBottom = dim(0, 4);
-                    PaddingLeft = dim(0, 8);
-                    PaddingRight = dim(0, 8);
-                });
-                items[ "tab_tooltip_text" ] = library:create( "TextLabel" , {
-                    Parent = items[ "tab_tooltip" ];
-                    BackgroundTransparency = 1;
-                    TextColor3 = curTheme.Accent or rgb(255, 215, 0);
-                    FontFace = library.font or Font.fromEnum(Enum.Font.Code);
-                    TextSize = 11;
-                    Text = "";
-                    BorderSizePixel = 0;
-                    AutomaticSize = Enum.AutomaticSize.XY;
-                    ZIndex = 301;
                 });
             end 
 
@@ -834,32 +801,32 @@
                 -- properties
                 name = prop_is_string and properties or (type(properties) == "table" and (properties.name or properties.Name)) or "visuals"; 
                 icon = (type(properties) == "table" and (properties.icon or properties.Icon)) or "http://www.roblox.com/asset/?id=6034767608";
-                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 64;
+                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 84;
                 
                 items = {};
             } 
 
             local items = cfg.items; do                
                 -- Tab buttons 
-                    local curTheme = library.current_theme or library.themes["Yellow"]
+                    local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
 
                     items[ "tab_button" ] = library:create( "TextButton" , {
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
                         Text = "";
-                        Size = dim2(0, 80, 0, 66);
+                        Size = dim2(0, 104, 0, 88);
                         BorderSizePixel = 0;
                         AutoButtonColor = false;
                         ZIndex = 6;
                     });
                     
                     items[ "image" ] = library:create( "ImageLabel" , {
-                        ImageColor3 = rgb(125, 125, 125);
+                        ImageColor3 = rgb(110, 110, 110);
                         Active = false;
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(0, 64, 0, 64);
+                        Size = dim2(0, cfg.icon_size, 0, cfg.icon_size);
                         AnchorPoint = vec2(0.5, 0.5);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
@@ -869,37 +836,6 @@
                         ScaleType = Enum.ScaleType.Fit;
                         ZIndex = 7;
                     });                       
-
-                    -- Tooltip and hover interactions
-                    items[ "tab_button" ].MouseEnter:Connect(function()
-                        local isActive = self.selected_tab and self.selected_tab[ 2 ] == items.tab
-                        if not isActive then
-                            local cTheme = library.current_theme or library.themes["Yellow"]
-                            local accent = cTheme.Accent or rgb(255, 215, 0)
-                            library:tween(items.image, {ImageColor3 = accent}, Enum.EasingStyle.Quad, 0.15)
-                        end
-                        local tip = self.items[ "tab_tooltip" ]
-                        local tip_text = self.items[ "tab_tooltip_text" ]
-                        if tip and tip_text then
-                            tip_text.Text = cfg.name
-                            local btn_pos = items[ "tab_button" ].AbsolutePosition
-                            local win_pos = self.items[ "window" ].AbsolutePosition
-                            local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 10
-                            tip.Position = dim2(0, 96, 0, rel_y)
-                            tip.Visible = true
-                        end
-                    end)
-
-                    items[ "tab_button" ].MouseLeave:Connect(function()
-                        local isActive = self.selected_tab and self.selected_tab[ 2 ] == items.tab
-                        if not isActive then
-                            library:tween(items.image, {ImageColor3 = rgb(125, 125, 125)}, Enum.EasingStyle.Quad, 0.15)
-                        end
-                        local tip = self.items[ "tab_tooltip" ]
-                        if tip then
-                            tip.Visible = false
-                        end
-                    end)
                 -- 
 
                 -- SubTab layout setup
@@ -993,15 +929,15 @@
 
             function cfg.open_tab() 
                 local selected_tab = self.selected_tab
-                local curTheme = library.current_theme or library.themes["Yellow"]
+                local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
                 
                 if selected_tab then 
-                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(125, 125, 125)}, Enum.EasingStyle.Quad, 0.15)
+                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(110, 110, 110)}, Enum.EasingStyle.Quad, 0.15)
                    selected_tab[ 2 ].Parent = library.items
                    selected_tab[ 2 ].Visible = false
                 end
                 
-                library:tween(items.image, {ImageColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
+                library:tween(items.image, {ImageColor3 = curTheme.Accent or rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.15)
                 items.tab.Parent = self.items[ "page_holder" ]
                 items.tab.Visible = true
 
@@ -1091,7 +1027,7 @@
                 end
 
                 function sub_cfg.open_subtab()
-                    local curTheme = library.current_theme or library.themes["Yellow"]
+                    local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
                     if cfg.selected_subtab then
                         library:tween(cfg.selected_subtab.items[ "subtab_btn" ], {TextColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
                         if cfg.selected_subtab.items[ "subtab_indicator" ] then
@@ -1099,9 +1035,9 @@
                         end
                         cfg.selected_subtab.items[ "subtab_content" ].Visible = false
                     end
-                    library:tween(sub_items[ "subtab_btn" ], {TextColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
+                    library:tween(sub_items[ "subtab_btn" ], {TextColor3 = curTheme.Accent or rgb(255, 255, 255)}, Enum.EasingStyle.Quad, 0.15)
                     if sub_items[ "subtab_indicator" ] then
-                        sub_items[ "subtab_indicator" ].BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0)
+                        sub_items[ "subtab_indicator" ].BackgroundColor3 = curTheme.Accent or rgb(255, 255, 255)
                         library:tween(sub_items[ "subtab_indicator" ], {BackgroundTransparency = 0}, Enum.EasingStyle.Quad, 0.15)
                     end
                     sub_items[ "subtab_content" ].Visible = true
@@ -1232,11 +1168,11 @@
                     SortOrder = Enum.SortOrder.LayoutOrder
                 });
                 
-                local curTheme = library.current_theme or library.themes["Yellow"]
+                local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
 
                 items.text = library:create( "TextLabel" , {
                     FontFace = library.font;
-                    TextColor3 = curTheme.Accent or rgb(255, 215, 0);
+                    TextColor3 = curTheme.Accent or rgb(255, 255, 255);
                     BorderColor3 = rgb(0, 0, 0);
                     Text = " " .. cfg.name .. " ";
                     Parent = items[ "section_outline" ];
@@ -1255,7 +1191,7 @@
                     BorderColor3 = rgb(0, 0, 0);
                     Size = dim2(1, 0, 0, 1);
                     BorderSizePixel = 0;
-                    BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
+                    BackgroundColor3 = curTheme.Accent or rgb(255, 255, 255);
                 });                
 
                 library:create( "UIStroke" , {
@@ -1267,13 +1203,13 @@
 
             items[ "section_outline" ].MouseEnter:Connect(function()
                 library:tween(items[ "section_outline" ], {BorderColor3 = rgb(65, 65, 65)})
-                library:tween(items.text, {TextColor3 = rgb(255, 240, 120)})
+                library:tween(items.text, {TextColor3 = rgb(255, 255, 255)})
             end)
 
             items[ "section_outline" ].MouseLeave:Connect(function()
                 library:tween(items[ "section_outline" ], {BorderColor3 = rgb(35, 35, 35)})
-                local curTheme = library.current_theme or library.themes["Yellow"]
-                library:tween(items.text, {TextColor3 = curTheme.Accent or rgb(255, 215, 0)})
+                local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
+                library:tween(items.text, {TextColor3 = curTheme.Accent or rgb(255, 255, 255)})
             end)
 
             function cfg:SetVisibility(state)
@@ -3091,12 +3027,12 @@
             end 
 
             items[ "button" ].MouseEnter:Connect(function()
-                local curTheme = library.current_theme or library.themes["Yellow"]
-                local accent = curTheme.Accent or rgb(255, 215, 0)
+                local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
+                local accent = curTheme.Accent or rgb(255, 255, 255)
                 library:tween(items[ "button_outline" ], {BackgroundColor3 = accent}, Enum.EasingStyle.Quad, 0.15)
                 library:tween(items[ "button_text" ], {TextColor3 = accent}, Enum.EasingStyle.Quad, 0.15)
                 if items[ "button_gradient" ] then
-                    items[ "button_gradient" ].Color = rgbseq{rgbkey(0, rgb(45, 38, 12)), rgbkey(1, rgb(18, 15, 5))}
+                    items[ "button_gradient" ].Color = rgbseq{rgbkey(0, rgb(45, 45, 45)), rgbkey(1, rgb(20, 20, 20))}
                 end
             end)
 
@@ -3109,8 +3045,8 @@
             end)
 
             items[ "button" ].MouseButton1Click:Connect(function()
-                local curTheme = library.current_theme or library.themes["Yellow"]
-                local accent = curTheme.Accent or rgb(255, 215, 0)
+                local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
+                local accent = curTheme.Accent or rgb(255, 255, 255)
                 items[ "button_text" ].TextColor3 = rgb(255, 255, 255) 
                 items[ "button_outline" ].BackgroundColor3 = rgb(255, 255, 255)
                 task.delay(0.1, function()
@@ -3209,9 +3145,9 @@
                     end)
                 end)
                 items["card"].MouseEnter:Connect(function()
-                    local curTheme = library.current_theme or library.themes["Yellow"]
-                    local accent = curTheme.Accent or rgb(255, 215, 0)
-                    library:tween(items["card"], {BackgroundColor3 = rgb(24, 21, 8), BorderColor3 = accent})
+                    local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
+                    local accent = curTheme.Accent or rgb(255, 255, 255)
+                    library:tween(items["card"], {BackgroundColor3 = rgb(24, 24, 24), BorderColor3 = accent})
                     library:tween(items["display_label"], {TextColor3 = accent})
                 end)
                 items["card"].MouseLeave:Connect(function()
