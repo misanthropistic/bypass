@@ -3322,9 +3322,65 @@
             local section = target_section or (existing_tab or window):Section({name = "Configs", side = "right", size = 1, default = true})
             config_holder = section:Dropdown({Name = "Configs", options = {"Report", "This", "Error", "To", "Finobe"}, callback = function(option) if textbox then textbox.set(option) end end, flag = "config_name_list"}); library:update_config_list()
             textbox = section:Textbox({name = "Config name:", flag = "config_name_text"})
-            section:Button({name = "Save", callback = function() writefile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg", library:get_config()) library:update_config_list() end}) 
-            section:Button({name = "Load", callback = function() library:load_config(readfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg"))  library:update_config_list() end})
-            section:Button({name = "Delete", callback = function() delfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg")  library:update_config_list() end})
+            section:Button({name = "Create Config", callback = function() 
+                local name = flags["config_name_text"]
+                if not name or name:gsub("%s+", "") == "" then 
+                    library:notify("Please enter a config name!", 2)
+                    return 
+                end
+                local path = library.directory .. "/configs/" .. name .. ".cfg"
+                pcall(function()
+                    if not isfolder(library.directory .. "/configs") then makefolder(library.directory .. "/configs") end
+                    writefile(path, library:get_config()) 
+                    library:update_config_list()
+                    library:notify("Created config: " .. name, 2)
+                end)
+            end}) 
+            section:Button({name = "Save Config", callback = function() 
+                local name = flags["config_name_text"]
+                if not name or name:gsub("%s+", "") == "" then 
+                    library:notify("Please enter a config name!", 2)
+                    return 
+                end
+                local path = library.directory .. "/configs/" .. name .. ".cfg"
+                local ok, err = pcall(function()
+                    if not isfolder(library.directory .. "/configs") then makefolder(library.directory .. "/configs") end
+                    writefile(path, library:get_config()) 
+                end)
+                if ok then
+                    library:update_config_list()
+                    library:notify("Saved config: " .. name, 2)
+                else
+                    library:notify("Failed to save: " .. tostring(err), 3)
+                end
+            end}) 
+            section:Button({name = "Load Config", callback = function() 
+                local name = flags["config_name_text"]
+                if not name or name:gsub("%s+", "") == "" then 
+                    library:notify("Please enter a config name!", 2)
+                    return 
+                end
+                local path = library.directory .. "/configs/" .. name .. ".cfg"
+                local ok, data = pcall(readfile, path)
+                if ok and data then
+                    library:load_config(data)
+                    library:notify("Loaded config: " .. name, 2)
+                else
+                    library:notify("Config not found: " .. name, 3)
+                end
+                library:update_config_list()
+            end})
+            section:Button({name = "Delete Config", callback = function() 
+                local name = flags["config_name_text"]
+                if not name or name:gsub("%s+", "") == "" then 
+                    library:notify("Please enter a config name!", 2)
+                    return 
+                end
+                local path = library.directory .. "/configs/" .. name .. ".cfg"
+                local ok = pcall(delfile, path)
+                library:update_config_list()
+                library:notify("Deleted config: " .. name, 2)
+            end})
         end
     --
     --
