@@ -3019,6 +3019,7 @@ local function uiLibrary()
             local cfg = {
                 name = options.name or options.Name or "TextBox",
                 callback = options.callback or options.Callback or function() end,
+                avatar = options.avatar or nil,
 
                 items = {};
             }
@@ -3061,6 +3062,19 @@ local function uiLibrary()
                     Color = rgbseq{rgbkey(0, rgb(33, 33, 33)), rgbkey(1, rgb(10, 10, 10))}
                 });
                 
+                -- Avatar image if provided
+                if cfg.avatar then
+                    items[ "avatar_image" ] = library:create( "ImageLabel" , {
+                        Parent = items[ "button_shading" ];
+                        Image = cfg.avatar;
+                        BackgroundTransparency = 1;
+                        BorderSizePixel = 0;
+                        Size = dim2(0, 16, 0, 16);
+                        Position = dim2(0, 3, 0.5, -8);
+                        Name = "AvatarImage"
+                    });
+                end
+                
                 items[ "button_text" ] = library:create( "TextLabel" , {
                     FontFace = library.font;
                     TextColor3 = rgb(178, 178, 178);
@@ -3069,7 +3083,8 @@ local function uiLibrary()
                     Parent = items[ "button_shading" ];
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 1, 0);
+                    Size = dim2(1, cfg.avatar and -22 or 0, 1, 0);
+                    Position = dim2(0, cfg.avatar and 20 or 0, 0, 0);
                     BorderSizePixel = 0;
                     AutomaticSize = Enum.AutomaticSize.XY;
                     TextSize = 10;
