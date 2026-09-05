@@ -310,7 +310,6 @@
                         )
                     )
 
-                     library:tween(frame, {Size = current_size}, Enum.EasingStyle.Linear, 0.05)  nobody will ntoice this aswell 👿
                     frame.Size = current_size
                 end
             end)
@@ -488,7 +487,6 @@
         end
 
         function library:unload_menu() 
-             Safely disconnect all tracked signals/connections
             if type(library.connections) == "table" then
                 for index, connection in pairs(library.connections) do 
                     pcall(function()
@@ -502,7 +500,6 @@
                 table.clear(library.connections)
             end
 
-             Destroy screen GUI instances
             if library[ "items" ] then 
                 pcall(function() library[ "items" ]:Destroy() end)
                 library[ "items" ] = nil
@@ -513,7 +510,6 @@
                 library[ "other" ] = nil
             end 
 
-             Clean up watermark if created
             pcall(function()
                 if watermark_obj then
                     watermark_obj:Destroy()
@@ -521,7 +517,6 @@
                 end
             end)
 
-             Clean up keybind list and custom cursor
             pcall(function()
                 if library.cleanup_keybind_list then
                     library.cleanup_keybind_list()
@@ -533,7 +528,6 @@
                 end
             end)
 
-             Clean up notifications
             pcall(function()
                 if library.notifications and type(library.notifications.notifs) == "table" then
                     for _, notif in pairs(library.notifications.notifs) do
@@ -543,7 +537,6 @@
                 end
             end)
 
-             Clear active references and state
             library.window_obj = nil
             library.current = nil
             library.current_open = nil
@@ -555,7 +548,6 @@
     
     function library:window(properties)
             local cfg = { 
-                 Properties
                 name = properties.name or properties.Name or "nebula";
                 size = properties.size or properties.Size or dim2(0, 760, 0, 460);
                 logo = (properties.logo ~= false and properties.logo) or (properties.Logo ~= false and properties.Logo) or nil;
@@ -731,7 +723,7 @@
                 });
             end 
 
-            do  Other
+            do 
                 library:draggify(items[ "window" ])
                 if items[ "top_frame" ] then
                     library:draggify(items[ "top_frame" ], items[ "window" ])
@@ -813,7 +805,6 @@
         function library:Tab(properties)
             local prop_is_string = type(properties) == "string"
             local cfg = {
-                 properties
                 name = prop_is_string and properties or (type(properties) == "table" and (properties.name or properties.Name)) or "visuals"; 
                 icon = (type(properties) == "table" and (properties.icon or properties.Icon)) or "http://www.roblox.com/asset/?id=6034767608";
                 icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 70;
@@ -822,7 +813,6 @@
             } 
 
             local items = cfg.items; do                
-                 Tab buttons 
                     local curTheme = library.current_theme or library.themes["BlackAndWhite"] or library.themes["Default"]
 
                     items[ "tab_button" ] = library:create( "TextButton" , {
@@ -853,7 +843,6 @@
                     });                       
                  
 
-                 SubTab layout setup
                 items[ "tab" ] = library:create( "Frame" , {
                     Parent = library.items;
                     BackgroundTransparency = 1;
@@ -906,7 +895,6 @@
                     LayoutOrder = 1;
                 });
 
-                 Default main subtab (used if no subtabs are created)
                 cfg.default_subtab = library:create( "Frame" , {
                     Parent = items[ "subtab_content" ];
                     BackgroundTransparency = 1;
@@ -1385,21 +1373,18 @@
         
         function library:Slider(options) 
             local cfg = {
-                 Options
                 name = options.name or options.Name or nil;
                 suffix = options.suffix or options.Suffix or "";
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺";
                 callback = options.callback or options.Callback or function() end; 
                 show_value = options.ShowValue or options.show_value or true; 
 
-                 value settings
                 min = options.min or options.minimum or options.Min or options.Minimum or 0;
                 max = options.max or options.maximum or options.Max or options.Maximum or 100;
                 intervals = options.interval or options.decimal or options.Interval or options.Decimal or 1;
                 default = options.default or options.Default or 10;
                 value = options.default or options.default or 10; 
 
-                 ignore
                 dragging = false;
                 items = {}
             } 
@@ -1586,14 +1571,12 @@
             local cfg = {
                 obj_type = "dropdown";
 
-                 Options
                 name = options.name or options.Name or nil;
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺";
                 options = options.items or options.Items or {"1", "2", "3"};
                 callback = options.callback or options.Callback or function() end;
                 multi = options.multi or options.Multi or false;
 
-                 Ignore these 
                 open = false;
                 option_instances = {};
                 multi_items = {};
@@ -1604,7 +1587,6 @@
             flags[cfg.flag] = cfg.default
             
             local items = cfg.items; do 
-                 Element
                     items[ "object" ] = library:create( "Frame" , {
                         Parent = self.items.object or self.items.elements;
                         Name = "\0";
@@ -1699,7 +1681,7 @@
                     });
                  
 
-                 Element Holder
+
                     items[ "dropdown_holder" ] = library:create( "Frame" , {
                         Parent = library.items;
                         Size = dim2(0, 110, 0, 0);
@@ -1782,7 +1764,8 @@
                 
                 library.current = cfg
             end
-             function cfg.set(value, ignore_callback)
+
+            function cfg.set(value, ignore_callback)
                 local selected = {}
                 local isTable = type(value) == "table"
 
@@ -1881,7 +1864,6 @@
             local cfg = {
                 name = options.Name or options.name or "Label",
 
-                 ignore
                 padding_top = options.PaddingTop or options.padding_top or 0;
                 padding_bottom = options.PaddingBottom or options.padding_bottom or 0;
 
@@ -1979,14 +1961,12 @@
             end
 
             local cfg = {
-                 options
                 name = options.name or options.Name or "", 
                 flag = options.flag or options.Flag or options.name or options.Name or "please set me a flag 🥺",
                 color = init_color,
                 alpha = init_alpha,
                 callback = options.callback or options.Callback or function() end,
 
-                 ignore
                 open = false, 
                 items = {};
             }
@@ -2001,7 +1981,6 @@
             flags[cfg.flag] = {Color = cfg.color, Transparency = cfg.alpha}
 
             local items = cfg.items; do 
-                 Component
                 local parent_container = self.items.object or self.items.elements
                 local holder_parent = parent_container
 
@@ -2073,7 +2052,6 @@
                 });
                 
                 
-                 Colorpicker
                     items[ "colorpicker_outline" ] = library:create( "Frame" , {
                         Parent = library.items;
                         Visible = false;
@@ -2976,11 +2954,9 @@
 
         function library:Button(options) 
             local cfg = {
-                 options
                 name = options.name or options.Name or "TextBox",
                 callback = options.callback or options.Callback or function() end,
 
-                 ignore
                 items = {};
             }
             
@@ -3236,7 +3212,7 @@
                     option:Destroy()
                 end
 
-                for _, option_data in options_to_refresh do  haha u skids no next >_<
+                for _, option_data in options_to_refresh do
                     local button = library:create( "TextButton" , {
                         FontFace = fonts.small;
                         TextColor3 = rgb(0, 0, 0);
@@ -3433,7 +3409,6 @@
                     ZIndex = 4;
                 })
 
-                 Draggable Watermark
                 local dragging = false
                 local drag_start = nil
                 local start_pos = nil
@@ -3587,7 +3562,6 @@
                 PaddingRight = dim(0, 8);
             })
 
-             Dragging
             local kl_dragging = false
             local kl_drag_start = nil
             local kl_start_pos = nil
