@@ -3323,29 +3323,60 @@
     --
     -- Watermark library
         local watermark_obj = nil
+        local watermark_label = nil
         local watermark_visible = true
         function library:Watermark(text)
             if not watermark_obj then
-                watermark_obj = library:create("TextLabel", {
+                watermark_obj = library:create("Frame", {
                     Parent = library.other;
                     Position = dim2(0, 20, 0, 20);
-                    Size = dim2(0, 0, 0, 20);
+                    Size = dim2(0, 0, 0, 22);
                     AutomaticSize = Enum.AutomaticSize.X;
-                    Text = " " .. text .. " ";
-                    TextColor3 = rgb(235, 235, 235);
-                    BackgroundColor3 = rgb(15, 15, 15);
-                    BorderColor3 = rgb(45, 45, 45);
+                    BackgroundColor3 = rgb(10, 10, 10);
+                    BorderColor3 = rgb(35, 35, 35);
                     BorderSizePixel = 1;
-                    FontFace = library.font;
-                    TextSize = 12;
-                    TextXAlignment = Enum.TextXAlignment.Left;
+                    ClipsDescendants = true;
                     Active = true;
                     Selectable = true;
                 })
+
+                library:create("UICorner", {
+                    Parent = watermark_obj;
+                    CornerRadius = dim(0, 4);
+                })
+
+                library:create("Frame", {
+                    Parent = watermark_obj;
+                    Name = "TopLine";
+                    Size = dim2(1, 0, 0, 1);
+                    Position = dim2(0, 0, 0, 0);
+                    BackgroundColor3 = rgb(255, 255, 255);
+                    BorderSizePixel = 0;
+                    ZIndex = 5;
+                })
+
                 library:create("UIPadding", {
                     Parent = watermark_obj;
-                    PaddingLeft = dim(0, 6);
-                    PaddingRight = dim(0, 6);
+                    PaddingLeft = dim(0, 9);
+                    PaddingRight = dim(0, 9);
+                    PaddingTop = dim(0, 2);
+                    PaddingBottom = dim(0, 2);
+                })
+
+                watermark_label = library:create("TextLabel", {
+                    Parent = watermark_obj;
+                    Name = "WatermarkText";
+                    Size = dim2(0, 0, 1, 0);
+                    AutomaticSize = Enum.AutomaticSize.X;
+                    Text = text or "";
+                    TextColor3 = rgb(240, 240, 240);
+                    BackgroundTransparency = 1;
+                    BorderSizePixel = 0;
+                    FontFace = library.font;
+                    TextSize = 11;
+                    TextXAlignment = Enum.TextXAlignment.Center;
+                    TextYAlignment = Enum.TextYAlignment.Center;
+                    ZIndex = 4;
                 })
 
                 -- Draggable Watermark
@@ -3379,17 +3410,19 @@
                     end
                 end)
             else
-                watermark_obj.Text = " " .. text .. " "
+                if watermark_label then
+                    watermark_label.Text = text or ""
+                end
             end
 
             watermark_obj.Visible = (watermark_visible == true)
 
             return {
                 Object = watermark_obj,
+                TextLabel = watermark_label,
                 SetText = function(self, t)
-                    if watermark_obj then
-                        watermark_obj.Text = " " .. t .. " "
-                        watermark_obj.Visible = (watermark_visible == true)
+                    if watermark_label then
+                        watermark_label.Text = t or ""
                     end
                 end,
                 SetVisibility = function(self, v)
@@ -3415,20 +3448,26 @@
                 Parent = library.other;
                 Name = "KeybindList";
                 Position = dim2(0, 20, 0, 260);
-                Size = dim2(0, 165, 0, 0);
+                Size = dim2(0, 175, 0, 0);
                 AutomaticSize = Enum.AutomaticSize.Y;
-                BackgroundColor3 = rgb(12, 12, 12);
-                BorderColor3 = rgb(38, 38, 38);
+                BackgroundColor3 = rgb(10, 10, 10);
+                BorderColor3 = rgb(35, 35, 35);
                 BorderSizePixel = 1;
+                ClipsDescendants = true;
                 Visible = false;
                 ZIndex = 50;
+            })
+
+            library:create("UICorner", {
+                Parent = kl_frame;
+                CornerRadius = dim(0, 5);
             })
 
             local kl_header = library:create("Frame", {
                 Parent = kl_frame;
                 Name = "Header";
-                Size = dim2(1, 0, 0, 18);
-                BackgroundColor3 = rgb(16, 16, 16);
+                Size = dim2(1, 0, 0, 22);
+                BackgroundColor3 = rgb(14, 14, 14);
                 BorderSizePixel = 0;
                 ZIndex = 51;
             })
@@ -3443,14 +3482,24 @@
                 ZIndex = 52;
             })
 
+            local kl_bot_divider = library:create("Frame", {
+                Parent = kl_header;
+                Name = "BottomDivider";
+                Size = dim2(1, 0, 0, 1);
+                Position = dim2(0, 0, 1, -1);
+                BackgroundColor3 = rgb(28, 28, 28);
+                BorderSizePixel = 0;
+                ZIndex = 52;
+            })
+
             local kl_title = library:create("TextLabel", {
                 Parent = kl_header;
                 Name = "Title";
                 Text = "keybinds";
                 FontFace = library.font;
                 TextSize = 11;
-                TextColor3 = rgb(235, 235, 235);
-                Position = dim2(0, 6, 0.5, 0);
+                TextColor3 = rgb(255, 255, 255);
+                Position = dim2(0, 8, 0.5, 0);
                 AnchorPoint = vec2(0, 0.5);
                 BackgroundTransparency = 1;
                 BorderSizePixel = 0;
@@ -3461,7 +3510,7 @@
             local kl_content = library:create("Frame", {
                 Parent = kl_frame;
                 Name = "Content";
-                Position = dim2(0, 0, 0, 18);
+                Position = dim2(0, 0, 0, 22);
                 Size = dim2(1, 0, 0, 0);
                 AutomaticSize = Enum.AutomaticSize.Y;
                 BackgroundTransparency = 1;
@@ -3477,10 +3526,10 @@
 
             library:create("UIPadding", {
                 Parent = kl_content;
-                PaddingTop = dim(0, 4);
-                PaddingBottom = dim(0, 4);
-                PaddingLeft = dim(0, 6);
-                PaddingRight = dim(0, 6);
+                PaddingTop = dim(0, 5);
+                PaddingBottom = dim(0, 5);
+                PaddingLeft = dim(0, 8);
+                PaddingRight = dim(0, 8);
             })
 
             -- Dragging
@@ -3542,7 +3591,7 @@
                         local row = library:create("Frame", {
                             Parent = kl_content;
                             Name = "BindRow";
-                            Size = dim2(1, 0, 0, 13);
+                            Size = dim2(1, 0, 0, 14);
                             BackgroundTransparency = 1;
                             BorderSizePixel = 0;
                             ZIndex = 52;
@@ -3756,79 +3805,73 @@
                 duration = options.duration or 3;
 			}
 			
-				local outline = library:create("Frame", {
-					Parent = library.items or library.other;
-					Size = dim2(0, 0, 0, 0);
-					BorderColor3 = rgb(0, 0, 0);
-					BorderSizePixel = 0;
-					AutomaticSize = Enum.AutomaticSize.XY;
-					BackgroundColor3 = rgb(0, 0, 0)
-				});
+			local outline = library:create("Frame", {
+				Parent = library.items or library.other;
+				Size = dim2(0, 0, 0, 0);
+				BorderColor3 = rgb(35, 35, 35);
+				BorderSizePixel = 1;
+				AutomaticSize = Enum.AutomaticSize.XY;
+				BackgroundColor3 = rgb(10, 10, 10);
+				ClipsDescendants = true;
+			});
 
-				local shading = library:create("Frame", {
-					Parent = outline;
-					Position = dim2(0, 1, 0, 1);
-					BorderColor3 = rgb(0, 0, 0);
-					BorderSizePixel = 0;
-					AutomaticSize = Enum.AutomaticSize.XY;
-					BackgroundColor3 = rgb(255, 255, 255)
-				});	
-				
-				library:create("UIGradient", {
-                    Rotation = 90;
-					Color = rgbseq{rgbkey(0, rgb(33, 33, 33)), rgbkey(1, rgb(8, 8, 8))};
-					Parent = shading
-				});
-				
-				library:create("UIPadding", {
-					PaddingTop = dim(0, 6);
-					PaddingBottom = dim(0, 6);
-					Parent = shading;
-					PaddingRight = dim(0, 8);
-					PaddingLeft = dim(0, 8)
-				});
-				
-				local misc_text = library:create("TextLabel", {
-					FontFace = library.font;
-					Parent = shading;
-					TextColor3 = rgb(178, 178, 178);
-					BorderColor3 = rgb(0, 0, 0);
-					Text = cfg.name;
-					AutomaticSize = Enum.AutomaticSize.XY;
-					BackgroundTransparency = 1;
-					TextXAlignment = Enum.TextXAlignment.Left;
-					BorderSizePixel = 0;
-					ZIndex = 2;
-					TextSize = 10;
-					BackgroundColor3 = rgb(255, 255, 255)
-				});
-                library:create("UIStroke", { Parent = misc_text });
-				
-				library:create("UIPadding", {
-					PaddingBottom = dim(0, 1);
-					PaddingRight = dim(0, 1);
-					Parent = outline
-				});
+			library:create("UICorner", {
+				Parent = outline;
+				CornerRadius = dim(0, 5);
+			});
 
-				local line = library:create( "Frame" , {
-					Parent = outline;
-					Name = "\0";
-					Position = dim2(0, 1, 1, -1);
-					BorderColor3 = rgb(0, 0, 0);
-					Size = dim2(0, 0, 0, 1);
-					BorderSizePixel = 0;
-					BackgroundColor3 = cfg.color
-				});
-				
-				local accent = library:create( "Frame" , {
-					Parent = outline;
-					Name = "\0";
-					Position = dim2(0, 0, 0, 0);
-					BorderColor3 = rgb(0, 0, 0);
-					Size = dim2(0, 1, 1, 0);
-					BorderSizePixel = 0;
-					BackgroundColor3 = cfg.color
-				});
+			local top_line = library:create("Frame", {
+				Parent = outline;
+				Name = "TopLine";
+				Position = dim2(0, 0, 0, 0);
+				Size = dim2(1, 0, 0, 1);
+				BackgroundColor3 = rgb(255, 255, 255);
+				BorderSizePixel = 0;
+				ZIndex = 4;
+			});
+
+			local left_bar = library:create("Frame", {
+				Parent = outline;
+				Name = "LeftBar";
+				Position = dim2(0, 0, 0, 0);
+				Size = dim2(0, 2, 1, 0);
+				BackgroundColor3 = cfg.color or rgb(255, 255, 255);
+				BorderSizePixel = 0;
+				ZIndex = 4;
+			});
+
+			local content_padding = library:create("UIPadding", {
+				Parent = outline;
+				PaddingTop = dim(0, 7);
+				PaddingBottom = dim(0, 8);
+				PaddingLeft = dim(0, 11);
+				PaddingRight = dim(0, 13);
+			});
+
+			local misc_text = library:create("TextLabel", {
+				FontFace = library.font;
+				Parent = outline;
+				TextColor3 = rgb(240, 240, 240);
+				BorderColor3 = rgb(0, 0, 0);
+				Text = cfg.name;
+				AutomaticSize = Enum.AutomaticSize.XY;
+				BackgroundTransparency = 1;
+				TextXAlignment = Enum.TextXAlignment.Left;
+				BorderSizePixel = 0;
+				ZIndex = 2;
+				TextSize = 11;
+			});
+
+			local line = library:create("Frame", {
+				Parent = outline;
+				Name = "TimerLine";
+				Position = dim2(0, 0, 1, -1);
+				BorderColor3 = rgb(0, 0, 0);
+				Size = dim2(1, 0, 0, 1);
+				BorderSizePixel = 0;
+				BackgroundColor3 = rgb(255, 255, 255);
+				ZIndex = 5;
+			});
 			
 			local index = #notifications.notifs + 1
 			notifications.notifs[index] = outline
@@ -3846,7 +3889,7 @@
 				end)
 			else 
 				task.spawn(function()
-					tween_service:Create(line, TweenInfo.new(cfg.duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Size = dim2(1, -1, 0, 1)}):Play()
+					tween_service:Create(line, TweenInfo.new(cfg.duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {Size = dim2(0, 0, 0, 1)}):Play()
 					task.wait(cfg.duration)
 					notifications.notifs[index] = nil
                     notifications:fade(outline, true)
