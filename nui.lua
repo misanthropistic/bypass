@@ -178,9 +178,6 @@
                     grad.Color = rgbseq(t.AccentGradient)
                 end
             end
-            if items["top_divider_glow"] then
-                items["top_divider_glow"].BackgroundColor3 = t.Accent
-            end
             if items["inline"] then items["inline"].BackgroundColor3 = t.InlineBg end
             if items["page_holder"] then items["page_holder"].BackgroundColor3 = t.PageHolderBg end
             if items["ui_title"] then items["ui_title"].TextColor3 = t.Accent end
@@ -197,8 +194,6 @@
         if library.window_obj and library.window_obj.selected_tab then
             local sel = library.window_obj.selected_tab
             if sel[1] then library:tween(sel[1], {ImageColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
-            if sel[3] then library:tween(sel[3], {BackgroundColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
-            if sel[4] then library:tween(sel[4], {BackgroundColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
         end
     end
 
@@ -653,37 +648,10 @@
                     Parent = items[ "window" ];
                     Name = "TopDivider";
                     Position = dim2(0, 0, 0, topBarH);
-                    Size = dim2(1, 0, 0, 2);
+                    Size = dim2(1, 0, 0, 1);
                     BorderSizePixel = 0;
                     ZIndex = 10;
                     BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
-                });
-                
-                local gradColors = (curTheme and curTheme.AccentGradient) or {
-                    rgbkey(0, rgb(255, 230, 80)),
-                    rgbkey(0.5, rgb(255, 215, 0)),
-                    rgbkey(1, rgb(200, 150, 0))
-                }
-                library:create( "UIGradient" , {
-                    Rotation = 0;
-                    Parent = items[ "top_divider" ];
-                    Color = rgbseq(gradColors);
-                });
-
-                items[ "top_divider_glow" ] = library:create( "Frame" , {
-                    Parent = items[ "window" ];
-                    Name = "TopDividerGlow";
-                    Position = dim2(0, 0, 0, topBarH + 2);
-                    Size = dim2(1, 0, 0, 3);
-                    BorderSizePixel = 0;
-                    ZIndex = 9;
-                    BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
-                    BackgroundTransparency = 0.85;
-                });
-                library:create( "UIGradient" , {
-                    Rotation = 90;
-                    Parent = items[ "top_divider_glow" ];
-                    Transparency = numseq{ numkey(0, 0.85), numkey(1, 1) };
                 });
 
                 items[ "ui_title" ] = library:create( "TextLabel" , {
@@ -710,8 +678,8 @@
                     Transparency = 0.3;
                 });
 
-                local sidebarW = 72
-                local contentY = topBarH + 2
+                local sidebarW = 76
+                local contentY = topBarH + 1
 
                 items[ "inline" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
@@ -752,13 +720,13 @@
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 8);
-                    PaddingBottom = dim(0, 8);
+                    PaddingTop = dim(0, 4);
+                    PaddingBottom = dim(0, 4);
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "tab_button_holder" ];
-                    Padding = dim(0, 8);
+                    Padding = dim(0, 2);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     HorizontalAlignment = Enum.HorizontalAlignment.Center;
                 });
@@ -905,26 +873,20 @@
                     items[ "tab_button" ] = library:create( "TextButton" , {
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
-                        BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
                         Text = "";
-                        Size = dim2(0, 58, 0, 58);
+                        Size = dim2(0, 68, 0, 52);
                         BorderSizePixel = 0;
                         AutoButtonColor = false;
                         ZIndex = 6;
                     });
-
-                    library:create( "UICorner" , {
-                        Parent = items[ "tab_button" ];
-                        CornerRadius = dim(0, 8);
-                    });
                     
                     items[ "image" ] = library:create( "ImageLabel" , {
-                        ImageColor3 = rgb(130, 130, 130);
+                        ImageColor3 = rgb(125, 125, 125);
                         Active = false;
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(0, 40, 0, 40);
+                        Size = dim2(0, 48, 0, 48);
                         AnchorPoint = vec2(0.5, 0.5);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
@@ -942,7 +904,6 @@
                             local cTheme = library.current_theme or library.themes["Yellow"]
                             local accent = cTheme.Accent or rgb(255, 215, 0)
                             library:tween(items.image, {ImageColor3 = accent}, Enum.EasingStyle.Quad, 0.15)
-                            library:tween(items.tab_button, {BackgroundTransparency = 0.9, BackgroundColor3 = accent}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
                         local tip_text = self.items[ "tab_tooltip_text" ]
@@ -951,7 +912,7 @@
                             local btn_pos = items[ "tab_button" ].AbsolutePosition
                             local win_pos = self.items[ "window" ].AbsolutePosition
                             local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 10
-                            tip.Position = dim2(0, 80, 0, rel_y)
+                            tip.Position = dim2(0, 84, 0, rel_y)
                             tip.Visible = true
                         end
                     end)
@@ -959,8 +920,7 @@
                     items[ "tab_button" ].MouseLeave:Connect(function()
                         local isActive = self.selected_tab and self.selected_tab[ 2 ] == items.tab
                         if not isActive then
-                            library:tween(items.image, {ImageColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
-                            library:tween(items.tab_button, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
+                            library:tween(items.image, {ImageColor3 = rgb(125, 125, 125)}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
                         if tip then
@@ -1063,16 +1023,12 @@
                 local curTheme = library.current_theme or library.themes["Yellow"]
                 
                 if selected_tab then 
-                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
-                   if selected_tab[ 3 ] then
-                       library:tween(selected_tab[ 3 ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
-                   end
+                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(125, 125, 125)}, Enum.EasingStyle.Quad, 0.15)
                    selected_tab[ 2 ].Parent = library.items
                    selected_tab[ 2 ].Visible = false
                 end
                 
                 library:tween(items.image, {ImageColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
-                library:tween(items.tab_button, {BackgroundTransparency = 0.85, BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
                 items.tab.Parent = self.items[ "page_holder" ]
                 items.tab.Visible = true
 
