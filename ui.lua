@@ -72,99 +72,29 @@
         current_open; 
     }
 
+    local yellowTheme = {
+        Accent = rgb(255, 215, 0),
+        WindowBg = rgb(10, 10, 10),
+        TopFrameBg = rgb(14, 14, 14),
+        InlineBg = rgb(12, 12, 12),
+        PageHolderBg = rgb(9, 9, 9),
+        Text = rgb(255, 255, 255),
+        SubText = rgb(180, 180, 180),
+        Border = rgb(42, 42, 42),
+        ToggleActive = rgb(255, 215, 0),
+        AccentGradient = { rgbkey(0, rgb(255, 230, 80)), rgbkey(0.5, rgb(255, 215, 0)), rgbkey(1, rgb(200, 150, 0)) }
+    }
+
     library.themes = {
-        ["Classic"] = {
-            Accent = rgb(255, 255, 255),
-            WindowBg = rgb(10, 10, 10),
-            TopFrameBg = rgb(14, 14, 14),
-            InlineBg = rgb(10, 10, 10),
-            PageHolderBg = rgb(10, 10, 10),
-            Text = rgb(235, 235, 235),
-            SubText = rgb(178, 178, 178),
-            Border = rgb(40, 40, 40),
-            ToggleActive = rgb(220, 220, 220),
-            AccentGradient = { rgbkey(0, rgb(255, 255, 255)), rgbkey(1, rgb(160, 160, 160)) }
-        },
-        ["Red"] = {
-            Accent = rgb(235, 55, 55),
-            WindowBg = rgb(12, 6, 6),
-            TopFrameBg = rgb(20, 10, 10),
-            InlineBg = rgb(14, 7, 7),
-            PageHolderBg = rgb(14, 7, 7),
-            Text = rgb(255, 230, 230),
-            SubText = rgb(210, 160, 160),
-            Border = rgb(80, 25, 25),
-            ToggleActive = rgb(235, 55, 55),
-            AccentGradient = { rgbkey(0, rgb(255, 80, 80)), rgbkey(1, rgb(160, 20, 20)) }
-        },
-        ["Blood"] = {
-            Accent = rgb(180, 0, 0),
-            WindowBg = rgb(8, 2, 2),
-            TopFrameBg = rgb(16, 4, 4),
-            InlineBg = rgb(10, 3, 3),
-            PageHolderBg = rgb(10, 3, 3),
-            Text = rgb(240, 190, 190),
-            SubText = rgb(170, 100, 100),
-            Border = rgb(90, 15, 15),
-            ToggleActive = rgb(180, 0, 0),
-            AccentGradient = { rgbkey(0, rgb(200, 20, 20)), rgbkey(1, rgb(100, 0, 0)) }
-        },
-        ["Galaxy"] = {
-            Accent = rgb(160, 90, 255),
-            WindowBg = rgb(8, 6, 18),
-            TopFrameBg = rgb(15, 10, 30),
-            InlineBg = rgb(11, 8, 22),
-            PageHolderBg = rgb(11, 8, 22),
-            Text = rgb(235, 225, 255),
-            SubText = rgb(175, 155, 215),
-            Border = rgb(65, 40, 105),
-            ToggleActive = rgb(160, 90, 255),
-            AccentGradient = { rgbkey(0, rgb(180, 110, 255)), rgbkey(1, rgb(100, 40, 180)) }
-        },
-        ["Purple"] = {
-            Accent = rgb(195, 90, 255),
-            WindowBg = rgb(14, 6, 20),
-            TopFrameBg = rgb(24, 10, 32),
-            InlineBg = rgb(16, 7, 24),
-            PageHolderBg = rgb(16, 7, 24),
-            Text = rgb(245, 230, 255),
-            SubText = rgb(190, 155, 220),
-            Border = rgb(80, 35, 115),
-            ToggleActive = rgb(195, 90, 255),
-            AccentGradient = { rgbkey(0, rgb(215, 120, 255)), rgbkey(1, rgb(130, 40, 190)) }
-        },
-        ["Ice Mode"] = {
-            Accent = rgb(0, 190, 255),
-            WindowBg = rgb(4, 12, 18),
-            TopFrameBg = rgb(8, 20, 30),
-            InlineBg = rgb(6, 14, 22),
-            PageHolderBg = rgb(6, 14, 22),
-            Text = rgb(225, 248, 255),
-            SubText = rgb(145, 195, 220),
-            Border = rgb(35, 75, 110),
-            ToggleActive = rgb(0, 190, 255),
-            AccentGradient = { rgbkey(0, rgb(80, 220, 255)), rgbkey(1, rgb(0, 130, 190)) }
-        },
-        ["Yellow"] = {
-            Accent = rgb(255, 215, 0),
-            WindowBg = rgb(10, 10, 10),
-            TopFrameBg = rgb(14, 14, 14),
-            InlineBg = rgb(12, 12, 12),
-            PageHolderBg = rgb(9, 9, 9),
-            Text = rgb(255, 255, 255),
-            SubText = rgb(180, 180, 180),
-            Border = rgb(42, 42, 42),
-            ToggleActive = rgb(255, 215, 0),
-            AccentGradient = { rgbkey(0, rgb(255, 230, 80)), rgbkey(0.5, rgb(255, 215, 0)), rgbkey(1, rgb(200, 150, 0)) }
-        }
+        ["Yellow"] = yellowTheme,
+        ["Default"] = yellowTheme
     }
     library.current_theme_name = "Yellow"
-    library.current_theme = library.themes["Yellow"]
+    library.current_theme = yellowTheme
 
     function library:SetTheme(themeName)
-        local t = library.themes[themeName]
-        if not t then return end
-        library.current_theme_name = themeName
+        local t = library.themes[themeName] or yellowTheme
+        library.current_theme_name = "Yellow"
         library.current_theme = t
 
         if library.window_obj and library.window_obj.items then
@@ -177,9 +107,6 @@
                 if grad and t.AccentGradient then
                     grad.Color = rgbseq(t.AccentGradient)
                 end
-            end
-            if items["top_divider_glow"] then
-                items["top_divider_glow"].BackgroundColor3 = t.Accent
             end
             if items["inline"] then items["inline"].BackgroundColor3 = t.InlineBg end
             if items["page_holder"] then items["page_holder"].BackgroundColor3 = t.PageHolderBg end
@@ -197,8 +124,6 @@
         if library.window_obj and library.window_obj.selected_tab then
             local sel = library.window_obj.selected_tab
             if sel[1] then library:tween(sel[1], {ImageColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
-            if sel[3] then library:tween(sel[3], {BackgroundColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
-            if sel[4] then library:tween(sel[4], {BackgroundColor3 = t.Accent}, Enum.EasingStyle.Quad, 0.15) end
         end
     end
 
@@ -570,21 +495,58 @@
         end
 
         function library:unload_menu() 
+            -- Safely disconnect all tracked signals/connections
+            if type(library.connections) == "table" then
+                for index, connection in pairs(library.connections) do 
+                    pcall(function()
+                        if typeof(connection) == "RBXScriptConnection" then
+                            connection:Disconnect()
+                        elseif type(connection) == "table" and type(connection.Disconnect) == "function" then
+                            connection:Disconnect()
+                        end
+                    end)
+                end
+                table.clear(library.connections)
+            end
+
+            -- Destroy screen GUI instances
             if library[ "items" ] then 
-                library[ "items" ]:Destroy()
+                pcall(function() library[ "items" ]:Destroy() end)
+                library[ "items" ] = nil
             end
 
             if library[ "other" ] then 
-                library[ "other" ]:Destroy()
+                pcall(function() library[ "other" ]:Destroy() end)
+                library[ "other" ] = nil
             end 
-            
-            for index, connection in library.connections do 
-                connection:Disconnect() 
-                connection = nil 
-            end
-            
-            library = nil 
+
+            -- Clean up watermark if created
+            pcall(function()
+                if watermark_obj then
+                    watermark_obj:Destroy()
+                    watermark_obj = nil
+                end
+            end)
+
+            -- Clean up notifications
+            pcall(function()
+                if library.notifications and type(library.notifications.notifs) == "table" then
+                    for _, notif in pairs(library.notifications.notifs) do
+                        pcall(function() notif:Destroy() end)
+                    end
+                    table.clear(library.notifications.notifs)
+                end
+            end)
+
+            -- Clear active references and state
+            library.window_obj = nil
+            library.current = nil
+            library.current_open = nil
         end 
+
+        library.Unload = function(self) return library:unload_menu() end
+        library.unload = function(self) return library:unload_menu() end
+        library.unloadMenu = function(self) return library:unload_menu() end
     --
     
     -- Library element functions
@@ -599,6 +561,11 @@
                 items = {};
                 tweening;
             }
+
+            cfg.Unload = function(self) return library:unload_menu() end
+            cfg.unload = function(self) return library:unload_menu() end
+            cfg.unload_menu = function(self) return library:unload_menu() end
+            cfg.unloadMenu = function(self) return library:unload_menu() end
             
             library[ "items" ] = library:create( "ScreenGui" , {
                 Parent = coregui;
@@ -614,6 +581,7 @@
                 Enabled = true;
                 ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
                 IgnoreGuiInset = true;
+                DisplayOrder = 9999;
             }); 
 
             local items = cfg.items; do
@@ -653,37 +621,10 @@
                     Parent = items[ "window" ];
                     Name = "TopDivider";
                     Position = dim2(0, 0, 0, topBarH);
-                    Size = dim2(1, 0, 0, 2);
+                    Size = dim2(1, 0, 0, 1);
                     BorderSizePixel = 0;
                     ZIndex = 10;
                     BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
-                });
-                
-                local gradColors = (curTheme and curTheme.AccentGradient) or {
-                    rgbkey(0, rgb(255, 230, 80)),
-                    rgbkey(0.5, rgb(255, 215, 0)),
-                    rgbkey(1, rgb(200, 150, 0))
-                }
-                library:create( "UIGradient" , {
-                    Rotation = 0;
-                    Parent = items[ "top_divider" ];
-                    Color = rgbseq(gradColors);
-                });
-
-                items[ "top_divider_glow" ] = library:create( "Frame" , {
-                    Parent = items[ "window" ];
-                    Name = "TopDividerGlow";
-                    Position = dim2(0, 0, 0, topBarH + 2);
-                    Size = dim2(1, 0, 0, 3);
-                    BorderSizePixel = 0;
-                    ZIndex = 9;
-                    BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
-                    BackgroundTransparency = 0.85;
-                });
-                library:create( "UIGradient" , {
-                    Rotation = 90;
-                    Parent = items[ "top_divider_glow" ];
-                    Transparency = numseq{ numkey(0, 0.85), numkey(1, 1) };
                 });
 
                 items[ "ui_title" ] = library:create( "TextLabel" , {
@@ -710,8 +651,8 @@
                     Transparency = 0.3;
                 });
 
-                local sidebarW = 72
-                local contentY = topBarH + 2
+                local sidebarW = 88
+                local contentY = topBarH + 1
 
                 items[ "inline" ] = library:create( "Frame" , {
                     Parent = items[ "window" ];
@@ -752,13 +693,13 @@
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 8);
-                    PaddingBottom = dim(0, 8);
+                    PaddingTop = dim(0, 4);
+                    PaddingBottom = dim(0, 4);
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "tab_button_holder" ];
-                    Padding = dim(0, 8);
+                    Padding = dim(0, 2);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     HorizontalAlignment = Enum.HorizontalAlignment.Center;
                 });
@@ -893,7 +834,7 @@
                 -- properties
                 name = prop_is_string and properties or (type(properties) == "table" and (properties.name or properties.Name)) or "visuals"; 
                 icon = (type(properties) == "table" and (properties.icon or properties.Icon)) or "http://www.roblox.com/asset/?id=6034767608";
-                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 68;
+                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 64;
                 
                 items = {};
             } 
@@ -905,26 +846,20 @@
                     items[ "tab_button" ] = library:create( "TextButton" , {
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
-                        BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0);
                         Text = "";
-                        Size = dim2(0, 58, 0, 58);
+                        Size = dim2(0, 80, 0, 66);
                         BorderSizePixel = 0;
                         AutoButtonColor = false;
                         ZIndex = 6;
                     });
-
-                    library:create( "UICorner" , {
-                        Parent = items[ "tab_button" ];
-                        CornerRadius = dim(0, 8);
-                    });
                     
                     items[ "image" ] = library:create( "ImageLabel" , {
-                        ImageColor3 = rgb(130, 130, 130);
+                        ImageColor3 = rgb(125, 125, 125);
                         Active = false;
                         BorderColor3 = rgb(0, 0, 0);
                         Parent = items[ "tab_button" ];
                         Name = "\0";
-                        Size = dim2(0, 40, 0, 40);
+                        Size = dim2(0, 64, 0, 64);
                         AnchorPoint = vec2(0.5, 0.5);
                         Image = cfg.icon;
                         BackgroundTransparency = 1;
@@ -942,7 +877,6 @@
                             local cTheme = library.current_theme or library.themes["Yellow"]
                             local accent = cTheme.Accent or rgb(255, 215, 0)
                             library:tween(items.image, {ImageColor3 = accent}, Enum.EasingStyle.Quad, 0.15)
-                            library:tween(items.tab_button, {BackgroundTransparency = 0.9, BackgroundColor3 = accent}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
                         local tip_text = self.items[ "tab_tooltip_text" ]
@@ -951,7 +885,7 @@
                             local btn_pos = items[ "tab_button" ].AbsolutePosition
                             local win_pos = self.items[ "window" ].AbsolutePosition
                             local rel_y = btn_pos.Y - win_pos.Y + (items[ "tab_button" ].AbsoluteSize.Y / 2) - 10
-                            tip.Position = dim2(0, 80, 0, rel_y)
+                            tip.Position = dim2(0, 96, 0, rel_y)
                             tip.Visible = true
                         end
                     end)
@@ -959,8 +893,7 @@
                     items[ "tab_button" ].MouseLeave:Connect(function()
                         local isActive = self.selected_tab and self.selected_tab[ 2 ] == items.tab
                         if not isActive then
-                            library:tween(items.image, {ImageColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
-                            library:tween(items.tab_button, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
+                            library:tween(items.image, {ImageColor3 = rgb(125, 125, 125)}, Enum.EasingStyle.Quad, 0.15)
                         end
                         local tip = self.items[ "tab_tooltip" ]
                         if tip then
@@ -1063,16 +996,12 @@
                 local curTheme = library.current_theme or library.themes["Yellow"]
                 
                 if selected_tab then 
-                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(130, 130, 130)}, Enum.EasingStyle.Quad, 0.15)
-                   if selected_tab[ 3 ] then
-                       library:tween(selected_tab[ 3 ], {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, 0.15)
-                   end
+                   library:tween(selected_tab[ 1 ], {ImageColor3 = rgb(125, 125, 125)}, Enum.EasingStyle.Quad, 0.15)
                    selected_tab[ 2 ].Parent = library.items
                    selected_tab[ 2 ].Visible = false
                 end
                 
                 library:tween(items.image, {ImageColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
-                library:tween(items.tab_button, {BackgroundTransparency = 0.85, BackgroundColor3 = curTheme.Accent or rgb(255, 215, 0)}, Enum.EasingStyle.Quad, 0.15)
                 items.tab.Parent = self.items[ "page_holder" ]
                 items.tab.Visible = true
 
@@ -2766,6 +2695,12 @@
                 Toggled = cfg.active
             }
 
+            library.tracked_keybinds = library.tracked_keybinds or {}
+            library.tracked_keybinds[cfg.flag] = cfg
+            if library.update_keybind_list then
+                library.update_keybind_list()
+            end
+
             local parent_object = self.items.object or self.items.elements
             local attached = self.items.object ~= nil
 
@@ -2990,6 +2925,9 @@
 
                 items.text_label.Text = key_text()
                 pcall(cfg.callback, cfg.active, cfg.key, cfg.mode)
+                if library.update_keybind_list then
+                    library.update_keybind_list()
+                end
             end
             
             items.text_label.MouseButton1Click:Connect(function()
@@ -3643,7 +3581,8 @@
         function library:Notify(text, duration)
             notifications:create_notification({name = tostring(text or ""), duration = duration or 3})
         end
-	-- 
--- 
+        library.Unload = library.unload_menu
+        library.unload = library.unload_menu
+        library.unloadMenu = library.unload_menu
 
 return library, notifications
