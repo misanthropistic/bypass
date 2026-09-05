@@ -528,6 +528,18 @@
                 end
             end)
 
+            -- Clean up keybind list and custom cursor
+            pcall(function()
+                if library.cleanup_keybind_list then
+                    library.cleanup_keybind_list()
+                end
+            end)
+            pcall(function()
+                if library.cleanup_cursor then
+                    library.cleanup_cursor()
+                end
+            end)
+
             -- Clean up notifications
             pcall(function()
                 if library.notifications and type(library.notifications.notifs) == "table" then
@@ -651,7 +663,7 @@
                     Transparency = 0.3;
                 });
 
-                local sidebarW = 112
+                local sidebarW = 98
                 local contentY = topBarH + 1
 
                 items[ "inline" ] = library:create( "Frame" , {
@@ -693,13 +705,13 @@
                 
                 library:create( "UIPadding" , {
                     Parent = items[ "tab_button_holder" ];
-                    PaddingTop = dim(0, 4);
-                    PaddingBottom = dim(0, 4);
+                    PaddingTop = dim(0, 2);
+                    PaddingBottom = dim(0, 2);
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "tab_button_holder" ];
-                    Padding = dim(0, 2);
+                    Padding = dim(0, 1);
                     SortOrder = Enum.SortOrder.LayoutOrder;
                     HorizontalAlignment = Enum.HorizontalAlignment.Center;
                 });
@@ -801,7 +813,7 @@
                 -- properties
                 name = prop_is_string and properties or (type(properties) == "table" and (properties.name or properties.Name)) or "visuals"; 
                 icon = (type(properties) == "table" and (properties.icon or properties.Icon)) or "http://www.roblox.com/asset/?id=6034767608";
-                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 84;
+                icon_size = (type(properties) == "table" and (properties.icon_size or properties.IconSize)) or 70;
                 
                 items = {};
             } 
@@ -814,7 +826,7 @@
                         Parent = self.items[ "tab_button_holder" ];
                         BackgroundTransparency = 1;
                         Text = "";
-                        Size = dim2(0, 104, 0, 88);
+                        Size = dim2(0, 90, 0, 68);
                         BorderSizePixel = 0;
                         AutoButtonColor = false;
                         ZIndex = 6;
@@ -1399,19 +1411,65 @@
                     Parent = self.items.object or self.items.elements;
                     Name = "\0";
                     BackgroundTransparency = 1;
-                    Size = dim2(1, 0, 0, 16);
+                    Size = dim2(1, 0, 0, 24);
                     BorderColor3 = rgb(0, 0, 0);
                     BorderSizePixel = 0;
+                    AutomaticSize = Enum.AutomaticSize.Y;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
                 library:create( "UIListLayout" , {
                     Parent = items[ "object" ];
-                    Padding = dim(0, 8);
+                    Padding = dim(0, 4);
                     SortOrder = Enum.SortOrder.LayoutOrder;
-                    FillDirection = Enum.FillDirection.Horizontal;
-                    VerticalAlignment = Enum.VerticalAlignment.Center;
+                    FillDirection = Enum.FillDirection.Vertical;
                 });
+
+                items[ "label_row" ] = library:create( "Frame" , {
+                    Parent = items[ "object" ];
+                    BackgroundTransparency = 1;
+                    Name = "\0";
+                    Size = dim2(1, 0, 0, 13);
+                    BorderSizePixel = 0;
+                    LayoutOrder = 0;
+                });
+
+                if cfg.name then
+                    items[ "name" ] = library:create( "TextLabel" , {
+                        FontFace = library.font;
+                        TextColor3 = rgb(178, 178, 178);
+                        BorderColor3 = rgb(0, 0, 0);
+                        Text = cfg.name;
+                        Parent = items[ "label_row" ];
+                        BackgroundTransparency = 1;
+                        BorderSizePixel = 0;
+                        AutomaticSize = Enum.AutomaticSize.XY;
+                        Position = dim2(0, 0, 0, 0);
+                        TextXAlignment = Enum.TextXAlignment.Left;
+                        TextSize = 11;
+                        BackgroundColor3 = rgb(255, 255, 255)
+                    });
+                    library:create( "UIStroke" , { Parent = items[ "name" ] });
+                end
+
+                if cfg.show_value then 
+                    items[ "value" ] = library:create( "TextLabel" , {
+                        FontFace = library.font;
+                        TextColor3 = rgb(178, 178, 178);
+                        BorderColor3 = rgb(0, 0, 0);
+                        Text = "";
+                        Parent = items[ "label_row" ];
+                        BackgroundTransparency = 1;
+                        BorderSizePixel = 0;
+                        AutomaticSize = Enum.AutomaticSize.XY;
+                        Position = dim2(1, 0, 0, 0);
+                        AnchorPoint = vec2(1, 0);
+                        TextXAlignment = Enum.TextXAlignment.Right;
+                        TextSize = 11;
+                        BackgroundColor3 = rgb(255, 255, 255)
+                    });
+                    library:create( "UIStroke" , { Parent = items[ "value" ] });
+                end       
                 
                 items[ "slider_parent" ] = library:create( "TextButton" , {
                     Parent = items[ "object" ];
@@ -1419,9 +1477,10 @@
                     Text = "";
                     Name = "\0";
                     BorderColor3 = rgb(0, 0, 0);
-                    Size = dim2(0, 110, 0, 16);
+                    Size = dim2(1, 0, 0, 10);
                     BorderSizePixel = 0;
                     LayoutOrder = 1;
+                    AutoButtonColor = false;
                     BackgroundColor3 = rgb(255, 255, 255)
                 });
                 
@@ -1474,40 +1533,6 @@
                     BorderSizePixel = 0;
                     BackgroundColor3 = thumbCol
                 });
-                
-                if cfg.name then
-                    items[ "name" ] = library:create( "TextLabel" , {
-                        FontFace = library.font;
-                        TextColor3 = rgb(178, 178, 178);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Text = cfg.name;
-                        Parent = items[ "object" ];
-                        BackgroundTransparency = 1;
-                        BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
-                        TextSize = 11;
-                        LayoutOrder = 0;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                    library:create( "UIStroke" , { Parent = items[ "name" ] });
-                end
-
-                if cfg.show_value then 
-                    items[ "value" ] = library:create( "TextLabel" , {
-                        FontFace = library.font;
-                        TextColor3 = rgb(178, 178, 178);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Text = "";
-                        Parent = items[ "object" ];
-                        BackgroundTransparency = 1;
-                        BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.XY;
-                        TextSize = 11;
-                        LayoutOrder = 2;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                    library:create( "UIStroke" , { Parent = items[ "value" ] });
-                end       
             end 
 
             function cfg.set(value, ignore_callback)
@@ -3374,6 +3399,324 @@
                     end
                 end
             }
+        end
+    --
+
+    -- Keybind list library
+        local keybind_list_obj = nil
+        local keybind_list_visible = false
+
+        function library:KeybindList()
+            if keybind_list_obj then
+                return keybind_list_obj
+            end
+
+            local kl_frame = library:create("Frame", {
+                Parent = library.other;
+                Name = "KeybindList";
+                Position = dim2(0, 20, 0, 260);
+                Size = dim2(0, 165, 0, 0);
+                AutomaticSize = Enum.AutomaticSize.Y;
+                BackgroundColor3 = rgb(12, 12, 12);
+                BorderColor3 = rgb(38, 38, 38);
+                BorderSizePixel = 1;
+                Visible = false;
+                ZIndex = 50;
+            })
+
+            local kl_header = library:create("Frame", {
+                Parent = kl_frame;
+                Name = "Header";
+                Size = dim2(1, 0, 0, 18);
+                BackgroundColor3 = rgb(16, 16, 16);
+                BorderSizePixel = 0;
+                ZIndex = 51;
+            })
+
+            local kl_top_line = library:create("Frame", {
+                Parent = kl_header;
+                Name = "TopLine";
+                Size = dim2(1, 0, 0, 1);
+                Position = dim2(0, 0, 0, 0);
+                BackgroundColor3 = rgb(255, 255, 255);
+                BorderSizePixel = 0;
+                ZIndex = 52;
+            })
+
+            local kl_title = library:create("TextLabel", {
+                Parent = kl_header;
+                Name = "Title";
+                Text = "keybinds";
+                FontFace = library.font;
+                TextSize = 11;
+                TextColor3 = rgb(235, 235, 235);
+                Position = dim2(0, 6, 0.5, 0);
+                AnchorPoint = vec2(0, 0.5);
+                BackgroundTransparency = 1;
+                BorderSizePixel = 0;
+                TextXAlignment = Enum.TextXAlignment.Left;
+                ZIndex = 53;
+            })
+
+            local kl_content = library:create("Frame", {
+                Parent = kl_frame;
+                Name = "Content";
+                Position = dim2(0, 0, 0, 18);
+                Size = dim2(1, 0, 0, 0);
+                AutomaticSize = Enum.AutomaticSize.Y;
+                BackgroundTransparency = 1;
+                BorderSizePixel = 0;
+                ZIndex = 51;
+            })
+
+            library:create("UIListLayout", {
+                Parent = kl_content;
+                SortOrder = Enum.SortOrder.LayoutOrder;
+                Padding = dim(0, 2);
+            })
+
+            library:create("UIPadding", {
+                Parent = kl_content;
+                PaddingTop = dim(0, 4);
+                PaddingBottom = dim(0, 4);
+                PaddingLeft = dim(0, 6);
+                PaddingRight = dim(0, 6);
+            })
+
+            -- Dragging
+            local kl_dragging = false
+            local kl_drag_start = nil
+            local kl_start_pos = nil
+
+            kl_header.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    kl_dragging = true
+                    kl_drag_start = input.Position
+                    kl_start_pos = kl_frame.Position
+                end
+            end)
+
+            uis.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    kl_dragging = false
+                end
+            end)
+
+            library:connection(uis.InputChanged, function(input)
+                if kl_dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    local delta = input.Position - kl_drag_start
+                    kl_frame.Position = UDim2.new(
+                        kl_start_pos.X.Scale,
+                        kl_start_pos.X.Offset + delta.X,
+                        kl_start_pos.Y.Scale,
+                        kl_start_pos.Y.Offset + delta.Y
+                    )
+                end
+            end)
+
+            local function update_list()
+                if not kl_frame or not kl_frame.Parent then return end
+                for _, child in ipairs(kl_content:GetChildren()) do
+                    if child:IsA("Frame") and child.Name == "BindRow" then
+                        child:Destroy()
+                    end
+                end
+
+                if not library.tracked_keybinds then return end
+                local count = 0
+                for flag, cfg in pairs(library.tracked_keybinds) do
+                    if cfg.key and cfg.key ~= "NONE" and cfg.key ~= Enum.KeyCode.Unknown then
+                        count = count + 1
+                        local key_name = tostring(cfg.key)
+                        if typeof(cfg.key) == "EnumItem" then
+                            key_name = cfg.key.Name
+                        end
+                        local mode_str = tostring(cfg.mode or "Toggle")
+                        local active_str = cfg.active and "[toggled]" or "[off]"
+                        if mode_str == "Hold" then
+                            active_str = cfg.active and "[holding]" or "[hold]"
+                        elseif mode_str == "Always" then
+                            active_str = "[always]"
+                        end
+
+                        local row = library:create("Frame", {
+                            Parent = kl_content;
+                            Name = "BindRow";
+                            Size = dim2(1, 0, 0, 13);
+                            BackgroundTransparency = 1;
+                            BorderSizePixel = 0;
+                            ZIndex = 52;
+                            LayoutOrder = count;
+                        })
+
+                        local name_lbl = library:create("TextLabel", {
+                            Parent = row;
+                            Name = "Name";
+                            Text = tostring(cfg.name or cfg.flag or "Keybind");
+                            FontFace = library.font;
+                            TextSize = 10;
+                            TextColor3 = cfg.active and rgb(255, 255, 255) or rgb(140, 140, 140);
+                            Position = dim2(0, 0, 0, 0);
+                            Size = dim2(0.58, 0, 1, 0);
+                            BackgroundTransparency = 1;
+                            BorderSizePixel = 0;
+                            TextXAlignment = Enum.TextXAlignment.Left;
+                            TextTruncate = Enum.TextTruncate.AtEnd;
+                            ZIndex = 53;
+                        })
+
+                        local state_lbl = library:create("TextLabel", {
+                            Parent = row;
+                            Name = "State";
+                            Text = "[" .. key_name .. "] " .. active_str;
+                            FontFace = library.font;
+                            TextSize = 10;
+                            TextColor3 = cfg.active and rgb(255, 255, 255) or rgb(110, 110, 110);
+                            Position = dim2(1, 0, 0, 0);
+                            AnchorPoint = vec2(1, 0);
+                            Size = dim2(0.42, 0, 1, 0);
+                            BackgroundTransparency = 1;
+                            BorderSizePixel = 0;
+                            TextXAlignment = Enum.TextXAlignment.Right;
+                            ZIndex = 53;
+                        })
+                    end
+                end
+            end
+
+            library.update_keybind_list = update_list
+            update_list()
+
+            keybind_list_obj = {
+                Frame = kl_frame,
+                Update = update_list,
+                SetVisibility = function(self, v)
+                    keybind_list_visible = (v == true)
+                    if kl_frame then
+                        kl_frame.Visible = keybind_list_visible
+                        if keybind_list_visible then
+                            update_list()
+                        end
+                    end
+                end
+            }
+
+            kl_frame.Visible = (keybind_list_visible == true)
+            return keybind_list_obj
+        end
+
+        library.cleanup_keybind_list = function()
+            if keybind_list_obj and keybind_list_obj.Frame then
+                pcall(function() keybind_list_obj.Frame:Destroy() end)
+                keybind_list_obj = nil
+            end
+        end
+
+        -- Custom Cursor
+        local cursor_enabled = false
+        local cursor_frame = nil
+        local cursor_connection = nil
+
+        function library:SetCustomCursor(enabled)
+            cursor_enabled = (enabled == true)
+
+            if cursor_enabled then
+                if not cursor_frame or not cursor_frame.Parent then
+                    cursor_frame = library:create("Frame", {
+                        Parent = library.other;
+                        Name = "CustomCursor";
+                        Size = dim2(0, 0, 0, 0);
+                        Position = dim2(0, mouse.X, 0, mouse.Y);
+                        AnchorPoint = vec2(0.5, 0.5);
+                        BackgroundTransparency = 1;
+                        BorderSizePixel = 0;
+                        ZIndex = 100000;
+                        Visible = true;
+                    })
+
+                    local gap = 3
+                    local len = 5
+                    local thick = 2
+
+                    -- 4 sides: Top, Bottom, Left, Right
+                    -- Top arm
+                    library:create("Frame", {
+                        Parent = cursor_frame;
+                        Name = "Top";
+                        Position = dim2(0, -1, 0, -gap - len);
+                        Size = dim2(0, thick, 0, len);
+                        BackgroundColor3 = rgb(255, 255, 255);
+                        BorderColor3 = rgb(0, 0, 0);
+                        BorderSizePixel = 1;
+                        ZIndex = 100001;
+                    })
+
+                    -- Bottom arm
+                    library:create("Frame", {
+                        Parent = cursor_frame;
+                        Name = "Bottom";
+                        Position = dim2(0, -1, 0, gap);
+                        Size = dim2(0, thick, 0, len);
+                        BackgroundColor3 = rgb(255, 255, 255);
+                        BorderColor3 = rgb(0, 0, 0);
+                        BorderSizePixel = 1;
+                        ZIndex = 100001;
+                    })
+
+                    -- Left arm
+                    library:create("Frame", {
+                        Parent = cursor_frame;
+                        Name = "Left";
+                        Position = dim2(0, -gap - len, 0, -1);
+                        Size = dim2(0, len, 0, thick);
+                        BackgroundColor3 = rgb(255, 255, 255);
+                        BorderColor3 = rgb(0, 0, 0);
+                        BorderSizePixel = 1;
+                        ZIndex = 100001;
+                    })
+
+                    -- Right arm
+                    library:create("Frame", {
+                        Parent = cursor_frame;
+                        Name = "Right";
+                        Position = dim2(0, gap, 0, -1);
+                        Size = dim2(0, len, 0, thick);
+                        BackgroundColor3 = rgb(255, 255, 255);
+                        BorderColor3 = rgb(0, 0, 0);
+                        BorderSizePixel = 1;
+                        ZIndex = 100001;
+                    })
+
+                    if not cursor_connection then
+                        cursor_connection = run.RenderStepped:Connect(function()
+                            if cursor_enabled and cursor_frame then
+                                cursor_frame.Position = dim2(0, mouse.X, 0, mouse.Y)
+                                uis.MouseIconEnabled = false
+                            end
+                        end)
+                    end
+                end
+
+                cursor_frame.Visible = true
+                uis.MouseIconEnabled = false
+            else
+                if cursor_frame then
+                    cursor_frame.Visible = false
+                end
+                uis.MouseIconEnabled = true
+            end
+        end
+
+        library.cleanup_cursor = function()
+            if cursor_connection then
+                cursor_connection:Disconnect()
+                cursor_connection = nil
+            end
+            if cursor_frame then
+                pcall(function() cursor_frame:Destroy() end)
+                cursor_frame = nil
+            end
+            uis.MouseIconEnabled = true
         end
     --
 
