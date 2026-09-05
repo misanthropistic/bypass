@@ -56,9 +56,7 @@
     local find = table.find 
     local remove = table.remove
     local concat = table.concat
- 
 
- Library init
     getgenv().library = {
         directory = "monolithhh",
         folders = {
@@ -192,8 +190,7 @@
     local config_flags = library.config_flags
     local notifications = library.notifications 
 
-     Font importing system 
-        if isfile(library.directory .. "/fonts/main.ttf") then 
+    if isfile(library.directory .. "/fonts/main.ttf") then 
             delfile(library.directory .. "/fonts/main.ttf")
         else 
             writefile(library.directory .. "/fonts/main.ttf", game:HttpGet("https://github.com/f1nobe7650/Nebula/raw/refs/heads/main/Minecraftia-Regular.ttf"))
@@ -217,10 +214,7 @@
         
         library.font = Font.new(getcustomasset(library.directory .. "/fonts/main_encoded.ttf"), Enum.FontWeight.Regular)
         library.Font = library.font
-     
 
- Library functions 
-     Misc functions
         function library:tween(obj, properties, easing_style, time) 
             local tween = tween_service:Create(obj, TweenInfo.new(time or 0.25, easing_style or Enum.EasingStyle.Quint, Enum.EasingDirection.InOut, 0, false, 0), properties)
             tween:Play()
@@ -559,9 +553,7 @@
         library.unload = function(self) return library:unload_menu() end
         library.unloadMenu = function(self) return library:unload_menu() end
     
-    
-     Library element functions
-        function library:window(properties)
+    function library:window(properties)
             local cfg = { 
                  Properties
                 name = properties.name or properties.Name or "nebula";
@@ -3383,8 +3375,7 @@
         end
     
     
-     Watermark library
-        local watermark_obj = nil
+    local watermark_obj = nil
         local watermark_label = nil
         local watermark_visible = true
         function library:Watermark(text)
@@ -3499,8 +3490,7 @@
         end
     
 
-     Keybind list library
-        local keybind_list_obj = nil
+    local keybind_list_obj = nil
         local keybind_list_visible = false
 
         function library:KeybindList()
@@ -3844,7 +3834,6 @@
         end)
     
 
-     Notification library
 		local notifications = library.notifications
 
 		function notifications:refresh_notifs() 
