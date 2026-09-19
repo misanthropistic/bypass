@@ -422,8 +422,8 @@
         end 
         
         function library:round(number, float) 
-            local multiplier = 1 / (float or 1)
-
+            if not float or float == 0 then return number end
+            local multiplier = 1 / float
             return floor(number * multiplier + 0.5) / multiplier
         end 
 
